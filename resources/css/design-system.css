@@ -343,3 +343,39 @@ body {
   padding: 16px 0;
   border-top: 1px solid var(--color-hairline);
 }
+
+.ds-text-input {
+  background-color: var(--color-canvas);
+  color: var(--color-ink);
+  font-family: var(--font-body);
+  font-size: 16px;
+  border-radius: var(--rounded-md);
+  padding: 14px 16px;
+  height: 48px;
+  border: 1px solid var(--color-hairline);
+  width: 100%;
+  box-sizing: border-box;
+  transition: border-color 0.2s, outline 0.2s;
+}
+
+.ds-text-input:focus {
+  outline: 2px solid var(--color-primary);
+  outline-offset: -2px;
+  border-color: transparent;
+}
+
+.ds-label {
+  display: block;
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--color-ink);
+  margin-bottom: var(--spacing-xs);
+}
+
+.ds-error-text {
+  font-family: var(--font-body);
+  font-size: 14px;
+  color: var(--color-semantic-down);
+  margin-top: var(--spacing-xs);
+}
