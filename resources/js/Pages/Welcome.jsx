@@ -28,7 +28,7 @@ export default function Welcome({ auth }) {
                             Sistem tertutup dengan integrasi potong gaji otomatis. Aman, transparan, dan tanpa repot. Khusus untuk ekosistem internal perusahaan.
                         </p>
                         <div style={{ display: 'flex', gap: 'var(--spacing-base)' }}>
-                            <ButtonPrimary href={route('login')} className="hover:opacity-90 transition-opacity" style={{ boxShadow: '0 4px 12px rgba(11,94,168,0.2)' }}>
+                            <ButtonPrimary href={route('login')} className="hover:opacity-90 transition-opacity" style={{ backgroundColor: 'var(--color-canvas)', color: 'var(--color-primary)', boxShadow: '0 4px 12px rgba(0,0,0,0.15)' }}>
                                 Lihat Dashboard
                             </ButtonPrimary>
                             <ButtonSecondaryDark href="#cara-kerja">
