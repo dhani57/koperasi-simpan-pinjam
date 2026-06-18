@@ -69,11 +69,10 @@ export default function Welcome({ auth }) {
                         
                         <ProductUiCardLight style={{ 
                             position: 'absolute', 
-                            bottom: '0', 
-                            right: '0', 
+                            top: 'calc(100% - 20px)', 
+                            right: '-20px', 
                             zIndex: 2, 
                             width: '320px',
-                            transform: 'translate(40px, 50%)',
                             boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)'
                         }}>
                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--spacing-sm)' }}>
