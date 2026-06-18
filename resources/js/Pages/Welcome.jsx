@@ -28,7 +28,7 @@ export default function Welcome({ auth }) {
                             Sistem tertutup dengan integrasi potong gaji otomatis. Aman, transparan, dan tanpa repot. Khusus untuk ekosistem internal perusahaan.
                         </p>
                         <div style={{ display: 'flex', gap: 'var(--spacing-base)' }}>
-                            <ButtonPrimary href={route('login')}>
+                            <ButtonPrimary href={route('login')} className="hover:opacity-90 transition-opacity" style={{ boxShadow: '0 4px 12px rgba(11,94,168,0.2)' }}>
                                 Lihat Dashboard
                             </ButtonPrimary>
                             <ButtonSecondaryDark href="#cara-kerja">
@@ -156,7 +156,7 @@ export default function Welcome({ auth }) {
 
                 <CtaBandDark>
                     <h2 className="ds-display-lg" style={{ marginBottom: 'var(--spacing-xl)' }}>Ingin menjadi anggota?</h2>
-                    <ButtonPillCta href="mailto:admin@koperasi.internal" style={{ backgroundColor: 'var(--color-surface-strong)', color: 'var(--color-ink)' }}>
+                    <ButtonPillCta href="mailto:admin@koperasi.internal" className="hover:opacity-90 transition-opacity" style={{ backgroundColor: 'var(--color-surface-strong)', color: 'var(--color-ink)', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}>
                         Hubungi Admin
                     </ButtonPillCta>
                 </CtaBandDark>
