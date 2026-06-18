@@ -1,8 +1,10 @@
 import { Head } from '@inertiajs/react';
 import TopNavUnila from '../Components/DesignSystem/TopNavUnila';
-import HeroBandDark from '../Components/DesignSystem/HeroBandDark';
-import ProductUiCardDark from '../Components/DesignSystem/ProductUiCardDark';
-import ButtonPrimary from '../Components/DesignSystem/ButtonPrimary';
+import HeroBandLight from '../Components/DesignSystem/HeroBandLight';
+import ButtonPillCta from '../Components/DesignSystem/ButtonPillCta';
+import FeatureCard from '../Components/DesignSystem/FeatureCard';
+import CtaBandDark from '../Components/DesignSystem/CtaBandDark';
+import FooterLight from '../Components/DesignSystem/FooterLight';
 
 export default function Welcome({ auth }) {
     return (
@@ -10,53 +12,116 @@ export default function Welcome({ auth }) {
             <Head title="Koperasi Simpan Pinjam" />
             <TopNavUnila auth={auth} />
             <main>
-                <HeroBandDark>
-                    <div style={{ paddingRight: 'var(--spacing-xl)' }}>
+                <HeroBandLight>
+                    <div style={{ paddingRight: 'var(--spacing-xl)', maxWidth: '640px' }}>
                         <h1 className="ds-display-mega" style={{ marginBottom: 'var(--spacing-md)' }}>
-                            Buku Besar Koperasi Era Digital.
+                            Kelola Simpan Pinjam Anda, Lebih Transparan
                         </h1>
-                        <p className="ds-body-md" style={{ color: 'var(--color-on-dark-soft)', marginBottom: 'var(--spacing-xl)', maxWidth: '480px' }}>
-                            Platform manajemen sirkulasi finansial tertutup yang aman, transparan, dan terintegrasi penuh dengan payroll institusi.
+                        <p className="ds-body-md" style={{ color: 'var(--color-body)', marginBottom: 'var(--spacing-xl)' }}>
+                            Platform manajemen sirkulasi finansial internal yang aman, terpercaya, dan terintegrasi penuh dengan sistem payroll institusi.
                         </p>
                         <div style={{ display: 'flex', gap: 'var(--spacing-base)' }}>
-                            <ButtonPrimary href={route('login')} isLarge={true}>
-                                Get Started
-                            </ButtonPrimary>
+                            <ButtonPillCta href={route('login')}>
+                                Masuk ke Akun
+                            </ButtonPillCta>
                         </div>
                     </div>
-                    
-                    <div style={{ position: 'relative' }}>
-                        <ProductUiCardDark style={{ position: 'relative', zIndex: 2 }}>
-                            <div style={{ borderBottom: '1px solid var(--color-surface-dark)', paddingBottom: 'var(--spacing-sm)', marginBottom: 'var(--spacing-base)' }}>
-                                <div className="ds-body-md" style={{ color: 'var(--color-on-dark-soft)' }}>Total Saldo Simpanan</div>
-                                <div style={{ fontFamily: 'var(--font-mono)', fontSize: '32px', fontWeight: 600 }}>Rp 12.500.000</div>
-                            </div>
-                            <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-sm)' }}>
-                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                                    <div className="ds-body-md">Potongan Wajib Bulanan</div>
-                                    <div style={{ fontFamily: 'var(--font-mono)', color: 'var(--color-semantic-up)' }}>Rp 500.000</div>
-                                </div>
-                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                                    <div className="ds-body-md">Limit Gaji Tersedia</div>
-                                    <div style={{ fontFamily: 'var(--font-mono)', color: 'var(--color-semantic-down)' }}>Rp 1.250.000</div>
-                                </div>
-                            </div>
-                        </ProductUiCardDark>
-                        
-                        <ProductUiCardDark style={{ 
-                            position: 'absolute', 
-                            top: '-30px', 
-                            right: '-30px', 
-                            zIndex: 1, 
-                            opacity: 0.6,
-                            transform: 'scale(0.9)'
-                        }}>
-                            <div className="ds-body-md" style={{ color: 'var(--color-on-dark-soft)' }}>Simulasi Pinjaman</div>
-                            <div style={{ fontFamily: 'var(--font-mono)', fontSize: '24px', fontWeight: 600, marginTop: '8px' }}>Tenor 12 Bulan</div>
-                        </ProductUiCardDark>
+                </HeroBandLight>
+
+                <section style={{ backgroundColor: 'var(--color-surface-soft)', padding: 'var(--spacing-section) var(--spacing-xl)' }}>
+                    <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
+                        <h2 className="ds-display-lg" style={{ textAlign: 'center', marginBottom: 'var(--spacing-xxl)' }}>Layanan Unggulan</h2>
+                        <div className="ds-grid-3up">
+                            <FeatureCard title="Simpanan Rutin Otomatis">
+                                Pemotongan simpanan wajib dan sukarela dilakukan secara otomatis setiap bulan langsung dari payroll, tanpa perlu transfer manual.
+                            </FeatureCard>
+                            <FeatureCard title="Pengajuan Pinjaman Online">
+                                Ajukan pinjaman dengan mudah melalui platform. Sistem akan menampilkan simulasi cicilan sesuai dengan batas kemampuan potongan gaji Anda.
+                            </FeatureCard>
+                            <FeatureCard title="Transparansi Mutasi Real-time">
+                                Pantau riwayat seluruh mutasi, potongan, dan saldo simpanan secara langsung dan terperinci.
+                            </FeatureCard>
+                        </div>
                     </div>
-                </HeroBandDark>
+                </section>
+
+                <section style={{ backgroundColor: 'var(--color-canvas)', padding: 'var(--spacing-section) var(--spacing-xl)' }}>
+                    <div style={{ maxWidth: '800px', margin: '0 auto', textAlign: 'center' }}>
+                        <h2 className="ds-display-lg" style={{ marginBottom: 'var(--spacing-xxl)' }}>Cara Kerja Sistem</h2>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-lg)', textAlign: 'left' }}>
+                            <div style={{ display: 'flex', gap: 'var(--spacing-md)' }}>
+                                <div style={{ 
+                                    minWidth: '48px', height: '48px', borderRadius: 'var(--rounded-full)', 
+                                    backgroundColor: 'var(--color-surface-strong)', display: 'flex', 
+                                    alignItems: 'center', justifyContent: 'center', fontWeight: '600',
+                                    fontSize: '20px'
+                                }}>1</div>
+                                <div>
+                                    <h3 className="ds-title-md">Terdaftar oleh Admin</h3>
+                                    <p className="ds-body-md" style={{ color: 'var(--color-body)' }}>Akun Anda dibuat secara terpusat oleh Admin menggunakan nomor identitas NIP/NIM yang valid.</p>
+                                </div>
+                            </div>
+                            <div style={{ display: 'flex', gap: 'var(--spacing-md)' }}>
+                                <div style={{ 
+                                    minWidth: '48px', height: '48px', borderRadius: 'var(--rounded-full)', 
+                                    backgroundColor: 'var(--color-surface-strong)', display: 'flex', 
+                                    alignItems: 'center', justifyContent: 'center', fontWeight: '600',
+                                    fontSize: '20px'
+                                }}>2</div>
+                                <div>
+                                    <h3 className="ds-title-md">Mulai Menabung atau Mengajukan Pinjaman</h3>
+                                    <p className="ds-body-md" style={{ color: 'var(--color-body)' }}>Setiap bulan, potongan simpanan akan otomatis diproses. Anda juga bisa mulai mengajukan pinjaman sesuai limit gaji.</p>
+                                </div>
+                            </div>
+                            <div style={{ display: 'flex', gap: 'var(--spacing-md)' }}>
+                                <div style={{ 
+                                    minWidth: '48px', height: '48px', borderRadius: 'var(--rounded-full)', 
+                                    backgroundColor: 'var(--color-surface-strong)', display: 'flex', 
+                                    alignItems: 'center', justifyContent: 'center', fontWeight: '600',
+                                    fontSize: '20px'
+                                }}>3</div>
+                                <div>
+                                    <h3 className="ds-title-md">Pantau Mutasi Kapan Saja</h3>
+                                    <p className="ds-body-md" style={{ color: 'var(--color-body)' }}>Akses buku besar digital pribadi Anda untuk melacak setiap rupiah yang dipotong maupun disetorkan ke koperasi.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <CtaBandDark>
+                    <h2 className="ds-display-lg" style={{ marginBottom: 'var(--spacing-xl)' }}>Sudah menjadi anggota?</h2>
+                    <ButtonPillCta href={route('login')} style={{ backgroundColor: 'var(--color-surface-strong)', color: 'var(--color-ink)' }}>
+                        Masuk Sekarang
+                    </ButtonPillCta>
+                </CtaBandDark>
             </main>
+            
+            <FooterLight>
+                <div style={{ maxWidth: '1200px', margin: '0 auto', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 'var(--spacing-xl)' }}>
+                    <div>
+                        <h3 className="ds-title-md" style={{ color: 'var(--color-ink)' }}>Koperasi Simpan Pinjam</h3>
+                        <p style={{ marginTop: 'var(--spacing-sm)' }}>Platform manajemen sirkulasi finansial tertutup.</p>
+                    </div>
+                    <div>
+                        <h3 className="ds-title-md" style={{ color: 'var(--color-ink)' }}>Layanan</h3>
+                        <ul style={{ listStyle: 'none', padding: 0, marginTop: 'var(--spacing-sm)', display: 'flex', flexDirection: 'column', gap: 'var(--spacing-xs)' }}>
+                            <li>Simpanan Wajib</li>
+                            <li>Simpanan Sukarela</li>
+                            <li>Pinjaman Anggota</li>
+                            <li>Rekonsiliasi Payroll</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h3 className="ds-title-md" style={{ color: 'var(--color-ink)' }}>Kontak</h3>
+                        <ul style={{ listStyle: 'none', padding: 0, marginTop: 'var(--spacing-sm)', display: 'flex', flexDirection: 'column', gap: 'var(--spacing-xs)' }}>
+                            <li>Sekretariat Koperasi</li>
+                            <li>Gedung Rektorat Lt. 2</li>
+                            <li>Jam Layanan: 08:00 - 16:00</li>
+                        </ul>
+                    </div>
+                </div>
+            </FooterLight>
         </>
     );
 }
