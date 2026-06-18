@@ -33,7 +33,7 @@ Route::middleware(['auth', 'verified', 'admin'])->prefix('admin')->name('admin.'
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::resource('users', UserController::class);
     Route::resource('loans', LoanController::class)->only(['index']);
-    Route::resource('settings', SettingController::class)->only(['index']);
+    Route::resource('settings', SettingController::class)->only(['index', 'store']);
 });
 
 require __DIR__.'/auth.php';

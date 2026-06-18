@@ -34,5 +34,9 @@ class DatabaseSeeder extends Seeder
             'monthly_saving_nominal' => 100000,
             'max_salary_deduction_limit' => 2000000,
         ]);
+
+        $this->call([
+            SettingSeeder::class,
+        ]);
     }
 }
