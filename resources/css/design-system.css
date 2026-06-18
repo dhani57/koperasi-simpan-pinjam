@@ -279,3 +279,63 @@ body {
     font-size: 36px;
   }
 }
+
+.ds-button-secondary-dark {
+  background-color: var(--color-surface-dark-elevated);
+  color: var(--color-on-dark);
+  border-radius: var(--rounded-pill);
+  padding: 12px 20px;
+  height: 44px;
+  border: none;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 16px;
+}
+.ds-button-secondary-dark:hover {
+  background-color: #0b4582; /* Slightly lighter on hover */
+}
+
+.ds-product-ui-card-light {
+  background-color: var(--color-canvas);
+  color: var(--color-ink);
+  border-radius: var(--rounded-xl);
+  padding: var(--spacing-xl);
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+.ds-badge-pill {
+  background-color: #FEF3C7;
+  color: var(--color-accent-yellow);
+  font-family: var(--font-body);
+  font-size: 10px;
+  font-weight: 700;
+  border-radius: var(--rounded-pill);
+  padding: 4px 8px;
+  text-transform: uppercase;
+}
+
+.ds-asset-icon-circular {
+  background-color: var(--color-primary);
+  color: var(--color-canvas);
+  border-radius: var(--rounded-full);
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.ds-asset-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 16px 0;
+  border-top: 1px solid var(--color-hairline);
+}
