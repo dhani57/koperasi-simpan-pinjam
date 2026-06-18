@@ -15,7 +15,7 @@ export default function TopNavUnila({ auth }) {
                     </Link>
                 ) : (
                     <>
-                        <Link href={route('login')} className="ds-nav-link opacity-80 hover:opacity-100 transition-opacity">
+                        <Link href={route('login')} className="ds-button-secondary-dark hover:opacity-80 transition-opacity" style={{ height: '36px', padding: '8px 16px', fontSize: '14px' }}>
                             Log in
                         </Link>
                     </>
