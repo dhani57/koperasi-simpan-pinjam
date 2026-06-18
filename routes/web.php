@@ -26,10 +26,14 @@ Route::middleware('auth')->group(function () {
 
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\Admin\LoanController;
+use App\Http\Controllers\Admin\SettingController;
 
 Route::middleware(['auth', 'verified', 'admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::resource('users', UserController::class);
+    Route::resource('loans', LoanController::class)->only(['index']);
+    Route::resource('settings', SettingController::class)->only(['index']);
 });
 
 require __DIR__.'/auth.php';
