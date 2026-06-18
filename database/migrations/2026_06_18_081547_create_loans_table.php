@@ -18,7 +18,7 @@ return new class extends Migration
             $table->decimal('cooperative_fee_percentage', 5, 2)->comment('Persentase jasa koperasi');
             $table->integer('tenor_months')->comment('Tenor dalam bulan');
             $table->decimal('monthly_installment', 15, 2)->comment('Angsuran per bulan (pokok + jasa)');
-            $table->enum('status', ['menunggu', 'aktif', 'lunas', 'ditolak'])->default('menunggu');
+            $table->enum('status', ['diajukan', 'disetujui', 'aktif', 'lunas', 'ditolak'])->default('diajukan');
             $table->timestamp('disbursed_at')->nullable()->comment('Waktu pencairan dana');
             $table->timestamps();
         });
