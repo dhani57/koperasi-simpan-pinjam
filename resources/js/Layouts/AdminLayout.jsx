@@ -6,18 +6,18 @@ export default function AdminLayout({ auth, children, title }) {
         <div style={{ minHeight: '100vh', display: 'flex', backgroundColor: 'var(--color-surface-soft)', color: 'var(--color-ink)', fontFamily: 'var(--font-sans)' }}>
             
             {/* Sidebar */}
-            <aside style={{ width: '260px', backgroundColor: 'var(--color-primary)', display: 'flex', flexDirection: 'column', position: 'fixed', height: '100vh', top: 0, left: 0, zIndex: 40, color: 'var(--color-on-primary)' }}>
+            <aside style={{ width: '260px', backgroundColor: 'var(--color-surface-dark)', display: 'flex', flexDirection: 'column', position: 'fixed', height: '100vh', top: 0, left: 0, zIndex: 40, color: 'var(--color-on-dark)' }}>
                 {/* Brand Logo */}
-                <div style={{ padding: 'var(--spacing-xl) var(--spacing-lg)', display: 'flex', alignItems: 'center', gap: '12px' }}>
-                    <div style={{ width: '32px', height: '32px', backgroundColor: 'var(--color-canvas)', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--color-primary)', fontWeight: 'bold' }}>
+                <div style={{ padding: 'var(--spacing-xl) var(--spacing-lg)', display: 'flex', alignItems: 'center', gap: '12px', borderBottom: '1px solid rgba(255, 255, 255, 0.1)' }}>
+                    <div style={{ width: '32px', height: '32px', backgroundColor: 'var(--color-canvas)', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--color-surface-dark)', fontWeight: 'bold' }}>
                         K
                     </div>
-                    <span style={{ fontSize: '20px', fontWeight: 700, letterSpacing: '-0.5px', color: 'var(--color-on-primary)' }}>Koperasi.</span>
+                    <span style={{ fontSize: '20px', fontWeight: 700, letterSpacing: '-0.5px', color: 'var(--color-on-dark)' }}>Koperasi.</span>
                 </div>
 
                 {/* Navigation Menu */}
                 <nav style={{ padding: '0 var(--spacing-base)', display: 'flex', flexDirection: 'column', gap: '4px', marginTop: 'var(--spacing-md)' }}>
-                    <div style={{ fontSize: '11px', fontWeight: 600, color: 'rgba(255, 255, 255, 0.7)', letterSpacing: '1px', textTransform: 'uppercase', padding: 'var(--spacing-md) var(--spacing-base) var(--spacing-xs)' }}>
+                    <div style={{ fontSize: '11px', fontWeight: 600, color: 'var(--color-on-dark-soft)', letterSpacing: '1px', textTransform: 'uppercase', padding: 'var(--spacing-md) var(--spacing-base) var(--spacing-xs)' }}>
                         Menu Pengurus
                     </div>
                     
@@ -29,8 +29,8 @@ export default function AdminLayout({ auth, children, title }) {
                             display: 'flex',
                             alignItems: 'center',
                             gap: '12px',
-                            backgroundColor: route().current('admin.dashboard') ? 'rgba(255, 255, 255, 0.15)' : 'transparent',
-                            color: route().current('admin.dashboard') ? 'var(--color-on-primary)' : 'rgba(255, 255, 255, 0.8)',
+                            backgroundColor: route().current('admin.dashboard') ? 'rgba(255, 255, 255, 0.1)' : 'transparent',
+                            color: route().current('admin.dashboard') ? 'var(--color-on-dark)' : 'rgba(255, 255, 255, 0.7)',
                             fontWeight: route().current('admin.dashboard') ? 600 : 500,
                             transition: 'all 0.2s ease'
                         }}
@@ -47,8 +47,8 @@ export default function AdminLayout({ auth, children, title }) {
                             display: 'flex',
                             alignItems: 'center',
                             gap: '12px',
-                            backgroundColor: route().current('admin.users.*') ? 'rgba(255, 255, 255, 0.15)' : 'transparent',
-                            color: route().current('admin.users.*') ? 'var(--color-on-primary)' : 'rgba(255, 255, 255, 0.8)',
+                            backgroundColor: route().current('admin.users.*') ? 'rgba(255, 255, 255, 0.1)' : 'transparent',
+                            color: route().current('admin.users.*') ? 'var(--color-on-dark)' : 'rgba(255, 255, 255, 0.7)',
                             fontWeight: route().current('admin.users.*') ? 600 : 500,
                             transition: 'all 0.2s ease'
                         }}
@@ -65,7 +65,7 @@ export default function AdminLayout({ auth, children, title }) {
                 {/* Floating TopNav (Sneat Style, but Blue) */}
                 <header style={{ padding: 'var(--spacing-lg) var(--spacing-lg) 0' }}>
                     <div style={{ 
-                        backgroundColor: 'var(--color-primary)', 
+                        backgroundColor: 'var(--color-surface-dark)', 
                         borderRadius: 'var(--rounded-lg)', 
                         boxShadow: '0 4px 12px rgba(11, 94, 168, 0.15)',
                         padding: '0 var(--spacing-lg)',
