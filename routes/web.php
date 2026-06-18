@@ -23,13 +23,16 @@ Route::get('/', function () {
 use App\Http\Controllers\Member\DashboardController as MemberDashboardController;
 use App\Http\Controllers\Member\LoanController as MemberLoanController;
 use App\Http\Controllers\Member\MutationController as MemberMutationController;
+use App\Http\Controllers\Member\ShuController as MemberShuController;
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/dashboard', [MemberDashboardController::class, 'index'])->name('dashboard');
+    Route::get('/member/dashboard', [MemberDashboardController::class, 'index'])->name('member.dashboard');
     
     Route::prefix('member')->name('member.')->group(function () {
         Route::resource('loans', MemberLoanController::class)->only(['index', 'create', 'store']);
         Route::resource('mutations', MemberMutationController::class)->only(['index']);
+        Route::get('shu', [MemberShuController::class, 'index'])->name('shu.index');
     });
 });
 

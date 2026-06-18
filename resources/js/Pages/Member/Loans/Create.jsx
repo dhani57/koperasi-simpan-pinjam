@@ -5,7 +5,7 @@ import MemberLayout from '@/Layouts/MemberLayout';
 export default function Create({ auth, hasActiveLoan, defaultFee, availableLimit }) {
     const { data, setData, post, processing, errors } = useForm({
         principal_amount: '',
-        tenor_months: 12,
+        tenor_months: 3,
     });
 
     const [simulation, setSimulation] = useState(null);
@@ -21,7 +21,9 @@ export default function Create({ auth, hasActiveLoan, defaultFee, availableLimit
                 setSimulation({
                     monthly,
                     totalFee,
-                    totalRepayment
+                    totalRepayment,
+                    jasaSebulan: principal * (defaultFee / 100),
+                    pokokSebulan: principal / tenor
                 });
             } else {
                 setSimulation(null);
@@ -36,135 +38,148 @@ export default function Create({ auth, hasActiveLoan, defaultFee, availableLimit
         post(route('member.loans.store'));
     };
 
-    return (
-        <MemberLayout auth={auth} title="Ajukan Pinjaman">
-            <Head title="Ajukan Pinjaman" />
+    const formatRp = (num) => new Intl.NumberFormat('id-ID').format(num);
 
-            <div style={{ maxWidth: '800px', margin: '0 auto' }}>
-                <div style={{ marginBottom: 'var(--spacing-lg)' }}>
-                    <Link href={route('member.loans.index')} style={{ color: 'var(--color-muted)', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '8px', fontSize: '14px', marginBottom: 'var(--spacing-md)' }}>
-                        &larr; Kembali
-                    </Link>
-                    <h2 className="ds-title-lg">Ajukan Pinjaman</h2>
-                    <p className="ds-body-sm" style={{ color: 'var(--color-muted)', marginTop: '4px' }}>Simulasikan cicilan Anda sebelum mengajukan pinjaman.</p>
+    return (
+        <MemberLayout auth={auth} title="Pengajuan Pinjaman">
+            <Head title="Pengajuan Pinjaman" />
+
+            <div style={{ maxWidth: '640px', margin: '0 auto', padding: 'var(--spacing-xl) 0' }}>
+                <div style={{ textAlign: 'center', marginBottom: 'var(--spacing-xl)' }}>
+                    <h2 className="ds-display-mega" style={{ fontSize: '32px', letterSpacing: '-0.5px', marginBottom: '12px' }}>Pengajuan Pinjaman</h2>
+                    <p style={{ color: 'var(--color-muted)', fontSize: '14px', lineHeight: '1.6', maxWidth: '480px', margin: '0 auto' }}>
+                        Pembayaran cicilan akan otomatis dipotong dari gaji bulanan Anda. Bebas repot, transparan di awal.
+                    </p>
                 </div>
 
                 {hasActiveLoan ? (
-                    <div style={{ backgroundColor: 'var(--color-surface-soft)', padding: 'var(--spacing-xl)', borderRadius: 'var(--rounded-lg)', textAlign: 'center' }}>
-                        <div style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: '48px', height: '48px', borderRadius: '50%', backgroundColor: 'var(--color-surface-strong)', color: 'var(--color-ink)', marginBottom: 'var(--spacing-md)' }}>
-                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
-                        </div>
+                    <div style={{ backgroundColor: 'white', padding: 'var(--spacing-xl)', borderRadius: 'var(--rounded-lg)', textAlign: 'center', border: '1px solid var(--color-hairline)' }}>
                         <h3 className="ds-title-md" style={{ marginBottom: '8px' }}>Pengajuan Terkunci</h3>
                         <p className="ds-body-sm" style={{ color: 'var(--color-muted)', maxWidth: '400px', margin: '0 auto' }}>
                             Anda masih memiliki pinjaman aktif atau dalam proses pengajuan. Silakan lunasi pinjaman sebelumnya terlebih dahulu.
                         </p>
                     </div>
                 ) : (
-                    <div style={{ display: 'grid', gap: 'var(--spacing-xl)', gridTemplateColumns: 'repeat(12, 1fr)' }}>
-                        <div className="col-span-12 md:col-span-7" style={{ backgroundColor: 'var(--color-canvas)', padding: 'var(--spacing-xl)', borderRadius: 'var(--rounded-lg)', boxShadow: '0 4px 12px rgba(0,0,0,0.03)' }}>
-                            <form onSubmit={submit}>
-                                <div style={{ marginBottom: 'var(--spacing-lg)' }}>
-                                    <label className="ds-body-sm" style={{ display: 'block', fontWeight: 600, marginBottom: '8px' }}>Pokok Pinjaman (Rp)</label>
+                    <form onSubmit={submit}>
+                        {/* Input Card */}
+                        <div style={{ backgroundColor: 'white', borderRadius: 'var(--rounded-lg)', padding: 'var(--spacing-xl)', border: '1px solid var(--color-hairline)', marginBottom: 'var(--spacing-lg)' }}>
+                            <div style={{ marginBottom: 'var(--spacing-xl)' }}>
+                                <label style={{ display: 'block', fontWeight: 600, fontSize: '13px', marginBottom: '8px' }}>Nominal Pinjaman</label>
+                                <div style={{ position: 'relative' }}>
+                                    <span style={{ position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)', fontFamily: 'var(--font-mono)', fontSize: '18px', color: 'var(--color-muted)' }}>Rp</span>
                                     <input
                                         type="number"
-                                        className="ds-text-input"
                                         value={data.principal_amount}
                                         onChange={e => setData('principal_amount', e.target.value)}
-                                        placeholder="Contoh: 5000000"
+                                        required
                                         min="100000"
-                                        required
-                                        style={{ width: '100%' }}
+                                        style={{ 
+                                            width: '100%', 
+                                            fontFamily: 'var(--font-mono)', 
+                                            fontSize: '18px', 
+                                            padding: '16px 16px 16px 48px', 
+                                            borderRadius: 'var(--rounded-md)', 
+                                            border: '1px solid var(--color-hairline)',
+                                            outline: 'none'
+                                        }}
+                                        placeholder="0"
                                     />
-                                    {errors.principal_amount && <div style={{ color: 'red', fontSize: '12px', marginTop: '4px' }}>{errors.principal_amount}</div>}
                                 </div>
-
-                                <div style={{ marginBottom: 'var(--spacing-xl)' }}>
-                                    <label className="ds-body-sm" style={{ display: 'block', fontWeight: 600, marginBottom: '8px' }}>Tenor (Bulan)</label>
-                                    <select
-                                        className="ds-text-input"
-                                        value={data.tenor_months}
-                                        onChange={e => setData('tenor_months', e.target.value)}
-                                        required
-                                        style={{ width: '100%' }}
-                                    >
-                                        <option value="3">3 Bulan</option>
-                                        <option value="6">6 Bulan</option>
-                                        <option value="12">12 Bulan</option>
-                                        <option value="24">24 Bulan</option>
-                                        <option value="36">36 Bulan</option>
-                                    </select>
-                                    {errors.tenor_months && <div style={{ color: 'red', fontSize: '12px', marginTop: '4px' }}>{errors.tenor_months}</div>}
+                                {errors.principal_amount && <div style={{ color: 'var(--color-semantic-down)', fontSize: '12px', marginTop: '4px' }}>{errors.principal_amount}</div>}
+                                
+                                <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '12px', fontSize: '12px' }}>
+                                    <span style={{ color: 'var(--color-muted)' }}>
+                                        Plafon maksimal Anda: <span style={{ fontWeight: 600, color: 'var(--color-ink)' }}>Rp {formatRp(availableLimit * 12)}</span>
+                                    </span>
+                                    <span style={{ color: 'var(--color-semantic-up)', fontWeight: 600 }}>Tersedia</span>
                                 </div>
+                            </div>
 
-                                <button 
-                                    type="submit"
-                                    className="ds-button-pill-cta"
-                                    disabled={processing || (simulation && simulation.monthly > availableLimit)}
-                                    style={{ 
-                                        width: '100%', 
-                                        justifyContent: 'center',
-                                        opacity: (processing || (simulation && simulation.monthly > availableLimit)) ? 0.5 : 1
-                                    }}
-                                >
-                                    {processing ? 'Memproses...' : 'Ajukan Sekarang'}
-                                </button>
-                            </form>
+                            <div>
+                                <label style={{ display: 'block', fontWeight: 600, fontSize: '13px', marginBottom: '12px' }}>Pilihan Tenor (Bulan)</label>
+                                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '12px' }}>
+                                    {[3, 6, 12].map(months => (
+                                        <div 
+                                            key={months}
+                                            onClick={() => setData('tenor_months', months)}
+                                            style={{ 
+                                                border: data.tenor_months === months ? '2px solid var(--color-primary)' : '1px solid var(--color-hairline)',
+                                                borderRadius: 'var(--rounded-md)',
+                                                padding: '16px',
+                                                textAlign: 'center',
+                                                cursor: 'pointer',
+                                                backgroundColor: data.tenor_months === months ? 'var(--color-surface-soft)' : 'white'
+                                            }}
+                                        >
+                                            <div style={{ fontWeight: 600, color: data.tenor_months === months ? 'var(--color-primary)' : 'var(--color-ink)', marginBottom: '4px' }}>{months} Bulan</div>
+                                            <div style={{ fontSize: '11px', color: 'var(--color-muted)' }}>Jasa {defaultFee}% / bln</div>
+                                        </div>
+                                    ))}
+                                </div>
+                                {errors.tenor_months && <div style={{ color: 'var(--color-semantic-down)', fontSize: '12px', marginTop: '4px' }}>{errors.tenor_months}</div>}
+                            </div>
                         </div>
 
-                        <div className="col-span-12 md:col-span-5">
-                            <div style={{ backgroundColor: 'var(--color-surface-soft)', padding: 'var(--spacing-lg)', borderRadius: 'var(--rounded-lg)' }}>
-                                <h3 className="ds-title-sm" style={{ marginBottom: 'var(--spacing-md)' }}>Simulasi Pinjaman</h3>
-                                
-                                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px', fontSize: '14px' }}>
-                                    <span style={{ color: 'var(--color-muted)' }}>Jasa Koperasi:</span>
-                                    <span style={{ fontWeight: 600 }}>{defaultFee}% / bln</span>
+                        {/* Simulasi Card */}
+                        {simulation && (
+                            <div style={{ backgroundColor: 'var(--color-surface-dark)', color: 'white', borderRadius: 'var(--rounded-lg)', padding: 'var(--spacing-xl)', marginBottom: 'var(--spacing-lg)' }}>
+                                <h3 style={{ fontSize: '16px', fontWeight: 600, marginBottom: '16px' }}>Simulasi Transparansi</h3>
+                                <p style={{ fontSize: '13px', color: 'rgba(255,255,255,0.7)', marginBottom: '24px', lineHeight: '1.5' }}>
+                                    Jika Anda meminjam <strong style={{ color: 'white' }}>Rp {formatRp(data.principal_amount)}</strong> selama <strong style={{ color: 'white' }}>{data.tenor_months} Bulan</strong>, berikut adalah estimasi total potongan gaji Anda bulan depan:
+                                </p>
+
+                                <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '14px', color: 'rgba(255,255,255,0.8)' }}>
+                                        <span>Potongan Simpanan Wajib (Rutin)</span>
+                                        <span style={{ fontFamily: 'var(--font-mono)', fontWeight: 500, color: 'white' }}>Rp {formatRp(auth.user.monthly_saving_nominal)}</span>
+                                    </div>
+                                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '14px', color: 'rgba(255,255,255,0.8)' }}>
+                                        <span>Cicilan Pokok Pinjaman Baru</span>
+                                        <span style={{ fontFamily: 'var(--font-mono)', fontWeight: 500, color: 'white' }}>Rp {formatRp(simulation.pokokSebulan)}</span>
+                                    </div>
+                                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '14px', color: 'rgba(255,255,255,0.8)' }}>
+                                        <span>Jasa Pinjaman ({defaultFee}%)</span>
+                                        <span style={{ fontFamily: 'var(--font-mono)', fontWeight: 500, color: 'white' }}>Rp {formatRp(simulation.jasaSebulan)}</span>
+                                    </div>
                                 </div>
 
-                                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px', fontSize: '14px' }}>
-                                    <span style={{ color: 'var(--color-muted)' }}>Plafon Potongan Gaji:</span>
-                                    <span style={{ fontWeight: 600, color: 'var(--color-semantic-up)' }}>Rp {new Intl.NumberFormat('id-ID').format(availableLimit)}</span>
+                                <div style={{ margin: '24px 0', borderTop: '1px solid rgba(255,255,255,0.1)' }}></div>
+
+                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                    <span style={{ fontSize: '16px', fontWeight: 600 }}>Total Potongan Gaji Bulan Depan</span>
+                                    <span style={{ fontFamily: 'var(--font-mono)', fontSize: '24px', fontWeight: 600 }}>Rp {formatRp(simulation.monthly + auth.user.monthly_saving_nominal)}</span>
                                 </div>
 
-                                <div style={{ margin: 'var(--spacing-md) 0', borderTop: '1px solid var(--color-hairline)' }}></div>
-
-                                {simulation ? (
-                                    <>
-                                        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px', fontSize: '14px' }}>
-                                            <span style={{ color: 'var(--color-muted)' }}>Total Jasa:</span>
-                                            <span style={{ fontWeight: 600, fontFamily: 'var(--font-mono)' }}>Rp {new Intl.NumberFormat('id-ID').format(simulation.totalFee)}</span>
-                                        </div>
-                                        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px', fontSize: '14px' }}>
-                                            <span style={{ color: 'var(--color-muted)' }}>Total Pengembalian:</span>
-                                            <span style={{ fontWeight: 600, fontFamily: 'var(--font-mono)' }}>Rp {new Intl.NumberFormat('id-ID').format(simulation.totalRepayment)}</span>
-                                        </div>
-                                        
-                                        <div style={{ 
-                                            marginTop: 'var(--spacing-md)', 
-                                            padding: 'var(--spacing-md)', 
-                                            backgroundColor: simulation.monthly > availableLimit ? 'var(--color-semantic-down)' : 'var(--color-surface-dark)', 
-                                            color: 'white', 
-                                            borderRadius: 'var(--rounded-md)',
-                                            textAlign: 'center'
-                                        }}>
-                                            <div style={{ fontSize: '12px', opacity: 0.8, marginBottom: '4px' }}>Estimasi Cicilan per Bulan</div>
-                                            <div style={{ fontSize: '24px', fontWeight: 700, fontFamily: 'var(--font-mono)' }}>
-                                                Rp {new Intl.NumberFormat('id-ID').format(simulation.monthly)}
-                                            </div>
-                                            {simulation.monthly > availableLimit && (
-                                                <div style={{ fontSize: '11px', marginTop: '8px', backgroundColor: 'rgba(255,255,255,0.2)', padding: '4px', borderRadius: '4px' }}>
-                                                    Melebihi sisa plafon gaji Anda!
-                                                </div>
-                                            )}
-                                        </div>
-                                    </>
-                                ) : (
-                                    <div style={{ textAlign: 'center', padding: 'var(--spacing-xl) 0', color: 'var(--color-muted)', fontSize: '14px' }}>
-                                        Masukkan pokok pinjaman untuk melihat simulasi.
+                                {(simulation.monthly > availableLimit) && (
+                                    <div style={{ marginTop: '16px', backgroundColor: 'var(--color-semantic-down)', padding: '12px', borderRadius: '8px', fontSize: '12px', textAlign: 'center' }}>
+                                        Peringatan: Total cicilan ({formatRp(simulation.monthly)}) melebihi sisa plafon potong gaji Anda ({formatRp(availableLimit)}).
                                     </div>
                                 )}
                             </div>
+                        )}
+
+                        <button 
+                            type="submit" 
+                            disabled={processing || !simulation || (simulation && simulation.monthly > availableLimit)}
+                            style={{ 
+                                width: '100%', 
+                                padding: '16px', 
+                                backgroundColor: 'var(--color-primary)', 
+                                color: 'white', 
+                                border: 'none', 
+                                borderRadius: '100px',
+                                fontSize: '16px',
+                                fontWeight: 600,
+                                cursor: (processing || !simulation || (simulation && simulation.monthly > availableLimit)) ? 'not-allowed' : 'pointer',
+                                opacity: (processing || !simulation || (simulation && simulation.monthly > availableLimit)) ? 0.5 : 1
+                            }}
+                        >
+                            {processing ? 'Memproses...' : 'Ajukan Pinjaman & Setujui Potong Gaji'}
+                        </button>
+                        <div style={{ textAlign: 'center', marginTop: '16px', fontSize: '11px', color: 'var(--color-muted)' }}>
+                            Dengan menekan tombol di atas, Anda menyetujui pemotongan gaji bulanan otomatis untuk pelunasan pinjaman. Dana akan ditransfer ke rekening Anda setelah disetujui oleh admin.
                         </div>
-                    </div>
+                    </form>
                 )}
             </div>
         </MemberLayout>
