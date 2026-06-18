@@ -14,7 +14,12 @@ return new class extends Migration
         Schema::create('users', function (Blueprint $table) {
             $table->id();
             $table->string('name');
+            $table->string('identity_number')->unique()->comment('NIP/NIM');
             $table->string('email')->unique();
+            $table->enum('role', ['anggota', 'bendahara', 'pengurus', 'ketua', 'pengawas'])->default('anggota');
+            $table->decimal('monthly_saving_nominal', 15, 2)->default(0)->comment('Nominal potongan wajib bulanan');
+            $table->decimal('max_salary_deduction_limit', 15, 2)->default(0)->comment('Limit maksimal gaji yang boleh dipotong');
+            $table->decimal('total_saving_balance', 15, 2)->default(0)->comment('Total saldo simpanan saat ini');
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
             $table->rememberToken();
