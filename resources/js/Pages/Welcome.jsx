@@ -31,7 +31,7 @@ export default function Welcome({ auth }) {
                             <ButtonPrimary href={route('login')}>
                                 Lihat Dashboard
                             </ButtonPrimary>
-                            <ButtonSecondaryDark href="#">
+                            <ButtonSecondaryDark href="#cara-kerja">
                                 Cara Kerja
                             </ButtonSecondaryDark>
                         </div>
@@ -110,7 +110,7 @@ export default function Welcome({ auth }) {
                     </div>
                 </section>
 
-                <section style={{ backgroundColor: 'var(--color-canvas)', padding: 'var(--spacing-section) var(--spacing-xl)' }}>
+                <section id="cara-kerja" style={{ backgroundColor: 'var(--color-canvas)', padding: 'var(--spacing-section) var(--spacing-xl)' }}>
                     <div style={{ maxWidth: '800px', margin: '0 auto', textAlign: 'center' }}>
                         <h2 className="ds-display-lg" style={{ marginBottom: 'var(--spacing-xxl)' }}>Cara Kerja Sistem</h2>
                         <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-lg)', textAlign: 'left' }}>
