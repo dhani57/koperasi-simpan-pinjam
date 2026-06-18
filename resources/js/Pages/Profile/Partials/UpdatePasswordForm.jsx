@@ -1,7 +1,6 @@
 import InputError from '@/Components/InputError';
 import InputLabel from '@/Components/InputLabel';
-import PrimaryButton from '@/Components/PrimaryButton';
-import TextInput from '@/Components/TextInput';
+import ButtonPrimary from '@/Components/DesignSystem/ButtonPrimary';
 import { Transition } from '@headlessui/react';
 import { useForm } from '@inertiajs/react';
 import { useRef } from 'react';
@@ -47,13 +46,12 @@ export default function UpdatePasswordForm({ className = '' }) {
     return (
         <section className={className}>
             <header>
-                <h2 className="text-lg font-medium text-gray-900">
-                    Update Password
+                <h2 className="ds-title-md">
+                    Ubah Password
                 </h2>
 
                 <p className="mt-1 text-sm text-gray-600">
-                    Ensure your account is using a long, random password to stay
-                    secure.
+                    Pastikan akun Anda menggunakan password yang panjang dan acak untuk tetap aman.
                 </p>
             </header>
 
@@ -61,10 +59,11 @@ export default function UpdatePasswordForm({ className = '' }) {
                 <div>
                     <InputLabel
                         htmlFor="current_password"
-                        value="Current Password"
+                        value="Password Saat Ini"
+                        className="ds-label"
                     />
 
-                    <TextInput
+                    <input
                         id="current_password"
                         ref={currentPasswordInput}
                         value={data.current_password}
@@ -72,7 +71,7 @@ export default function UpdatePasswordForm({ className = '' }) {
                             setData('current_password', e.target.value)
                         }
                         type="password"
-                        className="mt-1 block w-full"
+                        className="ds-text-input"
                         autoComplete="current-password"
                     />
 
@@ -83,15 +82,15 @@ export default function UpdatePasswordForm({ className = '' }) {
                 </div>
 
                 <div>
-                    <InputLabel htmlFor="password" value="New Password" />
+                    <InputLabel htmlFor="password" value="Password Baru" className="ds-label" />
 
-                    <TextInput
+                    <input
                         id="password"
                         ref={passwordInput}
                         value={data.password}
                         onChange={(e) => setData('password', e.target.value)}
                         type="password"
-                        className="mt-1 block w-full"
+                        className="ds-text-input"
                         autoComplete="new-password"
                     />
 
@@ -101,17 +100,18 @@ export default function UpdatePasswordForm({ className = '' }) {
                 <div>
                     <InputLabel
                         htmlFor="password_confirmation"
-                        value="Confirm Password"
+                        value="Konfirmasi Password Baru"
+                        className="ds-label"
                     />
 
-                    <TextInput
+                    <input
                         id="password_confirmation"
                         value={data.password_confirmation}
                         onChange={(e) =>
                             setData('password_confirmation', e.target.value)
                         }
                         type="password"
-                        className="mt-1 block w-full"
+                        className="ds-text-input"
                         autoComplete="new-password"
                     />
 
@@ -121,18 +121,20 @@ export default function UpdatePasswordForm({ className = '' }) {
                     />
                 </div>
 
-                <div className="flex items-center gap-4">
-                    <PrimaryButton disabled={processing}>Save</PrimaryButton>
+                <div className="flex items-center gap-4 pt-4 border-t border-slate-200">
+                    <ButtonPrimary disabled={processing}>Simpan Perubahan</ButtonPrimary>
 
                     <Transition
                         show={recentlySuccessful}
-                        enter="transition ease-in-out"
+                        enter="transition ease-in-out duration-300"
                         enterFrom="opacity-0"
-                        leave="transition ease-in-out"
+                        enterTo="opacity-100"
+                        leave="transition ease-in-out duration-300"
+                        leaveFrom="opacity-100"
                         leaveTo="opacity-0"
                     >
-                        <p className="text-sm text-gray-600">
-                            Saved.
+                        <p className="text-sm font-medium text-green-600">
+                            Berhasil disimpan.
                         </p>
                     </Transition>
                 </div>
