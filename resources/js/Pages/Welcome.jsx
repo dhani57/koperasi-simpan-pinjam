@@ -37,55 +37,57 @@ export default function Welcome({ auth }) {
                         </div>
                     </div>
                     
-                    <div style={{ position: 'relative', marginTop: 'var(--spacing-xl)', flex: 1 }}>
-                        <ProductUiCardLight style={{ position: 'relative', zIndex: 1, maxWidth: '440px', marginLeft: 'auto' }}>
-                            <div style={{ marginBottom: 'var(--spacing-md)' }}>
-                                <div className="ds-body-md" style={{ color: 'var(--color-muted)' }}>Estimasi Potong Gaji (Okt)</div>
-                                <div style={{ fontFamily: 'var(--font-mono)', fontSize: '28px', fontWeight: 600 }}>Rp 750.000</div>
-                            </div>
-                            
-                            <div className="ds-asset-row">
-                                <div style={{ display: 'flex', gap: 'var(--spacing-base)' }}>
-                                    <div className="ds-asset-icon-circular">S</div>
-                                    <div>
-                                        <div className="ds-title-sm" style={{ color: 'var(--color-ink)' }}>Simpanan Wajib</div>
-                                        <div className="ds-body-sm" style={{ color: 'var(--color-muted)' }}>Auto-deduct tgl 25</div>
-                                    </div>
+                    <div style={{ flex: 1, display: 'flex', justifyContent: 'center' }}>
+                        <div style={{ position: 'relative', marginTop: 'var(--spacing-xl)', width: '100%', maxWidth: '440px' }}>
+                            <ProductUiCardLight style={{ position: 'relative', zIndex: 1, width: '100%' }}>
+                                <div style={{ marginBottom: 'var(--spacing-md)' }}>
+                                    <div className="ds-body-md" style={{ color: 'var(--color-muted)' }}>Estimasi Potong Gaji (Okt)</div>
+                                    <div style={{ fontFamily: 'var(--font-mono)', fontSize: '28px', fontWeight: 600 }}>Rp 750.000</div>
                                 </div>
-                                <div style={{ fontFamily: 'var(--font-mono)', fontSize: '16px', fontWeight: 500 }}>Rp 100.000</div>
-                            </div>
-                            
-                            <div className="ds-asset-row" style={{ borderBottom: 'none', paddingBottom: 0 }}>
-                                <div style={{ display: 'flex', gap: 'var(--spacing-base)' }}>
-                                    <div className="ds-asset-icon-circular" style={{ backgroundColor: 'var(--color-surface-strong)', color: 'var(--color-primary)' }}>P</div>
-                                    <div>
-                                        <div className="ds-title-sm" style={{ color: 'var(--color-ink)' }}>Cicilan Pinjaman #124</div>
-                                        <div className="ds-body-sm" style={{ color: 'var(--color-muted)' }}>Sisa 3 bulan</div>
+                                
+                                <div className="ds-asset-row">
+                                    <div style={{ display: 'flex', gap: 'var(--spacing-base)' }}>
+                                        <div className="ds-asset-icon-circular">S</div>
+                                        <div>
+                                            <div className="ds-title-sm" style={{ color: 'var(--color-ink)' }}>Simpanan Wajib</div>
+                                            <div className="ds-body-sm" style={{ color: 'var(--color-muted)' }}>Auto-deduct tgl 25</div>
+                                        </div>
                                     </div>
+                                    <div style={{ fontFamily: 'var(--font-mono)', fontSize: '16px', fontWeight: 500 }}>Rp 100.000</div>
                                 </div>
-                                <div style={{ fontFamily: 'var(--font-mono)', fontSize: '16px', fontWeight: 500 }}>Rp 650.000</div>
-                            </div>
-                        </ProductUiCardLight>
-                        
-                        <ProductUiCardLight style={{ 
-                            position: 'absolute', 
-                            top: 'calc(100% - 20px)', 
-                            right: '-20px', 
-                            zIndex: 2, 
-                            width: '320px',
-                            boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)'
-                        }}>
-                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--spacing-sm)' }}>
-                                <div className="ds-body-sm" style={{ color: 'var(--color-muted)' }}>Proyeksi SHU Akhir Tahun</div>
-                                <span className="ds-badge-pill">ESTIMASI</span>
-                            </div>
-                            <div style={{ fontFamily: 'var(--font-mono)', fontSize: '24px', fontWeight: 600, color: 'var(--color-accent-yellow)' }}>
-                                Rp 2.150.000
-                            </div>
-                            <div className="ds-body-sm" style={{ color: 'var(--color-semantic-up)', marginTop: '4px', fontWeight: 500 }}>
-                                +12.5% dari tahun lalu
-                            </div>
-                        </ProductUiCardLight>
+                                
+                                <div className="ds-asset-row" style={{ borderBottom: 'none', paddingBottom: 0 }}>
+                                    <div style={{ display: 'flex', gap: 'var(--spacing-base)' }}>
+                                        <div className="ds-asset-icon-circular" style={{ backgroundColor: 'var(--color-surface-strong)', color: 'var(--color-primary)' }}>P</div>
+                                        <div>
+                                            <div className="ds-title-sm" style={{ color: 'var(--color-ink)' }}>Cicilan Pinjaman #124</div>
+                                            <div className="ds-body-sm" style={{ color: 'var(--color-muted)' }}>Sisa 3 bulan</div>
+                                        </div>
+                                    </div>
+                                    <div style={{ fontFamily: 'var(--font-mono)', fontSize: '16px', fontWeight: 500 }}>Rp 650.000</div>
+                                </div>
+                            </ProductUiCardLight>
+                            
+                            <ProductUiCardLight style={{ 
+                                position: 'absolute', 
+                                top: 'calc(100% - 20px)', 
+                                right: '-50px', 
+                                zIndex: 2, 
+                                width: '320px',
+                                boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)'
+                            }}>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--spacing-sm)' }}>
+                                    <div className="ds-body-sm" style={{ color: 'var(--color-muted)' }}>Proyeksi SHU Akhir Tahun</div>
+                                    <span className="ds-badge-pill">ESTIMASI</span>
+                                </div>
+                                <div style={{ fontFamily: 'var(--font-mono)', fontSize: '24px', fontWeight: 600, color: 'var(--color-accent-yellow)' }}>
+                                    Rp 2.150.000
+                                </div>
+                                <div className="ds-body-sm" style={{ color: 'var(--color-semantic-up)', marginTop: '4px', fontWeight: 500 }}>
+                                    +12.5% dari tahun lalu
+                                </div>
+                            </ProductUiCardLight>
+                        </div>
                     </div>
                 </HeroBandDark>
 
