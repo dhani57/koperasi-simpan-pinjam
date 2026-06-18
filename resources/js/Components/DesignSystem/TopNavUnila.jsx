@@ -18,9 +18,6 @@ export default function TopNavUnila({ auth }) {
                         <Link href={route('login')} className="ds-nav-link" style={{ opacity: 0.9 }}>
                             Log in
                         </Link>
-                        <Link href={route('register')} className="ds-button-primary" style={{ height: '36px', padding: '8px 16px', fontSize: '14px' }}>
-                            Register
-                        </Link>
                     </>
                 )}
             </div>

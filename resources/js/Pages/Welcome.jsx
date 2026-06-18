@@ -155,9 +155,9 @@ export default function Welcome({ auth }) {
                 </section>
 
                 <CtaBandDark>
-                    <h2 className="ds-display-lg" style={{ marginBottom: 'var(--spacing-xl)' }}>Sudah menjadi anggota?</h2>
-                    <ButtonPillCta href={route('login')} style={{ backgroundColor: 'var(--color-surface-strong)', color: 'var(--color-ink)' }}>
-                        Masuk Sekarang
+                    <h2 className="ds-display-lg" style={{ marginBottom: 'var(--spacing-xl)' }}>Ingin menjadi anggota?</h2>
+                    <ButtonPillCta href="mailto:admin@koperasi.internal" style={{ backgroundColor: 'var(--color-surface-strong)', color: 'var(--color-ink)' }}>
+                        Hubungi Admin
                     </ButtonPillCta>
                 </CtaBandDark>
             </main>
