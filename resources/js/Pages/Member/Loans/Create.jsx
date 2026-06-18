@@ -68,9 +68,9 @@ export default function Create({ auth, hasActiveLoan, defaultFee, availableLimit
                                 <div style={{ position: 'relative' }}>
                                     <span style={{ position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)', fontFamily: 'var(--font-mono)', fontSize: '18px', color: 'var(--color-muted)' }}>Rp</span>
                                     <input
-                                        type="number"
-                                        value={data.principal_amount}
-                                        onChange={e => setData('principal_amount', e.target.value)}
+                                        type="text"
+                                        value={data.principal_amount ? new Intl.NumberFormat('id-ID').format(data.principal_amount) : ''}
+                                        onChange={e => setData('principal_amount', e.target.value.replace(/\D/g, ''))}
                                         required
                                         min="100000"
                                         style={{ 
@@ -147,7 +147,7 @@ export default function Create({ auth, hasActiveLoan, defaultFee, availableLimit
 
                                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                                     <span style={{ fontSize: '16px', fontWeight: 600 }}>Total Potongan Gaji Bulan Depan</span>
-                                    <span style={{ fontFamily: 'var(--font-mono)', fontSize: '24px', fontWeight: 600 }}>Rp {formatRp(simulation.monthly + auth.user.monthly_saving_nominal)}</span>
+                                    <span style={{ fontFamily: 'var(--font-mono)', fontSize: '24px', fontWeight: 600 }}>Rp {formatRp(simulation.monthly + Number(auth.user.monthly_saving_nominal))}</span>
                                 </div>
 
                                 {(simulation.monthly > availableLimit) && (
