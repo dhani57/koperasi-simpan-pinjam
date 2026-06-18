@@ -10,7 +10,7 @@ export default function TopNavUnila({ auth }) {
             </div>
             <div className="flex items-center gap-6">
                 {auth?.user ? (
-                    <Link href={route('dashboard')} className="ds-nav-link" style={{ opacity: 0.9 }}>
+                    <Link href={auth.user.role === 'pengurus' ? route('admin.dashboard') : route('dashboard')} className="ds-nav-link" style={{ opacity: 0.9 }}>
                         Dashboard
                     </Link>
                 ) : (
