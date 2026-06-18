@@ -10,8 +10,8 @@ export default function Dashboard({ auth, stats, chartData }) {
 
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(12, 1fr)', gap: 'var(--spacing-lg)' }}>
                 
-                {/* Hero Welcome Card (Spans 8 columns on large screens) */}
-                <div style={{ gridColumn: 'span 12', '@media (min-width: 1024px)': { gridColumn: 'span 8' } }} className="lg:col-span-8 col-span-12">
+                {/* Hero Welcome Card (Spans 12 columns) */}
+                <div className="col-span-12">
                     <div style={{ 
                         backgroundColor: 'var(--color-canvas)', 
                         borderRadius: 'var(--rounded-xl)', 
@@ -20,13 +20,13 @@ export default function Dashboard({ auth, stats, chartData }) {
                         position: 'relative',
                         overflow: 'hidden',
                         height: '100%',
-                        minHeight: '280px'
+                        minHeight: '220px'
                     }}>
                         <div style={{ padding: '32px', flex: 1, zIndex: 10 }}>
                             <h2 style={{ fontSize: '24px', fontWeight: 600, color: 'var(--color-primary)', marginBottom: '12px' }}>
                                 Selamat Datang Kembali, {auth.user.name.split(' ')[0]}! 🎉
                             </h2>
-                            <p style={{ color: 'var(--color-body)', marginBottom: '24px', maxWidth: '400px', lineHeight: 1.5 }}>
+                            <p style={{ color: 'var(--color-body)', marginBottom: '24px', maxWidth: '500px', lineHeight: 1.5 }}>
                                 Anda memiliki wewenang penuh untuk mengelola anggota, melihat pergerakan dana, dan mengatur parameter koperasi hari ini.
                             </p>
                             <ButtonPrimary href={route('admin.users.index')} style={{ height: '40px', padding: '0 16px', fontSize: '14px' }}>
@@ -34,14 +34,14 @@ export default function Dashboard({ auth, stats, chartData }) {
                             </ButtonPrimary>
                         </div>
                         {/* Hero Illustration */}
-                        <div className="hidden md:flex" style={{ position: 'absolute', right: 0, bottom: 0, height: '120%', width: '45%', alignItems: 'flex-end', justifyContent: 'flex-end', pointerEvents: 'none' }}>
-                            <img src="/images/admin_welcome_hero.png" alt="Admin Illustration" style={{ height: '90%', objectFit: 'contain', transform: 'translateY(10%)' }} />
+                        <div className="hidden md:flex" style={{ position: 'absolute', right: 0, bottom: 0, height: '120%', width: '30%', alignItems: 'flex-end', justifyContent: 'flex-end', pointerEvents: 'none' }}>
+                            <img src="/images/admin_welcome_hero.png" alt="Admin Illustration" style={{ height: '100%', objectFit: 'contain', transform: 'translateY(10%)' }} />
                         </div>
                     </div>
                 </div>
 
-                {/* Metric Grid (Spans 4 columns) */}
-                <div className="lg:col-span-4 col-span-12" style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 'var(--spacing-lg)' }}>
+                {/* Metric Grid (Spans 12 columns, 4 cards side-by-side) */}
+                <div className="col-span-12" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 'var(--spacing-lg)' }}>
                     
                     {/* Metric 1: Total Anggota */}
                     <div style={{ backgroundColor: 'var(--color-canvas)', borderRadius: 'var(--rounded-xl)', padding: '24px', boxShadow: '0 2px 6px rgba(0,0,0,0.02)', display: 'flex', flexDirection: 'column', gap: '12px' }}>
