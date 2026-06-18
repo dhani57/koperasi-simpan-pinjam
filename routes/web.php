@@ -6,11 +6,17 @@ use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
 Route::get('/', function () {
+    // Cari kontak admin (Pengurus) untuk ditampilkan di landing page
+    $adminContact = \App\Models\User::whereIn('role', ['pengurus', 'ketua'])
+        ->whereNotNull('phone')
+        ->where('phone', '!=', '')
+        ->first();
+        
+    $adminPhone = $adminContact ? $adminContact->phone : null;
+
     return Inertia::render('Welcome', [
         'canLogin' => Route::has('login'),
-        'canRegister' => Route::has('register'),
-        'laravelVersion' => Application::VERSION,
-        'phpVersion' => PHP_VERSION,
+        'adminPhone' => $adminPhone,
     ]);
 });
 

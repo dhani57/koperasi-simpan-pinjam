@@ -9,7 +9,17 @@ import CtaBandDark from '../Components/DesignSystem/CtaBandDark';
 import FooterLight from '../Components/DesignSystem/FooterLight';
 import ButtonPillCta from '../Components/DesignSystem/ButtonPillCta';
 
-export default function Welcome({ auth }) {
+export default function Welcome({ auth, adminPhone }) {
+    // Generate WhatsApp Link
+    let waLink = "mailto:admin@koperasi.internal"; // fallback
+    if (adminPhone) {
+        let cleanPhone = adminPhone.replace(/\D/g, ''); // remove non-digits
+        if (cleanPhone.startsWith('0')) {
+            cleanPhone = '62' + cleanPhone.substring(1);
+        }
+        waLink = `https://wa.me/${cleanPhone}`;
+    }
+
     return (
         <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
             <Head title="Koperasi Institusi" />
@@ -156,9 +166,9 @@ export default function Welcome({ auth }) {
 
                 <CtaBandDark>
                     <h2 className="ds-display-lg" style={{ marginBottom: 'var(--spacing-xl)' }}>Ingin menjadi anggota?</h2>
-                    <ButtonPillCta href="mailto:admin@koperasi.internal" className="hover:opacity-90 transition-opacity" style={{ backgroundColor: 'var(--color-surface-strong)', color: 'var(--color-ink)', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}>
+                    <a href={waLink} target="_blank" rel="noopener noreferrer" className="ds-button-pill-cta hover:opacity-90 transition-opacity" style={{ backgroundColor: 'var(--color-surface-strong)', color: 'var(--color-ink)', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}>
                         Hubungi Admin
-                    </ButtonPillCta>
+                    </a>
                 </CtaBandDark>
             </main>
             
@@ -182,7 +192,11 @@ export default function Welcome({ auth }) {
                         <ul style={{ listStyle: 'none', padding: 0, marginTop: 'var(--spacing-sm)', display: 'flex', flexDirection: 'column', gap: 'var(--spacing-xs)' }}>
                             <li>Sekretariat Pusat</li>
                             <li>Gedung Utama Perusahaan, Lt. 3</li>
-                            <li>Ext. 4021 / koperasi@internal.app</li>
+                            {adminPhone ? (
+                                <li>WA: <a href={waLink} target="_blank" rel="noopener noreferrer" style={{ color: 'var(--color-primary)', textDecoration: 'none' }}>{adminPhone}</a></li>
+                            ) : (
+                                <li>Email: admin@koperasi.internal</li>
+                            )}
                             <li>Senin - Jumat, 08:00 - 16:00</li>
                         </ul>
                     </div>
