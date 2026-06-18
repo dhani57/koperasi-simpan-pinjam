@@ -38,7 +38,8 @@ export default function Welcome({ auth }) {
                     </div>
                     
                     <div style={{ flex: 1, display: 'flex', justifyContent: 'center' }}>
-                        <div style={{ position: 'relative', marginTop: 'var(--spacing-xl)', width: '100%', maxWidth: '440px' }}>
+                        {/* Wrapper acts as bounding box for both cards. Margin offsets the absolute card. */}
+                        <div style={{ position: 'relative', width: '100%', maxWidth: '440px', marginBottom: '100px', marginRight: '50px' }}>
                             <ProductUiCardLight style={{ position: 'relative', zIndex: 1, width: '100%' }}>
                                 <div style={{ marginBottom: 'var(--spacing-md)' }}>
                                     <div className="ds-body-md" style={{ color: 'var(--color-muted)' }}>Estimasi Potong Gaji (Okt)</div>
