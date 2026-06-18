@@ -15,6 +15,7 @@ export default function UpdateProfileInformation({
         useForm({
             name: user.name,
             email: user.email,
+            phone: user.phone || '',
         });
 
     const submit = (e) => {
@@ -65,6 +66,21 @@ export default function UpdateProfileInformation({
                     />
 
                     <InputError className="mt-2" message={errors.email} />
+                </div>
+
+                <div>
+                    <InputLabel htmlFor="phone" value="Nomor Telepon / WhatsApp" className="ds-label" />
+
+                    <input
+                        id="phone"
+                        type="text"
+                        className="ds-text-input"
+                        value={data.phone}
+                        onChange={(e) => setData('phone', e.target.value)}
+                        placeholder="Contoh: 08123456789"
+                    />
+
+                    <InputError className="mt-2" message={errors.phone} />
                 </div>
 
                 {mustVerifyEmail && user.email_verified_at === null && (
