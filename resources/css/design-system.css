@@ -1,0 +1,191 @@
+:root {
+  /* Colors */
+  --color-primary: #0B5EA8;
+  --color-primary-active: #084A85;
+  --color-primary-disabled: #A6C4DF;
+  --color-ink: #1e293b;
+  --color-body: #475569;
+  --color-body-strong: #0f172a;
+  --color-muted: #64748b;
+  --color-muted-soft: #cbd5e1;
+  --color-hairline: #e2e8f0;
+  --color-hairline-soft: #f1f5f9;
+  --color-canvas: #ffffff;
+  --color-surface-soft: #f8fafc;
+  --color-surface-card: #ffffff;
+  --color-surface-strong: #f1f5f9;
+  --color-surface-dark: #042B54;
+  --color-surface-dark-elevated: #073A6E;
+  --color-on-primary: #ffffff;
+  --color-on-dark: #ffffff;
+  --color-on-dark-soft: #94a3b8;
+  --color-semantic-up: #05b169;
+  --color-semantic-down: #cf202f;
+  --color-accent-yellow: #CA8306;
+
+  /* Typography */
+  --font-display: 'Poppins', -apple-system, system-ui, sans-serif;
+  --font-body: system-ui, -apple-system, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Courier New', monospace;
+
+  /* Rounded */
+  --rounded-none: 0px;
+  --rounded-xs: 4px;
+  --rounded-sm: 8px;
+  --rounded-md: 12px;
+  --rounded-lg: 16px;
+  --rounded-xl: 24px;
+  --rounded-pill: 100px;
+  --rounded-full: 9999px;
+
+  /* Spacing */
+  --spacing-xxs: 4px;
+  --spacing-xs: 8px;
+  --spacing-sm: 12px;
+  --spacing-base: 16px;
+  --spacing-md: 20px;
+  --spacing-lg: 24px;
+  --spacing-xl: 32px;
+  --spacing-xxl: 48px;
+  --spacing-section: 96px;
+}
+
+body {
+  background-color: var(--color-canvas);
+  color: var(--color-ink);
+  font-family: var(--font-body);
+  margin: 0;
+  padding: 0;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Typography Classes */
+.ds-display-mega {
+  font-family: var(--font-display);
+  font-size: 80px;
+  font-weight: 600;
+  line-height: 1.0;
+  letter-spacing: -2px;
+}
+@media (max-width: 1024px) {
+  .ds-display-mega { font-size: 64px; }
+}
+@media (max-width: 640px) {
+  .ds-display-mega { font-size: 40px; }
+}
+
+.ds-body-md {
+  font-family: var(--font-body);
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 1.5;
+}
+
+.ds-button-text {
+  font-family: var(--font-display);
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1.15;
+}
+
+.ds-nav-link {
+  font-family: var(--font-display);
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.4;
+  text-decoration: none;
+  color: inherit;
+}
+
+/* Components */
+.ds-top-nav-unila {
+  background: linear-gradient(90deg, var(--color-primary) 0%, #073864 100%);
+  color: var(--color-canvas);
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 var(--spacing-xl);
+}
+
+.ds-button-primary {
+  background-color: var(--color-primary);
+  color: var(--color-on-primary);
+  border-radius: var(--rounded-pill);
+  padding: 12px 20px;
+  height: 44px;
+  border: none;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  transition: background-color 0.2s;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 16px;
+}
+.ds-button-primary:hover, .ds-button-primary:active {
+  background-color: var(--color-primary-active);
+}
+.ds-button-primary:disabled {
+  background-color: var(--color-primary-disabled);
+  cursor: not-allowed;
+}
+
+.ds-button-pill-cta {
+  background-color: var(--color-primary);
+  color: var(--color-on-primary);
+  border-radius: var(--rounded-pill);
+  padding: 16px 32px;
+  height: 56px;
+  border: none;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  transition: background-color 0.2s;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 16px;
+}
+.ds-button-pill-cta:hover {
+  background-color: var(--color-primary-active);
+}
+
+.ds-hero-band-dark {
+  background-color: var(--color-surface-dark);
+  color: var(--color-on-dark);
+  padding: var(--spacing-section) var(--spacing-xl);
+  min-height: 80vh;
+  display: flex;
+  align-items: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.ds-hero-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  width: 100%;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--spacing-xxl);
+  align-items: center;
+}
+
+@media (max-width: 1024px) {
+  .ds-hero-container {
+    grid-template-columns: 1fr;
+    text-align: center;
+  }
+}
+
+.ds-product-ui-card-dark {
+  background-color: var(--color-surface-dark-elevated);
+  color: var(--color-on-dark);
+  border-radius: var(--rounded-xl);
+  padding: var(--spacing-xl);
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
