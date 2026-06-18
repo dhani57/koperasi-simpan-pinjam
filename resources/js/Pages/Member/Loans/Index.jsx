@@ -6,59 +6,89 @@ export default function Index({ auth, loans }) {
         <MemberLayout auth={auth} title="Pinjaman Saya">
             <Head title="Pinjaman Saya" />
 
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--spacing-lg)' }}>
-                <div>
-                    <h2 className="ds-title-lg">Pinjaman Saya</h2>
-                    <p className="ds-body-sm" style={{ color: 'var(--color-muted)', marginTop: '4px' }}>Daftar pengajuan dan pinjaman aktif Anda.</p>
+            <div style={{ maxWidth: '1000px', margin: '0 auto', padding: 'var(--spacing-xl) var(--spacing-md)' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--spacing-lg)' }}>
+                    <div>
+                        <h2 className="ds-display-mega" style={{ fontSize: '32px', letterSpacing: '-0.5px' }}>Pinjaman Saya</h2>
+                        <p className="ds-body-sm" style={{ color: 'var(--color-muted)', marginTop: '8px' }}>Daftar pengajuan dan pinjaman aktif Anda.</p>
+                    </div>
+                    <Link 
+                        href={route('member.loans.create')} 
+                        style={{ 
+                            display: 'inline-flex', 
+                            alignItems: 'center', 
+                            gap: '8px', 
+                            padding: '12px 24px', 
+                            backgroundColor: 'var(--color-primary)', 
+                            border: 'none', 
+                            borderRadius: '100px', 
+                            fontSize: '14px', 
+                            fontWeight: 600, 
+                            color: 'white', 
+                            cursor: 'pointer',
+                            textDecoration: 'none'
+                        }}
+                    >
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                        Ajukan Pinjaman
+                    </Link>
                 </div>
-                <Link href={route('member.loans.create')} className="ds-button-pill-cta">
-                    Ajukan Pinjaman
-                </Link>
-            </div>
 
-            <div style={{ backgroundColor: 'var(--color-canvas)', borderRadius: 'var(--rounded-lg)', boxShadow: '0 4px 12px rgba(0,0,0,0.03)', overflow: 'hidden' }}>
-                <table style={{ width: '100%', textAlign: 'left', borderCollapse: 'collapse' }}>
-                    <thead style={{ backgroundColor: 'var(--color-surface-soft)', borderBottom: '1px solid var(--color-hairline)' }}>
-                        <tr>
-                            <th style={{ padding: 'var(--spacing-md)', fontSize: '13px', color: 'var(--color-muted)', fontWeight: 500 }}>Tanggal</th>
-                            <th style={{ padding: 'var(--spacing-md)', fontSize: '13px', color: 'var(--color-muted)', fontWeight: 500 }}>Pokok Pinjaman</th>
-                            <th style={{ padding: 'var(--spacing-md)', fontSize: '13px', color: 'var(--color-muted)', fontWeight: 500 }}>Tenor</th>
-                            <th style={{ padding: 'var(--spacing-md)', fontSize: '13px', color: 'var(--color-muted)', fontWeight: 500 }}>Cicilan/Bulan</th>
-                            <th style={{ padding: 'var(--spacing-md)', fontSize: '13px', color: 'var(--color-muted)', fontWeight: 500 }}>Status</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {loans && loans.length > 0 ? (
-                            loans.map((loan, idx) => (
-                                <tr key={idx} style={{ borderBottom: '1px solid var(--color-hairline)' }}>
-                                    <td style={{ padding: 'var(--spacing-md)', fontSize: '14px' }}>
-                                        {new Date(loan.created_at).toLocaleDateString('id-ID')}
-                                    </td>
-                                    <td style={{ padding: 'var(--spacing-md)', fontSize: '14px', fontFamily: 'var(--font-mono)' }}>
-                                        Rp {new Intl.NumberFormat('id-ID').format(loan.principal_amount)}
-                                    </td>
-                                    <td style={{ padding: 'var(--spacing-md)', fontSize: '14px' }}>
-                                        {loan.tenor_months} bln
-                                    </td>
-                                    <td style={{ padding: 'var(--spacing-md)', fontSize: '14px', fontFamily: 'var(--font-mono)' }}>
-                                        Rp {new Intl.NumberFormat('id-ID').format(loan.monthly_installment)}
-                                    </td>
-                                    <td style={{ padding: 'var(--spacing-md)' }}>
-                                        <span className={`ds-badge-pill ${loan.status === 'aktif' || loan.status === 'disetujui' ? 'bg-green-100 text-green-800' : loan.status === 'ditolak' ? 'bg-red-100 text-red-800' : 'bg-yellow-100 text-yellow-800'}`}>
-                                            {loan.status.toUpperCase()}
-                                        </span>
+                <div style={{ backgroundColor: 'white', borderRadius: 'var(--rounded-lg)', border: '1px solid var(--color-hairline)', overflow: 'hidden' }}>
+                    <table style={{ width: '100%', textAlign: 'left', borderCollapse: 'collapse' }}>
+                        <thead style={{ backgroundColor: 'var(--color-surface-soft)', borderBottom: '1px solid var(--color-hairline)' }}>
+                            <tr>
+                                <th style={{ padding: '16px 24px', fontSize: '13px', color: 'var(--color-muted)', fontWeight: 600 }}>Tanggal</th>
+                                <th style={{ padding: '16px 24px', fontSize: '13px', color: 'var(--color-muted)', fontWeight: 600 }}>Pokok Pinjaman</th>
+                                <th style={{ padding: '16px 24px', fontSize: '13px', color: 'var(--color-muted)', fontWeight: 600 }}>Tenor</th>
+                                <th style={{ padding: '16px 24px', fontSize: '13px', color: 'var(--color-muted)', fontWeight: 600 }}>Cicilan/Bulan</th>
+                                <th style={{ padding: '16px 24px', fontSize: '13px', color: 'var(--color-muted)', fontWeight: 600 }}>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {loans && loans.length > 0 ? (
+                                loans.map((loan, idx) => (
+                                    <tr key={idx} style={{ borderBottom: idx < loans.length - 1 ? '1px solid var(--color-hairline)' : 'none' }}>
+                                        <td style={{ padding: '16px 24px', fontSize: '14px' }}>
+                                            {new Date(loan.created_at).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })}
+                                        </td>
+                                        <td style={{ padding: '16px 24px', fontSize: '15px', fontFamily: 'var(--font-mono)', fontWeight: 500 }}>
+                                            Rp {new Intl.NumberFormat('id-ID').format(loan.principal_amount)}
+                                        </td>
+                                        <td style={{ padding: '16px 24px', fontSize: '14px' }}>
+                                            {loan.tenor_months} bln
+                                        </td>
+                                        <td style={{ padding: '16px 24px', fontSize: '15px', fontFamily: 'var(--font-mono)', fontWeight: 500 }}>
+                                            Rp {new Intl.NumberFormat('id-ID').format(loan.monthly_installment)}
+                                        </td>
+                                        <td style={{ padding: '16px 24px' }}>
+                                            <span style={{ 
+                                                backgroundColor: loan.status === 'aktif' || loan.status === 'disetujui' ? '#dcfce7' : loan.status === 'ditolak' ? '#fee2e2' : '#fef9c3',
+                                                color: loan.status === 'aktif' || loan.status === 'disetujui' ? '#166534' : loan.status === 'ditolak' ? '#991b1b' : '#854d0e',
+                                                padding: '4px 12px',
+                                                borderRadius: '100px',
+                                                fontSize: '11px',
+                                                fontWeight: 700,
+                                                textTransform: 'uppercase'
+                                            }}>
+                                                {loan.status}
+                                            </span>
+                                        </td>
+                                    </tr>
+                                ))
+                            ) : (
+                                <tr>
+                                    <td colSpan="5" style={{ padding: '48px 24px', textAlign: 'center', color: 'var(--color-muted)' }}>
+                                        <div style={{ marginBottom: '16px' }}>
+                                            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--color-hairline)" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+                                        </div>
+                                        Anda belum memiliki riwayat pinjaman.
                                     </td>
                                 </tr>
-                            ))
-                        ) : (
-                            <tr>
-                                <td colSpan="5" style={{ padding: 'var(--spacing-xl)', textAlign: 'center', color: 'var(--color-muted)' }}>
-                                    Anda belum memiliki riwayat pinjaman.
-                                </td>
-                            </tr>
-                        )}
-                    </tbody>
-                </table>
+                            )}
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </MemberLayout>
     );
