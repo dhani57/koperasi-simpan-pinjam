@@ -160,26 +160,27 @@ export default function Welcome({ auth }) {
             </main>
             
             <FooterLight>
-                <div style={{ maxWidth: '1200px', margin: '0 auto', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 'var(--spacing-xl)' }}>
+                <div style={{ maxWidth: '1200px', margin: '0 auto', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 'var(--spacing-xl)' }}>
                     <div>
-                        <h3 className="ds-title-md" style={{ color: 'var(--color-ink)' }}>Koperasi Simpan Pinjam</h3>
-                        <p style={{ marginTop: 'var(--spacing-sm)' }}>Platform manajemen sirkulasi finansial tertutup.</p>
+                        <h3 className="ds-title-md" style={{ color: 'var(--color-ink)' }}>Koperasi Karyawan Eksekutif</h3>
+                        <p style={{ marginTop: 'var(--spacing-sm)' }}>Platform manajemen sirkulasi finansial tertutup yang didesain khusus untuk efisiensi ekosistem internal perusahaan.</p>
                     </div>
                     <div>
-                        <h3 className="ds-title-md" style={{ color: 'var(--color-ink)' }}>Layanan</h3>
+                        <h3 className="ds-title-md" style={{ color: 'var(--color-ink)' }}>Produk & Layanan</h3>
                         <ul style={{ listStyle: 'none', padding: 0, marginTop: 'var(--spacing-sm)', display: 'flex', flexDirection: 'column', gap: 'var(--spacing-xs)' }}>
-                            <li>Simpanan Wajib</li>
-                            <li>Simpanan Sukarela</li>
-                            <li>Pinjaman Anggota</li>
-                            <li>Rekonsiliasi Payroll</li>
+                            <li>Simpanan Wajib & Sukarela</li>
+                            <li>Pinjaman Multiguna</li>
+                            <li>Proyeksi SHU (Sisa Hasil Usaha)</li>
+                            <li>Integrasi Payroll Otomatis</li>
                         </ul>
                     </div>
                     <div>
-                        <h3 className="ds-title-md" style={{ color: 'var(--color-ink)' }}>Kontak</h3>
+                        <h3 className="ds-title-md" style={{ color: 'var(--color-ink)' }}>Hubungi Kami</h3>
                         <ul style={{ listStyle: 'none', padding: 0, marginTop: 'var(--spacing-sm)', display: 'flex', flexDirection: 'column', gap: 'var(--spacing-xs)' }}>
-                            <li>Sekretariat Koperasi</li>
-                            <li>Gedung Rektorat Lt. 2</li>
-                            <li>Jam Layanan: 08:00 - 16:00</li>
+                            <li>Sekretariat Pusat</li>
+                            <li>Gedung Utama Perusahaan, Lt. 3</li>
+                            <li>Ext. 4021 / koperasi@internal.app</li>
+                            <li>Senin - Jumat, 08:00 - 16:00</li>
                         </ul>
                     </div>
                 </div>

@@ -217,16 +217,16 @@ body {
 }
 
 .ds-footer-light {
-  background-color: var(--color-canvas);
+  background-color: var(--color-surface-strong);
   color: var(--color-body);
-  padding: 64px 48px;
+  padding: 80px 48px 64px;
 }
 
 .ds-legal-band {
-  background-color: var(--color-canvas);
+  background-color: var(--color-surface-strong);
   color: var(--color-muted);
   font-size: 13px; /* caption */
-  border-top: 1px solid var(--color-hairline-soft);
+  border-top: 1px solid var(--color-hairline);
   padding: var(--spacing-lg) 48px;
   display: flex;
   justify-content: space-between;
