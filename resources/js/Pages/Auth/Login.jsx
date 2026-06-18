@@ -24,26 +24,32 @@ export default function Login({ status, canResetPassword }) {
             {/* Left Pane - Information (Hidden on small screens) */}
             <div className="hidden lg:flex" style={{ 
                 flex: '0 0 50%', 
-                backgroundColor: 'var(--color-surface-soft)', 
+                backgroundColor: 'var(--color-surface-dark)', 
+                color: 'var(--color-on-dark)',
                 flexDirection: 'column',
                 justifyContent: 'center',
                 padding: 'var(--spacing-section)',
-                borderRight: '1px solid var(--color-hairline)'
+                position: 'relative',
+                overflow: 'hidden'
             }}>
-                <div style={{ maxWidth: '480px', margin: '0 auto' }}>
+                {/* Decorative background element */}
+                <div style={{ position: 'absolute', top: '-10%', left: '-10%', width: '50%', height: '50%', background: 'radial-gradient(circle, rgba(11,94,168,0.2) 0%, rgba(4,43,84,0) 70%)', borderRadius: '50%' }}></div>
+                <div style={{ position: 'absolute', bottom: '-20%', right: '-10%', width: '60%', height: '60%', background: 'radial-gradient(circle, rgba(11,94,168,0.15) 0%, rgba(4,43,84,0) 70%)', borderRadius: '50%' }}></div>
+
+                <div style={{ maxWidth: '480px', margin: '0 auto', position: 'relative', zIndex: 1 }}>
                     <div style={{ marginBottom: 'var(--spacing-xxl)' }}>
-                        <div style={{ display: 'inline-flex', alignItems: 'center', gap: 'var(--spacing-sm)', marginBottom: 'var(--spacing-md)' }}>
-                            <div style={{ width: '32px', height: '32px', backgroundColor: 'var(--color-primary)', borderRadius: 'var(--rounded-full)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                                <span style={{ color: 'var(--color-canvas)', fontWeight: 'bold' }}>K</span>
+                        <div style={{ display: 'inline-flex', alignItems: 'center', gap: 'var(--spacing-sm)', marginBottom: 'var(--spacing-lg)' }}>
+                            <div style={{ width: '36px', height: '36px', backgroundColor: 'var(--color-primary)', borderRadius: 'var(--rounded-md)', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 4px 12px rgba(0,0,0,0.2)' }}>
+                                <span style={{ color: 'var(--color-canvas)', fontWeight: 'bold', fontSize: '18px' }}>K</span>
                             </div>
-                            <span className="ds-nav-link" style={{ color: 'var(--color-ink)', fontSize: '18px', fontWeight: '600' }}>
+                            <span className="ds-nav-link" style={{ color: 'var(--color-on-dark)', fontSize: '20px', fontWeight: '600' }}>
                                 Koperasi Internal
                             </span>
                         </div>
-                        <h2 className="ds-display-sm" style={{ marginBottom: 'var(--spacing-sm)' }}>
+                        <h2 className="ds-display-sm" style={{ marginBottom: 'var(--spacing-sm)', color: 'var(--color-on-dark)' }}>
                             Kemudahan Finansial dalam Genggaman
                         </h2>
-                        <p className="ds-body-md" style={{ color: 'var(--color-muted)' }}>
+                        <p className="ds-body-md" style={{ color: 'var(--color-on-dark-soft)' }}>
                             Sistem buku besar digital yang mengotomatisasi pemotongan simpanan dan pinjaman.
                         </p>
                     </div>
@@ -51,16 +57,16 @@ export default function Login({ status, canResetPassword }) {
                     <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-lg)' }}>
                         {/* Feature 1 */}
                         <div style={{ display: 'flex', gap: 'var(--spacing-base)' }}>
-                            <div style={{ width: '40px', height: '40px', borderRadius: 'var(--rounded-md)', backgroundColor: 'var(--color-surface-strong)', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--color-primary)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <div style={{ width: '40px', height: '40px', borderRadius: 'var(--rounded-md)', backgroundColor: 'rgba(255,255,255,0.05)', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--color-on-dark)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                     <path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"></path>
                                     <path d="M3 5v14a2 2 0 0 0 2 2h16v-5"></path>
                                     <path d="M18 12a2 2 0 0 0 0 4h4v-4Z"></path>
                                 </svg>
                             </div>
                             <div>
-                                <h3 className="ds-title-sm" style={{ marginBottom: '4px' }}>Pemotongan Gaji Terpusat</h3>
-                                <p className="ds-body-sm" style={{ color: 'var(--color-muted)' }}>
+                                <h3 className="ds-title-sm" style={{ marginBottom: '4px', color: 'var(--color-on-dark)' }}>Pemotongan Gaji Terpusat</h3>
+                                <p className="ds-body-sm" style={{ color: 'var(--color-on-dark-soft)' }}>
                                     Integrasi mulus dengan sistem HR/Payroll untuk autodebet cicilan tiap bulan tanpa perlu transfer manual.
                                 </p>
                             </div>
@@ -68,14 +74,14 @@ export default function Login({ status, canResetPassword }) {
 
                         {/* Feature 2 */}
                         <div style={{ display: 'flex', gap: 'var(--spacing-base)' }}>
-                            <div style={{ width: '40px', height: '40px', borderRadius: 'var(--rounded-md)', backgroundColor: 'var(--color-surface-strong)', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--color-primary)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <div style={{ width: '40px', height: '40px', borderRadius: 'var(--rounded-md)', backgroundColor: 'rgba(255,255,255,0.05)', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--color-on-dark)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                     <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
                                 </svg>
                             </div>
                             <div>
-                                <h3 className="ds-title-sm" style={{ marginBottom: '4px' }}>Transparansi Real-time</h3>
-                                <p className="ds-body-sm" style={{ color: 'var(--color-muted)' }}>
+                                <h3 className="ds-title-sm" style={{ marginBottom: '4px', color: 'var(--color-on-dark)' }}>Transparansi Real-time</h3>
+                                <p className="ds-body-sm" style={{ color: 'var(--color-on-dark-soft)' }}>
                                     Akses buku besar mutasi pribadi Anda secara instan. Saldo ter-*update* detik itu juga.
                                 </p>
                             </div>
@@ -83,14 +89,14 @@ export default function Login({ status, canResetPassword }) {
 
                         {/* Feature 3 */}
                         <div style={{ display: 'flex', gap: 'var(--spacing-base)' }}>
-                            <div style={{ width: '40px', height: '40px', borderRadius: 'var(--rounded-md)', backgroundColor: 'var(--color-surface-strong)', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--color-primary)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <div style={{ width: '40px', height: '40px', borderRadius: 'var(--rounded-md)', backgroundColor: 'rgba(255,255,255,0.05)', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--color-on-dark)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                     <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
                                 </svg>
                             </div>
                             <div>
-                                <h3 className="ds-title-sm" style={{ marginBottom: '4px' }}>Integritas Keamanan</h3>
-                                <p className="ds-body-sm" style={{ color: 'var(--color-muted)' }}>
+                                <h3 className="ds-title-sm" style={{ marginBottom: '4px', color: 'var(--color-on-dark)' }}>Integritas Keamanan</h3>
+                                <p className="ds-body-sm" style={{ color: 'var(--color-on-dark-soft)' }}>
                                     Proses peninjauan berjenjang memastikan akuntabilitas dana dan pencatatan tak tergoyahkan.
                                 </p>
                             </div>
@@ -101,23 +107,12 @@ export default function Login({ status, canResetPassword }) {
 
             {/* Right Pane - Login Form */}
             <div style={{ flex: '1', display: 'flex', flexDirection: 'column', position: 'relative' }}>
-                
-                {/* Mobile Header (Hidden on Desktop) */}
-                <header className="lg:hidden" style={{ padding: 'var(--spacing-md) var(--spacing-xl)', borderBottom: '1px solid var(--color-hairline)', display: 'flex', alignItems: 'center', gap: 'var(--spacing-sm)' }}>
-                    <div style={{ width: '32px', height: '32px', backgroundColor: 'var(--color-primary)', borderRadius: 'var(--rounded-full)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                        <span style={{ color: 'var(--color-canvas)', fontWeight: 'bold' }}>K</span>
-                    </div>
-                    <span className="ds-nav-link" style={{ color: 'var(--color-ink)', fontSize: '16px', fontWeight: '600' }}>
-                        Koperasi Internal
-                    </span>
-                </header>
-
                 <main style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 'var(--spacing-xl)' }}>
                     <div style={{ width: '100%', maxWidth: '400px' }}>
                         
                         <div style={{ marginBottom: 'var(--spacing-xl)' }}>
-                            <h1 className="ds-display-sm" style={{ fontSize: '32px', marginBottom: 'var(--spacing-xs)' }}>Masuk</h1>
-                            <p className="ds-body-md" style={{ color: 'var(--color-muted)' }}>Sistem Manajemen Finansial</p>
+                            <h1 className="ds-display-sm" style={{ fontSize: '32px', marginBottom: 'var(--spacing-xs)', color: 'var(--color-ink)' }}>Masuk</h1>
+                            <p className="ds-body-md" style={{ color: 'var(--color-muted)' }}>Sistem Manajemen Finansial Internal</p>
                         </div>
 
                         {status && (
@@ -141,7 +136,7 @@ export default function Login({ status, canResetPassword }) {
                                     autoFocus
                                     placeholder="user@instansi.com"
                                     onChange={(e) => setData('identifier', e.target.value)}
-                                    style={{ backgroundColor: 'var(--color-surface-soft)' }}
+                                    style={{ backgroundColor: 'var(--color-canvas)', borderColor: 'var(--color-hairline)' }}
                                 />
                                 {errors.identifier && (
                                     <p className="ds-error-text">{errors.identifier}</p>
@@ -161,7 +156,7 @@ export default function Login({ status, canResetPassword }) {
                                         className="ds-text-input"
                                         autoComplete="current-password"
                                         placeholder="••••••••"
-                                        style={{ paddingRight: '48px', backgroundColor: 'var(--color-surface-soft)' }}
+                                        style={{ paddingRight: '48px', backgroundColor: 'var(--color-canvas)', borderColor: 'var(--color-hairline)' }}
                                         onChange={(e) => setData('password', e.target.value)}
                                     />
                                     <button
