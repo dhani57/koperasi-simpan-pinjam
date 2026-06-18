@@ -114,6 +114,22 @@ export default function Login({ status, canResetPassword }) {
 
             {/* Right Pane - Login Form */}
             <div style={{ flex: '1', display: 'flex', flexDirection: 'column', position: 'relative', zIndex: 1 }}>
+                
+                {/* Back to Landing Page Button */}
+                <div style={{ position: 'absolute', top: 'var(--spacing-xl)', right: 'var(--spacing-xl)' }}>
+                    <Link 
+                        href="/" 
+                        className="hover:opacity-70 transition-opacity" 
+                        style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--color-muted)', fontSize: '14px', fontWeight: '500', textDecoration: 'none' }}
+                    >
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <line x1="19" y1="12" x2="5" y2="12"></line>
+                            <polyline points="12 19 5 12 12 5"></polyline>
+                        </svg>
+                        Kembali
+                    </Link>
+                </div>
+
                 <main style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 'var(--spacing-xl)' }}>
                     <div style={{ width: '100%', maxWidth: '400px', marginLeft: '5%' }}>
                         
@@ -191,6 +207,7 @@ export default function Login({ status, canResetPassword }) {
                                     <button
                                         type="button"
                                         onClick={() => setShowPassword(!showPassword)}
+                                        className="hover:opacity-70 transition-opacity"
                                         style={{
                                             position: 'absolute',
                                             right: '16px',
@@ -227,7 +244,7 @@ export default function Login({ status, canResetPassword }) {
 
                             <button
                                 type="submit"
-                                className="ds-button-primary"
+                                className="ds-button-primary hover:opacity-90 transition-opacity"
                                 disabled={processing}
                                 style={{ width: '100%', height: '52px', fontSize: '16px', marginBottom: 'var(--spacing-lg)', boxShadow: '0 4px 12px rgba(11,94,168,0.2)' }}
                             >
@@ -238,6 +255,7 @@ export default function Login({ status, canResetPassword }) {
                                 {canResetPassword && (
                                     <Link
                                         href={route('password.request')}
+                                        className="hover:underline hover:opacity-80 transition-all"
                                         style={{ fontFamily: 'var(--font-body)', fontSize: '14px', color: 'var(--color-primary)', textDecoration: 'none', fontWeight: '500' }}
                                     >
                                         Lupa kata sandi? Klik disini
