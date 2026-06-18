@@ -37,8 +37,8 @@ export default function Welcome({ auth }) {
                         </div>
                     </div>
                     
-                    <div style={{ position: 'relative', marginTop: 'var(--spacing-xl)', flex: 1 }}>
-                        <ProductUiCardLight style={{ position: 'relative', zIndex: 1, maxWidth: '440px', marginLeft: 'auto' }}>
+                    <div style={{ position: 'relative', marginTop: 'var(--spacing-xl)', flex: 1, marginRight: '40px' }}>
+                        <ProductUiCardLight style={{ position: 'relative', zIndex: 1, maxWidth: '440px', marginLeft: 'auto', marginBottom: '80px' }}>
                             <div style={{ marginBottom: 'var(--spacing-md)' }}>
                                 <div className="ds-body-md" style={{ color: 'var(--color-muted)' }}>Estimasi Potong Gaji (Okt)</div>
                                 <div style={{ fontFamily: 'var(--font-mono)', fontSize: '28px', fontWeight: 600 }}>Rp 750.000</div>
@@ -69,8 +69,8 @@ export default function Welcome({ auth }) {
                         
                         <ProductUiCardLight style={{ 
                             position: 'absolute', 
-                            bottom: '-60px', 
-                            right: '20px', 
+                            bottom: '20px', 
+                            right: '-40px', 
                             zIndex: 2, 
                             width: '320px',
                             boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)'
