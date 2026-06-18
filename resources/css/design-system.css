@@ -162,7 +162,6 @@ body {
   display: flex;
   align-items: center;
   position: relative;
-  overflow: hidden;
 }
 
 .ds-hero-container {
