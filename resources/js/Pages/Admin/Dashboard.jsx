@@ -27,11 +27,21 @@ export default function Dashboard({ auth, stats, chartData }) {
                                 Selamat Datang Kembali, {auth.user.name.split(' ')[0]}! 🎉
                             </h2>
                             <p style={{ color: 'var(--color-body)', marginBottom: '24px', maxWidth: '500px', lineHeight: 1.5 }}>
-                                Anda memiliki wewenang penuh untuk mengelola anggota, melihat pergerakan dana, dan mengatur parameter koperasi hari ini.
+                                {auth.user.role === 'bendahara' 
+                                    ? 'Anda memiliki wewenang untuk menyetujui pengajuan pinjaman anggota, melakukan pencairan, dan mengelola tagihan potongan bulanan.' 
+                                    : 'Anda memiliki wewenang penuh untuk mengelola anggota, melihat pergerakan dana, dan mengatur parameter koperasi hari ini.'
+                                }
                             </p>
-                            <ButtonPrimary href={route('admin.users.index')} style={{ height: '40px', padding: '0 16px', fontSize: '14px' }}>
-                                Kelola Anggota
-                            </ButtonPrimary>
+                            
+                            {auth.user.role === 'bendahara' ? (
+                                <ButtonPrimary href={route('admin.loans.index')} style={{ height: '40px', padding: '0 16px', fontSize: '14px' }}>
+                                    Lihat Pinjaman
+                                </ButtonPrimary>
+                            ) : (
+                                <ButtonPrimary href={route('admin.users.index')} style={{ height: '40px', padding: '0 16px', fontSize: '14px' }}>
+                                    Kelola Anggota
+                                </ButtonPrimary>
+                            )}
                         </div>
                         {/* Hero Illustration */}
                         <div className="hidden md:flex" style={{ position: 'absolute', right: 0, bottom: 0, height: '120%', width: '30%', alignItems: 'flex-end', justifyContent: 'flex-end', pointerEvents: 'none' }}>
