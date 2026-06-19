@@ -1,9 +1,11 @@
+import React, { useState } from 'react';
 import { Head, useForm } from '@inertiajs/react';
 import AdminLayout from '@/Layouts/AdminLayout';
 import InputLabel from '@/Components/InputLabel';
 import TextInput from '@/Components/TextInput';
 import InputError from '@/Components/InputError';
 import ButtonPrimary from '@/Components/DesignSystem/ButtonPrimary';
+import Toast from '@/Components/DesignSystem/Toast';
 
 export default function Index({ auth, settings }) {
     let initialInactiveMonths = [];
@@ -20,6 +22,8 @@ export default function Index({ auth, settings }) {
         inactive_months: initialInactiveMonths,
     });
 
+    const [toast, setToast] = useState({ show: false, message: '', type: 'error' });
+
     const submit = (e) => {
         e.preventDefault();
         post(route('admin.settings.store'));
@@ -28,6 +32,13 @@ export default function Index({ auth, settings }) {
     return (
         <AdminLayout auth={auth} title="Parameter Sistem">
             <Head title="Parameter Sistem" />
+            
+            <Toast 
+                show={toast.show} 
+                message={toast.message} 
+                type={toast.type} 
+                onClose={() => setToast({ ...toast, show: false })} 
+            />
 
             <form onSubmit={submit} className="max-w-4xl space-y-8">
                 
@@ -129,7 +140,11 @@ export default function Index({ auth, settings }) {
                                             if (updated.length < 2) {
                                                 updated.push(month.value);
                                             } else {
-                                                alert('Hanya dapat memilih maksimal 2 bulan non-aktif.');
+                                                setToast({
+                                                    show: true,
+                                                    message: 'Batas maksimal tercapai! Hanya dapat memilih 2 bulan non-aktif dalam setahun.',
+                                                    type: 'error'
+                                                });
                                                 return;
                                             }
                                         } else {
