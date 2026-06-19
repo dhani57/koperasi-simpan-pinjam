@@ -61,7 +61,7 @@ export default function AdminLayout({ auth, children, title }) {
                         </Link>
                     )}
 
-                    {(auth.user.role === 'pengurus' || auth.user.role === 'bendahara') && (
+                    {(auth.user.role === 'pengurus' || auth.user.role === 'bendahara' || auth.user.role === 'ketua') && (
                         <Link 
                             href={route('admin.loans.index')} 
                             style={{ 
@@ -77,7 +77,7 @@ export default function AdminLayout({ auth, children, title }) {
                             }}
                         >
                             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
-                            {auth.user.role === 'bendahara' ? 'Pinjaman' : 'Verifikasi Pinjaman'}
+                            {auth.user.role === 'pengurus' ? 'Verifikasi Pinjaman' : 'Persetujuan Pinjaman'}
                         </Link>
                     )}
 
@@ -102,43 +102,43 @@ export default function AdminLayout({ auth, children, title }) {
                     )}
 
                     {auth.user.role === 'bendahara' && (
-                        <>
-                            <Link 
-                                href={route('admin.deductions.index')} 
-                                style={{ 
-                                    padding: '10px 16px', 
-                                    borderRadius: 'var(--rounded-md)',
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    gap: '12px',
-                                    backgroundColor: route().current('admin.deductions.*') ? 'rgba(255, 255, 255, 0.1)' : 'transparent',
-                                    color: route().current('admin.deductions.*') ? 'var(--color-on-dark)' : 'rgba(255, 255, 255, 0.7)',
-                                    fontWeight: route().current('admin.deductions.*') ? 600 : 500,
-                                    transition: 'all 0.2s ease'
-                                }}
-                            >
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"></rect><line x1="2" y1="10" x2="22" y2="10"></line></svg>
-                                Potongan Bulanan
-                            </Link>
-                            
-                            <Link 
-                                href={route('admin.shu.index')} 
-                                style={{ 
-                                    padding: '10px 16px', 
-                                    borderRadius: 'var(--rounded-md)',
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    gap: '12px',
-                                    backgroundColor: route().current('admin.shu.*') ? 'rgba(255, 255, 255, 0.1)' : 'transparent',
-                                    color: route().current('admin.shu.*') ? 'var(--color-on-dark)' : 'rgba(255, 255, 255, 0.7)',
-                                    fontWeight: route().current('admin.shu.*') ? 600 : 500,
-                                    transition: 'all 0.2s ease'
-                                }}
-                            >
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"></path><path d="M22 12A10 10 0 0 0 12 2v10z"></path></svg>
-                                Laporan SHU
-                            </Link>
-                        </>
+                        <Link 
+                            href={route('admin.deductions.index')} 
+                            style={{ 
+                                padding: '10px 16px', 
+                                borderRadius: 'var(--rounded-md)',
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '12px',
+                                backgroundColor: route().current('admin.deductions.*') ? 'rgba(255, 255, 255, 0.1)' : 'transparent',
+                                color: route().current('admin.deductions.*') ? 'var(--color-on-dark)' : 'rgba(255, 255, 255, 0.7)',
+                                fontWeight: route().current('admin.deductions.*') ? 600 : 500,
+                                transition: 'all 0.2s ease'
+                            }}
+                        >
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"></rect><line x1="2" y1="10" x2="22" y2="10"></line></svg>
+                            Potongan Bulanan
+                        </Link>
+                    )}
+                    
+                    {(auth.user.role === 'bendahara' || auth.user.role === 'ketua') && (
+                        <Link 
+                            href={route('admin.shu.index')} 
+                            style={{ 
+                                padding: '10px 16px', 
+                                borderRadius: 'var(--rounded-md)',
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '12px',
+                                backgroundColor: route().current('admin.shu.*') ? 'rgba(255, 255, 255, 0.1)' : 'transparent',
+                                color: route().current('admin.shu.*') ? 'var(--color-on-dark)' : 'rgba(255, 255, 255, 0.7)',
+                                fontWeight: route().current('admin.shu.*') ? 600 : 500,
+                                transition: 'all 0.2s ease'
+                            }}
+                        >
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"></path><path d="M22 12A10 10 0 0 0 12 2v10z"></path></svg>
+                            Laporan SHU
+                        </Link>
                     )}
                 </nav>
             </aside>

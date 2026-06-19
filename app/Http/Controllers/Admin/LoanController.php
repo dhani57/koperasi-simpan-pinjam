@@ -34,7 +34,7 @@ class LoanController extends Controller
 
     public function reject(Loan $loan, Request $request)
     {
-        if (!in_array(auth()->user()->role, ['pengurus', 'bendahara'])) {
+        if (!in_array(auth()->user()->role, ['pengurus', 'bendahara', 'ketua'])) {
             abort(403, 'Unauthorized action.');
         }
 
@@ -53,7 +53,7 @@ class LoanController extends Controller
 
     public function approve(Loan $loan)
     {
-        if (auth()->user()->role !== 'bendahara') {
+        if (!in_array(auth()->user()->role, ['bendahara', 'ketua'])) {
             abort(403, 'Unauthorized action.');
         }
 

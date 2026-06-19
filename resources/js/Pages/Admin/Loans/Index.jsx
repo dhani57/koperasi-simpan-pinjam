@@ -3,13 +3,15 @@ import AdminLayout from '@/Layouts/AdminLayout';
 
 export default function Index({ auth, loans }) {
     const isBendahara = auth.user.role === 'bendahara';
+    const isKetua = auth.user.role === 'ketua';
+    const isPengurus = auth.user.role === 'pengurus';
 
     const formatRp = (num) => new Intl.NumberFormat('id-ID').format(num);
     const formatDate = (dateString) => new Intl.DateTimeFormat('id-ID', { year: 'numeric', month: 'short', day: 'numeric' }).format(new Date(dateString));
 
     return (
-        <AdminLayout auth={auth} title={isBendahara ? "Pinjaman" : "Verifikasi Pinjaman"}>
-            <Head title={isBendahara ? "Pinjaman" : "Verifikasi Pinjaman"} />
+        <AdminLayout auth={auth} title={isPengurus ? "Verifikasi Pinjaman" : "Persetujuan Pinjaman"}>
+            <Head title={isPengurus ? "Verifikasi Pinjaman" : "Persetujuan Pinjaman"} />
 
             <div style={{ backgroundColor: 'white', borderRadius: 'var(--rounded-xl)', padding: '32px', border: '1px solid var(--color-hairline)' }}>
                 <h2 className="ds-title-md" style={{ marginBottom: '24px' }}>Daftar Pengajuan Pinjaman</h2>
@@ -53,7 +55,7 @@ export default function Index({ auth, loans }) {
                                         <td style={{ padding: '16px', textAlign: 'right' }}>
                                             <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end' }}>
                                                 {/* Admin Actions */}
-                                                {!isBendahara && loan.status === 'diajukan' && (
+                                                {isPengurus && loan.status === 'diajukan' && (
                                                     <>
                                                         <form method="post" action={route('admin.loans.verify', loan.id)} style={{ display: 'inline' }}>
                                                             <input type="hidden" name="_token" value={document.head.querySelector('meta[name="csrf-token"]')?.content} />
@@ -66,8 +68,8 @@ export default function Index({ auth, loans }) {
                                                     </>
                                                 )}
 
-                                                {/* Bendahara Actions */}
-                                                {isBendahara && (loan.status === 'diajukan' || loan.status === 'diverifikasi') && (
+                                                {/* Bendahara / Ketua Actions */}
+                                                {(isBendahara || isKetua) && (loan.status === 'diajukan' || loan.status === 'diverifikasi') && (
                                                     <form method="post" action={route('admin.loans.approve', loan.id)} style={{ display: 'inline' }}>
                                                         <input type="hidden" name="_token" value={document.head.querySelector('meta[name="csrf-token"]')?.content} />
                                                         <button type="submit" className="ds-button-primary" style={{ padding: '6px 12px', fontSize: '12px' }}>Setujui</button>
@@ -81,7 +83,7 @@ export default function Index({ auth, loans }) {
                                                     </form>
                                                 )}
 
-                                                {isBendahara && (loan.status === 'diajukan' || loan.status === 'diverifikasi') && (
+                                                {(isBendahara || isKetua) && (loan.status === 'diajukan' || loan.status === 'diverifikasi') && (
                                                     <form method="post" action={route('admin.loans.reject', loan.id)} style={{ display: 'inline' }}>
                                                         <input type="hidden" name="_token" value={document.head.querySelector('meta[name="csrf-token"]')?.content} />
                                                         <button type="submit" className="ds-button-secondary" style={{ padding: '6px 12px', fontSize: '12px', color: 'var(--color-semantic-down)' }}>Tolak</button>

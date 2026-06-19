@@ -29,6 +29,8 @@ export default function Dashboard({ auth, stats, chartData }) {
                             <p style={{ color: 'var(--color-body)', marginBottom: '24px', maxWidth: '500px', lineHeight: 1.5 }}>
                                 {auth.user.role === 'bendahara' 
                                     ? 'Anda memiliki wewenang untuk menyetujui pengajuan pinjaman anggota, melakukan pencairan, dan mengelola tagihan potongan bulanan.' 
+                                    : auth.user.role === 'ketua'
+                                    ? 'Anda memiliki wewenang eksekutif untuk memantau ringkasan finansial, menyetujui pengajuan pinjaman anggota, dan memvalidasi laporan distribusi SHU.'
                                     : 'Anda memiliki wewenang penuh untuk mengelola anggota, melihat pergerakan dana, dan mengatur parameter koperasi hari ini.'
                                 }
                             </p>
@@ -36,6 +38,10 @@ export default function Dashboard({ auth, stats, chartData }) {
                             {auth.user.role === 'bendahara' ? (
                                 <ButtonPrimary href={route('admin.loans.index')} style={{ height: '40px', padding: '0 16px', fontSize: '14px' }}>
                                     Lihat Pinjaman
+                                </ButtonPrimary>
+                            ) : auth.user.role === 'ketua' ? (
+                                <ButtonPrimary href={route('admin.shu.index')} style={{ height: '40px', padding: '0 16px', fontSize: '14px' }}>
+                                    Laporan SHU
                                 </ButtonPrimary>
                             ) : (
                                 <ButtonPrimary href={route('admin.users.index')} style={{ height: '40px', padding: '0 16px', fontSize: '14px' }}>

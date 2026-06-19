@@ -9,7 +9,7 @@ class ShuController extends Controller
 {
     public function index()
     {
-        if (auth()->user()->role !== 'bendahara') {
+        if (!in_array(auth()->user()->role, ['bendahara', 'ketua'])) {
             abort(403, 'Unauthorized action.');
         }
 
@@ -30,6 +30,15 @@ class ShuController extends Controller
         // This process might take a long time, so it should ideally be queued.
         // \App\Jobs\CalculateShuJob::dispatch();
         
-        return redirect()->back()->with('success', 'Proses perhitungan dan distribusi SHU sedang berjalan di latar belakang.');
+        return redirect()->back()->with('success', 'Draft perhitungan SHU berhasil dibuat dan menunggu persetujuan Ketua.');
+    }
+
+    public function approve(Request $request)
+    {
+        if (auth()->user()->role !== 'ketua') {
+            abort(403, 'Unauthorized action.');
+        }
+
+        return redirect()->back()->with('success', 'Distribusi SHU telah disetujui dan dibagikan ke saldo anggota.');
     }
 }

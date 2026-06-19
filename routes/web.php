@@ -69,6 +69,7 @@ Route::middleware(['auth', 'verified', 'admin'])->prefix('admin')->name('admin.'
     // SHU Routes
     Route::get('shu', [ShuController::class, 'index'])->name('shu.index');
     Route::post('shu/generate', [ShuController::class, 'store'])->name('shu.store');
+    Route::post('shu/approve', [ShuController::class, 'approve'])->name('shu.approve');
 });
 
 require __DIR__.'/auth.php';
