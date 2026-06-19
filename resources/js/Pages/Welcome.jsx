@@ -26,6 +26,7 @@ export default function Welcome({ auth, adminPhone }) {
     const heroCardsRef = useRef(null);
     const featuresRef = useRef(null);
     const stepsRef = useRef(null);
+    const ctaRef = useRef(null);
 
     useEffect(() => {
         // Hero Animations
@@ -60,7 +61,6 @@ export default function Welcome({ auth, adminPhone }) {
                             easing: 'easeOutQuart',
                             delay: anime.stagger(150)
                         });
-                        observer.unobserve(entry.target);
                     }
                     if (entry.target === stepsRef.current) {
                         anime({
@@ -71,7 +71,27 @@ export default function Welcome({ auth, adminPhone }) {
                             easing: 'easeOutQuart',
                             delay: anime.stagger(200)
                         });
-                        observer.unobserve(entry.target);
+                    }
+                    if (entry.target === ctaRef.current) {
+                        anime({
+                            targets: ctaRef.current.children,
+                            scale: [0.9, 1],
+                            opacity: [0, 1],
+                            duration: 1000,
+                            easing: 'easeOutBack',
+                            delay: anime.stagger(200)
+                        });
+                    }
+                } else {
+                    // Reset when out of view so it repeats
+                    if (entry.target === featuresRef.current) {
+                        anime.set(featuresRef.current.children, { opacity: 0, translateY: 40 });
+                    }
+                    if (entry.target === stepsRef.current) {
+                        anime.set(stepsRef.current.children, { opacity: 0, translateX: -40 });
+                    }
+                    if (entry.target === ctaRef.current) {
+                        anime.set(ctaRef.current.children, { opacity: 0, scale: 0.9 });
                     }
                 }
             });
@@ -79,6 +99,7 @@ export default function Welcome({ auth, adminPhone }) {
 
         if (featuresRef.current) observer.observe(featuresRef.current);
         if (stepsRef.current) observer.observe(stepsRef.current);
+        if (ctaRef.current) observer.observe(ctaRef.current);
 
         return () => observer.disconnect();
     }, []);
@@ -235,10 +256,12 @@ export default function Welcome({ auth, adminPhone }) {
                 </section>
 
                 <CtaBandDark>
-                    <h2 className="ds-display-lg" style={{ marginBottom: 'var(--spacing-xl)' }}>Ingin menjadi anggota?</h2>
-                    <a href={waLink} target="_blank" rel="noopener noreferrer" className="ds-button-pill-cta hover:opacity-90 transition-opacity" style={{ backgroundColor: 'var(--color-surface-strong)', color: 'var(--color-ink)', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}>
-                        Hubungi Admin
-                    </a>
+                    <div ref={ctaRef} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                        <h2 className="ds-display-lg" style={{ marginBottom: 'var(--spacing-xl)', opacity: 0 }}>Ingin menjadi anggota?</h2>
+                        <a href={waLink} target="_blank" rel="noopener noreferrer" className="ds-button-pill-cta hover:opacity-90 transition-opacity" style={{ backgroundColor: 'var(--color-surface-strong)', color: 'var(--color-ink)', boxShadow: '0 4px 12px rgba(0,0,0,0.1)', opacity: 0 }}>
+                            Hubungi Admin
+                        </a>
+                    </div>
                 </CtaBandDark>
             </main>
             
