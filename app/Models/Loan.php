@@ -20,10 +20,13 @@ class Loan extends Model
         'current_year_monthly_fee',
         'status',
         'disbursed_at',
+        'admin_verified_at',
+        'admin_verified_by',
     ];
 
     protected $casts = [
         'disbursed_at' => 'datetime',
+        'admin_verified_at' => 'datetime',
     ];
 
     public function user()
@@ -34,5 +37,10 @@ class Loan extends Model
     public function loanAnnualServices()
     {
         return $this->hasMany(LoanAnnualService::class);
+    }
+
+    public function verifiedBy()
+    {
+        return $this->belongsTo(User::class, 'admin_verified_by');
     }
 }
