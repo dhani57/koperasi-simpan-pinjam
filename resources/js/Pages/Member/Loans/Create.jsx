@@ -176,6 +176,28 @@ export default function Create({ auth, hasActiveLoan, defaultFee, availableLimit
                         >
                             {processing ? 'Memproses...' : 'Ajukan Pinjaman & Setujui Potong Gaji'}
                         </button>
+
+                        <Link 
+                            href={route('member.loans.index')}
+                            style={{ 
+                                display: 'block',
+                                width: '100%', 
+                                padding: '16px', 
+                                backgroundColor: 'transparent', 
+                                color: 'var(--color-ink)', 
+                                border: '1px solid var(--color-hairline)', 
+                                borderRadius: '100px',
+                                fontSize: '16px',
+                                fontWeight: 600,
+                                textAlign: 'center',
+                                marginTop: '12px',
+                                textDecoration: 'none',
+                                boxSizing: 'border-box'
+                            }}
+                        >
+                            Batal & Kembali
+                        </Link>
+
                         <div style={{ textAlign: 'center', marginTop: '16px', fontSize: '11px', color: 'var(--color-muted)' }}>
                             Dengan menekan tombol di atas, Anda menyetujui pemotongan gaji bulanan otomatis untuk pelunasan pinjaman. Dana akan ditransfer ke rekening Anda setelah disetujui oleh admin.
                         </div>
