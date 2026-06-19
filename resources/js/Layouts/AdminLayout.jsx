@@ -39,23 +39,7 @@ export default function AdminLayout({ auth, children, title }) {
                         Dasbor
                     </Link>
 
-                    <Link 
-                        href={route('admin.dashboard')} 
-                        style={{ 
-                            padding: '10px 16px', 
-                            borderRadius: 'var(--rounded-md)',
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: '12px',
-                            backgroundColor: route().current('admin.dashboard') ? 'rgba(255, 255, 255, 0.1)' : 'transparent',
-                            color: route().current('admin.dashboard') ? 'var(--color-on-dark)' : 'rgba(255, 255, 255, 0.7)',
-                            fontWeight: route().current('admin.dashboard') ? 600 : 500,
-                            transition: 'all 0.2s ease'
-                        }}
-                    >
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="7" height="9" rx="1"></rect><rect x="14" y="3" width="7" height="5" rx="1"></rect><rect x="14" y="12" width="7" height="9" rx="1"></rect><rect x="3" y="16" width="7" height="5" rx="1"></rect></svg>
-                        Dasbor
-                    </Link>
+
 
                     {auth.user.role === 'pengurus' && (
                         <>
