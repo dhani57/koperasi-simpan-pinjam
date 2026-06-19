@@ -31,6 +31,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     
     Route::prefix('member')->name('member.')->group(function () {
         Route::resource('loans', MemberLoanController::class)->only(['index', 'create', 'store']);
+        Route::get('mutations/print', [MemberMutationController::class, 'print'])->name('mutations.print');
         Route::resource('mutations', MemberMutationController::class)->only(['index']);
         Route::get('shu', [MemberShuController::class, 'index'])->name('shu.index');
     });

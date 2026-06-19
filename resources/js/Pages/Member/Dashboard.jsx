@@ -20,10 +20,10 @@ export default function Dashboard({ auth, totalSimpanan, simpananRutin, plafonTe
                         <h1 className="ds-display-mega" style={{ fontSize: '32px', letterSpacing: '-0.5px' }}>Selamat datang, {auth.user.name.split(' ')[0]}!</h1>
                         <span style={{ backgroundColor: 'var(--color-accent-yellow)', color: 'white', padding: '4px 12px', borderRadius: '100px', fontSize: '12px', fontWeight: 700 }}>AKTIF</span>
                     </div>
-                    <button style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '8px 16px', backgroundColor: 'var(--color-surface-strong)', border: 'none', borderRadius: '100px', fontSize: '13px', fontWeight: 600, color: 'var(--color-ink)', cursor: 'pointer' }}>
+                    <a href={route('member.mutations.print')} target="_blank" rel="noopener noreferrer" style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '8px 16px', backgroundColor: 'var(--color-surface-strong)', border: 'none', borderRadius: '100px', fontSize: '13px', fontWeight: 600, color: 'var(--color-ink)', cursor: 'pointer', textDecoration: 'none' }}>
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="12" y1="18" x2="12" y2="12"></line><line x1="9" y1="15" x2="12" y2="18"></line><line x1="15" y1="15" x2="12" y2="18"></line></svg>
                         Unduh E-Slip
-                    </button>
+                    </a>
                 </div>
 
                 {/* Big Dark Card: Estimasi Potongan Gaji */}

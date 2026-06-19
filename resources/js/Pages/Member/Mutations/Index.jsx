@@ -41,10 +41,10 @@ export default function Index({ auth, mutations }) {
                             <div style={{ fontSize: '12px', color: 'var(--color-muted)' }}>Total Potongan Bulan Ini</div>
                             <div style={{ fontFamily: 'var(--font-mono)', fontSize: '18px', fontWeight: 600 }}>Rp {formatRp(auth.user.monthly_saving_nominal)}</div>
                         </div>
-                        <button style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '12px 20px', backgroundColor: 'var(--color-primary)', border: 'none', borderRadius: '100px', fontSize: '14px', fontWeight: 600, color: 'white', cursor: 'pointer' }}>
+                        <a href={route('member.mutations.print')} target="_blank" rel="noopener noreferrer" style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '12px 20px', backgroundColor: 'var(--color-primary)', border: 'none', borderRadius: '100px', fontSize: '14px', fontWeight: 600, color: 'white', cursor: 'pointer', textDecoration: 'none' }}>
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="12" y1="18" x2="12" y2="12"></line><line x1="9" y1="15" x2="12" y2="18"></line><line x1="15" y1="15" x2="12" y2="18"></line></svg>
                             Unduh E-Slip PDF
-                        </button>
+                        </a>
                     </div>
                 </div>
 

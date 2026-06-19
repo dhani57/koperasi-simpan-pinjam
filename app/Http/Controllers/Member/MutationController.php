@@ -17,4 +17,15 @@ class MutationController extends Controller
             'mutations' => $mutations
         ]);
     }
+
+    public function print(Request $request)
+    {
+        $mutations = \App\Models\Mutation::where('user_id', auth()->id())
+            ->orderBy('created_at', 'desc')
+            ->get();
+            
+        return inertia('Member/Mutations/Print', [
+            'mutations' => $mutations
+        ]);
+    }
 }
