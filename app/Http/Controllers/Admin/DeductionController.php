@@ -17,7 +17,7 @@ class DeductionController extends Controller
             abort(403, 'Unauthorized action.');
         }
 
-        $periods = DeductionPeriod::latest('period_date')->paginate(10);
+        $periods = DeductionPeriod::orderBy('year', 'desc')->orderBy('month', 'desc')->paginate(10);
         return inertia('Admin/Deductions/Index', ['periods' => $periods]);
     }
 
@@ -36,8 +36,8 @@ class DeductionController extends Controller
         $year = $date->year;
 
         // Check if period already exists
-        $existing = DeductionPeriod::whereMonth('period_date', $month)
-            ->whereYear('period_date', $year)
+        $existing = DeductionPeriod::where('month', $month)
+            ->where('year', $year)
             ->first();
 
         if ($existing) {
@@ -47,8 +47,9 @@ class DeductionController extends Controller
         \DB::beginTransaction();
         try {
             $period = DeductionPeriod::create([
-                'period_date' => $date->startOfMonth()->toDateString(),
-                'status' => 'draft',
+                'month' => $month,
+                'year' => $year,
+                'status' => 'draf',
             ]);
 
             $members = User::where('role', 'anggota')->get();
@@ -99,7 +100,7 @@ class DeductionController extends Controller
 
         $details = DeductionDetail::with('user')->where('deduction_period_id', $deduction->id)->get();
 
-        $csvFileName = 'Potongan_Koperasi_' . \Carbon\Carbon::parse($deduction->period_date)->format('F_Y') . '.csv';
+        $csvFileName = 'Potongan_Koperasi_' . str_pad($deduction->month, 2, '0', STR_PAD_LEFT) . '_' . $deduction->year . '.csv';
         $headers = [
             "Content-type"        => "text/csv",
             "Content-Disposition" => "attachment; filename=$csvFileName",

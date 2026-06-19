@@ -75,17 +75,17 @@ export default function Index({ auth, periods }) {
                             <tbody>
                                 {periods.data.map(period => (
                                     <tr key={period.id} style={{ borderBottom: '1px solid var(--color-hairline)' }}>
-                                        <td style={{ padding: '12px', fontSize: '14px', fontWeight: 500 }}>{formatMonth(period.period_date)}</td>
+                                        <td style={{ padding: '12px', fontSize: '14px', fontWeight: 500 }}>{formatMonth(`${period.year}-${String(period.month).padStart(2, '0')}-01`)}</td>
                                         <td style={{ padding: '12px', fontSize: '14px' }}>
                                             <span style={{ 
                                                 padding: '4px 8px', 
                                                 borderRadius: '4px', 
                                                 fontSize: '12px', 
                                                 fontWeight: 600,
-                                                backgroundColor: period.status === 'completed' ? '#dcfce7' : '#fef3c7',
-                                                color: period.status === 'completed' ? '#166534' : '#92400e'
+                                                backgroundColor: period.status === 'selesai_divalidasi' ? '#dcfce7' : '#fef3c7',
+                                                color: period.status === 'selesai_divalidasi' ? '#166534' : '#92400e'
                                             }}>
-                                                {period.status.toUpperCase()}
+                                                {period.status.replace(/_/g, ' ').toUpperCase()}
                                             </span>
                                         </td>
                                         <td style={{ padding: '12px', textAlign: 'right' }}>
