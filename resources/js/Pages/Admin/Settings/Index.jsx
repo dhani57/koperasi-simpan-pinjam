@@ -6,10 +6,18 @@ import InputError from '@/Components/InputError';
 import ButtonPrimary from '@/Components/DesignSystem/ButtonPrimary';
 
 export default function Index({ auth, settings }) {
+    let initialInactiveMonths = [];
+    try {
+        initialInactiveMonths = settings?.inactive_months ? JSON.parse(settings.inactive_months) : [];
+    } catch (e) {
+        initialInactiveMonths = [];
+    }
+
     const { data, setData, post, processing, errors, recentlySuccessful } = useForm({
         default_monthly_saving: settings?.default_monthly_saving || '100000',
         default_salary_limit: settings?.default_salary_limit || '2000000',
         loan_interest_rate: settings?.loan_interest_rate || '1.5',
+        inactive_months: initialInactiveMonths,
     });
 
     const submit = (e) => {
@@ -86,6 +94,55 @@ export default function Index({ auth, settings }) {
                             <InputError className="mt-2" message={errors.loan_interest_rate} />
                         </div>
                     </div>
+                </div>
+
+                {/* Parameter Periode Aktif (Bulan Non-Aktif) */}
+                <div style={{ backgroundColor: 'var(--color-canvas)', borderRadius: 'var(--rounded-xl)', padding: '32px', boxShadow: '0 2px 6px rgba(0,0,0,0.02)' }}>
+                    <div style={{ marginBottom: '24px' }}>
+                        <h2 style={{ fontSize: '18px', fontWeight: 600, color: 'var(--color-ink)' }}>Bulan Non-Aktif Potongan</h2>
+                        <p style={{ color: 'var(--color-muted)', fontSize: '14px', marginTop: '4px' }}>Pilih 2 bulan dalam setahun dimana tidak ada potongan simpanan maupun cicilan (10 bulan aktif).</p>
+                    </div>
+
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                        {[
+                            { value: 1, label: 'Januari' },
+                            { value: 2, label: 'Februari' },
+                            { value: 3, label: 'Maret' },
+                            { value: 4, label: 'April' },
+                            { value: 5, label: 'Mei' },
+                            { value: 6, label: 'Juni' },
+                            { value: 7, label: 'Juli' },
+                            { value: 8, label: 'Agustus' },
+                            { value: 9, label: 'September' },
+                            { value: 10, label: 'Oktober' },
+                            { value: 11, label: 'November' },
+                            { value: 12, label: 'Desember' }
+                        ].map((month) => (
+                            <label key={month.value} className="flex items-center space-x-2 cursor-pointer">
+                                <input
+                                    type="checkbox"
+                                    className="rounded border-gray-300 text-primary focus:ring-primary"
+                                    checked={data.inactive_months.includes(month.value)}
+                                    onChange={(e) => {
+                                        let updated = [...data.inactive_months];
+                                        if (e.target.checked) {
+                                            if (updated.length < 2) {
+                                                updated.push(month.value);
+                                            } else {
+                                                alert('Hanya dapat memilih maksimal 2 bulan non-aktif.');
+                                                return;
+                                            }
+                                        } else {
+                                            updated = updated.filter(m => m !== month.value);
+                                        }
+                                        setData('inactive_months', updated);
+                                    }}
+                                />
+                                <span className="text-sm text-gray-700">{month.label}</span>
+                            </label>
+                        ))}
+                    </div>
+                    <InputError className="mt-2" message={errors.inactive_months} />
                 </div>
 
                 {/* Action Buttons */}
