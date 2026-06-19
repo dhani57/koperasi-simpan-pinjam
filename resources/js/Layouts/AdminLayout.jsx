@@ -41,7 +41,7 @@ export default function AdminLayout({ auth, children, title }) {
 
 
 
-                    {auth.user.role === 'pengurus' && (
+                    {(auth.user.role === 'pengurus' || auth.user.role === 'pengawas') && (
                         <Link 
                             href={route('admin.users.index')} 
                             style={{ 
@@ -61,7 +61,7 @@ export default function AdminLayout({ auth, children, title }) {
                         </Link>
                     )}
 
-                    {(auth.user.role === 'pengurus' || auth.user.role === 'bendahara' || auth.user.role === 'ketua') && (
+                    {(auth.user.role === 'pengurus' || auth.user.role === 'bendahara' || auth.user.role === 'ketua' || auth.user.role === 'pengawas') && (
                         <Link 
                             href={route('admin.loans.index')} 
                             style={{ 
@@ -81,7 +81,7 @@ export default function AdminLayout({ auth, children, title }) {
                         </Link>
                     )}
 
-                    {auth.user.role === 'pengurus' && (
+                    {(auth.user.role === 'pengurus' || auth.user.role === 'pengawas') && (
                         <Link 
                             href={route('admin.settings.index')} 
                             style={{ 
@@ -101,7 +101,7 @@ export default function AdminLayout({ auth, children, title }) {
                         </Link>
                     )}
 
-                    {auth.user.role === 'bendahara' && (
+                    {(auth.user.role === 'bendahara' || auth.user.role === 'pengawas') && (
                         <Link 
                             href={route('admin.deductions.index')} 
                             style={{ 
@@ -121,7 +121,7 @@ export default function AdminLayout({ auth, children, title }) {
                         </Link>
                     )}
                     
-                    {(auth.user.role === 'bendahara' || auth.user.role === 'ketua') && (
+                    {(auth.user.role === 'bendahara' || auth.user.role === 'ketua' || auth.user.role === 'pengawas') && (
                         <Link 
                             href={route('admin.shu.index')} 
                             style={{ 
@@ -140,6 +140,23 @@ export default function AdminLayout({ auth, children, title }) {
                             Laporan SHU
                         </Link>
                     )}
+                    <Link 
+                        href={route('admin.mutations.index')} 
+                        style={{ 
+                            padding: '10px 16px', 
+                            borderRadius: 'var(--rounded-md)',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '12px',
+                            backgroundColor: route().current('admin.mutations.*') ? 'rgba(255, 255, 255, 0.1)' : 'transparent',
+                            color: route().current('admin.mutations.*') ? 'var(--color-on-dark)' : 'rgba(255, 255, 255, 0.7)',
+                            fontWeight: route().current('admin.mutations.*') ? 600 : 500,
+                            transition: 'all 0.2s ease'
+                        }}
+                    >
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
+                        Log Mutasi
+                    </Link>
                 </nav>
             </aside>
 

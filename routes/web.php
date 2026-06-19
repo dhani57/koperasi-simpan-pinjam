@@ -66,6 +66,9 @@ Route::middleware(['auth', 'verified', 'admin'])->prefix('admin')->name('admin.'
     Route::resource('deductions', DeductionController::class)->only(['index', 'store']);
     Route::get('deductions/{deduction}/export', [DeductionController::class, 'export'])->name('deductions.export');
     
+    // Log Mutasi Routes
+    Route::get('mutations', [\App\Http\Controllers\Admin\MutationController::class, 'index'])->name('mutations.index');
+
     // SHU Routes
     Route::get('shu', [ShuController::class, 'index'])->name('shu.index');
     Route::post('shu/generate', [ShuController::class, 'store'])->name('shu.store');

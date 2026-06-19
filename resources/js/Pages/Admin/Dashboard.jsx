@@ -31,6 +31,8 @@ export default function Dashboard({ auth, stats, chartData }) {
                                     ? 'Anda memiliki wewenang untuk menyetujui pengajuan pinjaman anggota, melakukan pencairan, dan mengelola tagihan potongan bulanan.' 
                                     : auth.user.role === 'ketua'
                                     ? 'Anda memiliki wewenang eksekutif untuk memantau ringkasan finansial, menyetujui pengajuan pinjaman anggota, dan memvalidasi laporan distribusi SHU.'
+                                    : auth.user.role === 'pengawas'
+                                    ? 'Anda memiliki akses independen untuk memantau, melacak, dan meninjau seluruh log mutasi dan riwayat aktivitas koperasi.'
                                     : 'Anda memiliki wewenang penuh untuk mengelola anggota, melihat pergerakan dana, dan mengatur parameter koperasi hari ini.'
                                 }
                             </p>
@@ -42,6 +44,10 @@ export default function Dashboard({ auth, stats, chartData }) {
                             ) : auth.user.role === 'ketua' ? (
                                 <ButtonPrimary href={route('admin.shu.index')} style={{ height: '40px', padding: '0 16px', fontSize: '14px' }}>
                                     Laporan SHU
+                                </ButtonPrimary>
+                            ) : auth.user.role === 'pengawas' ? (
+                                <ButtonPrimary href={route('admin.mutations.index')} style={{ height: '40px', padding: '0 16px', fontSize: '14px' }}>
+                                    Lihat Log Mutasi
                                 </ButtonPrimary>
                             ) : (
                                 <ButtonPrimary href={route('admin.users.index')} style={{ height: '40px', padding: '0 16px', fontSize: '14px' }}>

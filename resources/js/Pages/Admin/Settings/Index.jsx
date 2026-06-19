@@ -167,17 +167,19 @@ export default function Index({ auth, settings }) {
                 </div>
 
                 {/* Action Buttons */}
-                <div style={{ display: 'flex', alignItems: 'center', gap: '16px', padding: '16px 0' }}>
-                    <ButtonPrimary disabled={processing} type="submit">
-                        Simpan Perubahan
-                    </ButtonPrimary>
+                {auth.user.role !== 'pengawas' && (
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '16px', padding: '16px 0' }}>
+                        <ButtonPrimary disabled={processing} type="submit">
+                            Simpan Perubahan
+                        </ButtonPrimary>
 
-                    {recentlySuccessful && (
-                        <p style={{ color: 'var(--color-semantic-up)', fontSize: '14px', fontWeight: 500, margin: 0 }}>
-                            Berhasil disimpan.
-                        </p>
-                    )}
-                </div>
+                        {recentlySuccessful && (
+                            <p style={{ color: 'var(--color-semantic-up)', fontSize: '14px', fontWeight: 500, margin: 0 }}>
+                                Berhasil disimpan.
+                            </p>
+                        )}
+                    </div>
+                )}
             </form>
         </AdminLayout>
     );

@@ -15,11 +15,13 @@ export default function Index({ auth, users }) {
         <AdminLayout auth={auth} title="Manajemen Anggota">
             <Head title="Manajemen Anggota" />
 
-            <div style={{ marginBottom: 'var(--spacing-lg)', display: 'flex', justifyContent: 'flex-end' }}>
-                <ButtonPrimary href={route('admin.users.create')}>
-                    + Tambah Anggota Baru
-                </ButtonPrimary>
-            </div>
+            {auth.user.role !== 'pengawas' && (
+                <div style={{ marginBottom: 'var(--spacing-lg)', display: 'flex', justifyContent: 'flex-end' }}>
+                    <ButtonPrimary href={route('admin.users.create')}>
+                        + Tambah Anggota Baru
+                    </ButtonPrimary>
+                </div>
+            )}
 
             <div style={{ backgroundColor: 'var(--color-canvas)', borderRadius: 'var(--rounded-lg)', border: '1px solid var(--color-hairline)', overflow: 'hidden' }}>
                 <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
@@ -29,7 +31,9 @@ export default function Index({ auth, users }) {
                             <th className="ds-body-sm" style={{ padding: '16px', color: 'var(--color-muted)', fontWeight: 600 }}>Nama & Email</th>
                             <th className="ds-body-sm" style={{ padding: '16px', color: 'var(--color-muted)', fontWeight: 600 }}>Peran</th>
                             <th className="ds-body-sm" style={{ padding: '16px', color: 'var(--color-muted)', fontWeight: 600 }}>Limit Potongan</th>
-                            <th className="ds-body-sm" style={{ padding: '16px', color: 'var(--color-muted)', fontWeight: 600 }}>Aksi</th>
+                            {auth.user.role !== 'pengawas' && (
+                                <th className="ds-body-sm" style={{ padding: '16px', color: 'var(--color-muted)', fontWeight: 600 }}>Aksi</th>
+                            )}
                         </tr>
                     </thead>
                     <tbody>
@@ -49,12 +53,14 @@ export default function Index({ auth, users }) {
                                     </span>
                                 </td>
                                 <td style={{ padding: '16px', fontFamily: 'var(--font-mono)' }}>Rp {numberFormat(user.max_salary_deduction_limit)}</td>
-                                <td style={{ padding: '16px' }}>
-                                    <div style={{ display: 'flex', gap: '8px' }}>
-                                        <Link href={route('admin.users.edit', user.id)} className="text-blue-600 hover:text-blue-800 text-sm font-medium">Edit</Link>
-                                        <button onClick={() => handleDelete(user.id)} className="text-red-600 hover:text-red-800 text-sm font-medium">Hapus</button>
-                                    </div>
-                                </td>
+                                {auth.user.role !== 'pengawas' && (
+                                    <td style={{ padding: '16px' }}>
+                                        <div style={{ display: 'flex', gap: '8px' }}>
+                                            <Link href={route('admin.users.edit', user.id)} className="text-blue-600 hover:text-blue-800 text-sm font-medium">Edit</Link>
+                                            <button onClick={() => handleDelete(user.id)} className="text-red-600 hover:text-red-800 text-sm font-medium">Hapus</button>
+                                        </div>
+                                    </td>
+                                )}
                             </tr>
                         ))}
                         {users.data.length === 0 && (

@@ -13,7 +13,7 @@ class DeductionController extends Controller
 {
     public function index()
     {
-        if (auth()->user()->role !== 'bendahara') {
+        if (!in_array(auth()->user()->role, ['bendahara', 'pengawas'])) {
             abort(403, 'Unauthorized action.');
         }
 
@@ -51,7 +51,7 @@ class DeductionController extends Controller
                 'status' => 'draft',
             ]);
 
-            $members = User::where('role', 'member')->get();
+            $members = User::where('role', 'anggota')->get();
 
             foreach ($members as $member) {
                 // Check if this month is inactive for this member
@@ -93,7 +93,7 @@ class DeductionController extends Controller
 
     public function export(DeductionPeriod $deduction)
     {
-        if (auth()->user()->role !== 'bendahara') {
+        if (!in_array(auth()->user()->role, ['bendahara', 'pengawas'])) {
             abort(403, 'Unauthorized action.');
         }
 

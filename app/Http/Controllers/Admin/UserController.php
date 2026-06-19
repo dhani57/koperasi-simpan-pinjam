@@ -11,6 +11,10 @@ class UserController extends Controller
 {
     public function index()
     {
+        if (!in_array(auth()->user()->role, ['pengurus', 'pengawas'])) {
+            abort(403, 'Unauthorized action.');
+        }
+
         $users = User::latest()->paginate(10);
         return inertia('Admin/Users/Index', ['users' => $users]);
     }

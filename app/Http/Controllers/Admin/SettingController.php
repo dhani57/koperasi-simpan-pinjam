@@ -18,6 +18,10 @@ class SettingController extends Controller
 
     public function store(Request $request)
     {
+        if (auth()->user()->role === 'pengawas') {
+            abort(403, 'Unauthorized action.');
+        }
+
         $validated = $request->validate([
             'default_monthly_saving' => 'required|numeric|min:0',
             'default_salary_limit' => 'required|numeric|min:0',

@@ -38,6 +38,8 @@ export default function Index({ auth }) {
                 <p style={{ color: 'var(--color-muted)', fontSize: '14px', lineHeight: '1.6', marginBottom: '32px' }}>
                     {auth.user.role === 'ketua' 
                         ? 'Tinjau draf perhitungan Sisa Hasil Usaha (SHU) sebelum didistribusikan ke masing-masing anggota. Persetujuan Anda diperlukan untuk mengesahkan proses ini.'
+                        : auth.user.role === 'pengawas'
+                        ? 'Pantau proses tutup buku tahunan koperasi. Anda memiliki akses baca untuk meninjau laporan SHU tanpa hak mengubah status persetujuan.'
                         : 'Proses tutup buku akan mengkalkulasi Sisa Hasil Usaha (SHU) berdasarkan total pendapatan jasa pinjaman dan akan didistribusikan ke masing-masing anggota secara proporsional sesuai dengan kontribusi mereka.'
                     }
                 </p>
@@ -51,6 +53,11 @@ export default function Index({ auth }) {
                                 <li>Dana akan langsung dialokasikan ke saldo masing-masing anggota.</li>
                                 <li>Laporan tahun berjalan resmi ditutup.</li>
                             </>
+                        ) : auth.user.role === 'pengawas' ? (
+                            <>
+                                <li>Anda dapat melihat riwayat tutup buku.</li>
+                                <li>Seluruh proses perhitungan adalah transparan dan tercatat dalam sistem.</li>
+                            </>
                         ) : (
                             <>
                                 <li>Sistem akan menghitung total keuntungan dari bunga pinjaman tahun berjalan.</li>
@@ -61,33 +68,35 @@ export default function Index({ auth }) {
                     </ul>
                 </div>
 
-                {auth.user.role === 'ketua' ? (
-                    <form onSubmit={(e) => {
-                        e.preventDefault();
-                        if (confirm('Anda yakin ingin menyetujui distribusi SHU ini? Tindakan ini tidak dapat dibatalkan.')) {
-                            post(route('admin.shu.approve'));
-                        }
-                    }}>
-                        <button 
-                            type="submit" 
-                            disabled={processing}
-                            className="ds-button-primary"
-                            style={{ width: '100%', padding: '16px', fontSize: '16px', backgroundColor: '#10b981' }}
-                        >
-                            {processing ? 'Memproses...' : 'Setujui Distribusi SHU'}
-                        </button>
-                    </form>
-                ) : (
-                    <form onSubmit={submit}>
-                        <button 
-                            type="submit" 
-                            disabled={processing}
-                            className="ds-button-primary"
-                            style={{ width: '100%', padding: '16px', fontSize: '16px', backgroundColor: 'var(--color-semantic-down)' }}
-                        >
-                            {processing ? 'Memproses...' : 'Buat Draf Perhitungan SHU'}
-                        </button>
-                    </form>
+                {auth.user.role !== 'pengawas' && (
+                    auth.user.role === 'ketua' ? (
+                        <form onSubmit={(e) => {
+                            e.preventDefault();
+                            if (confirm('Anda yakin ingin menyetujui distribusi SHU ini? Tindakan ini tidak dapat dibatalkan.')) {
+                                post(route('admin.shu.approve'));
+                            }
+                        }}>
+                            <button 
+                                type="submit" 
+                                disabled={processing}
+                                className="ds-button-primary"
+                                style={{ width: '100%', padding: '16px', fontSize: '16px', backgroundColor: '#10b981' }}
+                            >
+                                {processing ? 'Memproses...' : 'Setujui Distribusi SHU'}
+                            </button>
+                        </form>
+                    ) : (
+                        <form onSubmit={submit}>
+                            <button 
+                                type="submit" 
+                                disabled={processing}
+                                className="ds-button-primary"
+                                style={{ width: '100%', padding: '16px', fontSize: '16px', backgroundColor: 'var(--color-semantic-down)' }}
+                            >
+                                {processing ? 'Memproses...' : 'Buat Draf Perhitungan SHU'}
+                            </button>
+                        </form>
+                    )
                 )}
             </div>
         </AdminLayout>

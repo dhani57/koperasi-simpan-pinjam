@@ -21,37 +21,39 @@ export default function Index({ auth, periods }) {
         <AdminLayout auth={auth} title="Potongan Bulanan (Tagihan)">
             <Head title="Potongan Bulanan" />
 
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: '24px' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: auth.user.role === 'pengawas' ? '1fr' : '1fr 2fr', gap: '24px' }}>
                 {/* Generate Form */}
-                <div style={{ backgroundColor: 'white', borderRadius: 'var(--rounded-xl)', padding: '24px', border: '1px solid var(--color-hairline)', alignSelf: 'start' }}>
-                    <h2 className="ds-title-md" style={{ marginBottom: '8px' }}>Buat Tagihan Baru</h2>
-                    <p style={{ color: 'var(--color-muted)', fontSize: '13px', marginBottom: '24px' }}>
-                        Generate tagihan potongan simpanan rutin dan angsuran pinjaman untuk diserahkan ke bagian Payroll.
-                    </p>
+                {auth.user.role !== 'pengawas' && (
+                    <div style={{ backgroundColor: 'white', borderRadius: 'var(--rounded-xl)', padding: '24px', border: '1px solid var(--color-hairline)', alignSelf: 'start' }}>
+                        <h2 className="ds-title-md" style={{ marginBottom: '8px' }}>Buat Tagihan Baru</h2>
+                        <p style={{ color: 'var(--color-muted)', fontSize: '13px', marginBottom: '24px' }}>
+                            Generate tagihan potongan simpanan rutin dan angsuran pinjaman untuk diserahkan ke bagian Payroll.
+                        </p>
 
-                    <form onSubmit={submit}>
-                        <div style={{ marginBottom: '16px' }}>
-                            <label style={{ display: 'block', fontSize: '13px', fontWeight: 600, marginBottom: '8px' }}>Pilih Bulan & Tahun</label>
-                            <input 
-                                type="month" 
-                                value={data.period_date.slice(0, 7)}
-                                onChange={e => setData('period_date', e.target.value + '-01')}
-                                required
-                                style={{ width: '100%', padding: '10px 12px', border: '1px solid var(--color-hairline)', borderRadius: 'var(--rounded-md)' }}
-                            />
-                            {errors.period_date && <div style={{ color: 'var(--color-semantic-down)', fontSize: '12px', marginTop: '4px' }}>{errors.period_date}</div>}
-                        </div>
+                        <form onSubmit={submit}>
+                            <div style={{ marginBottom: '16px' }}>
+                                <label style={{ display: 'block', fontSize: '13px', fontWeight: 600, marginBottom: '8px' }}>Pilih Bulan & Tahun</label>
+                                <input 
+                                    type="month" 
+                                    value={data.period_date.slice(0, 7)}
+                                    onChange={e => setData('period_date', e.target.value + '-01')}
+                                    required
+                                    style={{ width: '100%', padding: '10px 12px', border: '1px solid var(--color-hairline)', borderRadius: 'var(--rounded-md)' }}
+                                />
+                                {errors.period_date && <div style={{ color: 'var(--color-semantic-down)', fontSize: '12px', marginTop: '4px' }}>{errors.period_date}</div>}
+                            </div>
 
-                        <button 
-                            type="submit" 
-                            disabled={processing}
-                            className="ds-button-primary"
-                            style={{ width: '100%', padding: '12px' }}
-                        >
-                            {processing ? 'Memproses...' : 'Generate Tagihan'}
-                        </button>
-                    </form>
-                </div>
+                            <button 
+                                type="submit" 
+                                disabled={processing}
+                                className="ds-button-primary"
+                                style={{ width: '100%', padding: '12px' }}
+                            >
+                                {processing ? 'Memproses...' : 'Generate Tagihan'}
+                            </button>
+                        </form>
+                    </div>
+                )}
 
                 {/* List of Periods */}
                 <div style={{ backgroundColor: 'white', borderRadius: 'var(--rounded-xl)', padding: '24px', border: '1px solid var(--color-hairline)' }}>

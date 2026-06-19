@@ -9,7 +9,7 @@ class ShuController extends Controller
 {
     public function index()
     {
-        if (!in_array(auth()->user()->role, ['bendahara', 'ketua'])) {
+        if (!in_array(auth()->user()->role, ['bendahara', 'ketua', 'pengawas'])) {
             abort(403, 'Unauthorized action.');
         }
 
