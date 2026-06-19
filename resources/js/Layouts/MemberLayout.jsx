@@ -54,7 +54,6 @@ export default function MemberLayout({ auth, children }) {
                         </nav>
 
                         <div className="hidden md:flex" style={{ alignItems: 'center', gap: 'var(--spacing-md)' }}>
-                            <span style={{ fontSize: '14px', color: 'rgba(255,255,255,0.8)' }}>Bantuan</span>
                             <Dropdown>
                                 <Dropdown.Trigger>
                                     <button
