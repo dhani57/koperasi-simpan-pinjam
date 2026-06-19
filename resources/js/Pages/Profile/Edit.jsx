@@ -6,7 +6,7 @@ import UpdatePasswordForm from './Partials/UpdatePasswordForm';
 import UpdateProfileInformationForm from './Partials/UpdateProfileInformationForm';
 
 export default function Edit({ auth, mustVerifyEmail, status }) {
-    const isAdmin = ['pengurus', 'ketua'].includes(auth.user.role);
+    const isAdmin = ['pengurus', 'bendahara', 'ketua', 'pengawas'].includes(auth.user.role);
 
     // Choose layout based on role
     const Layout = isAdmin ? AdminLayout : MemberLayout;

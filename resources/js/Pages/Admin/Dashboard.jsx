@@ -4,9 +4,19 @@ import ButtonPrimary from '@/Components/DesignSystem/ButtonPrimary';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 
 export default function Dashboard({ auth, stats, chartData }) {
+    const getDashboardTitle = () => {
+        switch(auth.user.role) {
+            case 'pengurus': return 'Dasbor Pengurus';
+            case 'bendahara': return 'Dasbor Bendahara';
+            case 'ketua': return 'Dasbor Ketua';
+            case 'pengawas': return 'Dasbor Pengawas';
+            default: return 'Dasbor';
+        }
+    };
+
     return (
-        <AdminLayout auth={auth} title="Dasbor Pengurus">
-            <Head title="Admin Dashboard" />
+        <AdminLayout auth={auth} title={getDashboardTitle()}>
+            <Head title={getDashboardTitle()} />
 
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(12, 1fr)', gap: 'var(--spacing-lg)' }}>
                 

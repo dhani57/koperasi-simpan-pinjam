@@ -18,7 +18,7 @@ export default function AdminLayout({ auth, children, title }) {
                 {/* Navigation Menu */}
                 <nav style={{ padding: '0 var(--spacing-base)', display: 'flex', flexDirection: 'column', gap: '4px', marginTop: 'var(--spacing-md)' }}>
                     <div style={{ fontSize: '11px', fontWeight: 600, color: 'var(--color-on-dark-soft)', letterSpacing: '1px', textTransform: 'uppercase', padding: 'var(--spacing-md) var(--spacing-base) var(--spacing-xs)' }}>
-                        Menu Pengurus
+                        Menu Utama
                     </div>
                     
                     <Link 
