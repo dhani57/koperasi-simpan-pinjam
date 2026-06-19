@@ -14,7 +14,10 @@ class Loan extends Model
         'principal_amount',
         'cooperative_fee_percentage',
         'tenor_months',
-        'monthly_installment',
+        'tenor_years',
+        'monthly_principal_installment',
+        'current_remaining_principal',
+        'current_year_monthly_fee',
         'status',
         'disbursed_at',
     ];
@@ -26,5 +29,10 @@ class Loan extends Model
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function loanAnnualServices()
+    {
+        return $this->hasMany(LoanAnnualService::class);
     }
 }
