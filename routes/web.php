@@ -46,12 +46,29 @@ use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\LoanController;
 use App\Http\Controllers\Admin\SettingController;
+use App\Http\Controllers\Admin\DeductionController;
+use App\Http\Controllers\Admin\ShuController;
 
 Route::middleware(['auth', 'verified', 'admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::resource('users', UserController::class);
+    
+    // Pinjaman Routes
     Route::resource('loans', LoanController::class)->only(['index']);
+    Route::post('loans/{loan}/verify', [LoanController::class, 'verify'])->name('loans.verify');
+    Route::post('loans/{loan}/reject', [LoanController::class, 'reject'])->name('loans.reject');
+    Route::post('loans/{loan}/approve', [LoanController::class, 'approve'])->name('loans.approve');
+    Route::post('loans/{loan}/disburse', [LoanController::class, 'disburse'])->name('loans.disburse');
+    
     Route::resource('settings', SettingController::class)->only(['index', 'store']);
+    
+    // Potongan Bulanan Routes
+    Route::resource('deductions', DeductionController::class)->only(['index', 'store']);
+    Route::get('deductions/{deduction}/export', [DeductionController::class, 'export'])->name('deductions.export');
+    
+    // SHU Routes
+    Route::get('shu', [ShuController::class, 'index'])->name('shu.index');
+    Route::post('shu/generate', [ShuController::class, 'store'])->name('shu.store');
 });
 
 require __DIR__.'/auth.php';

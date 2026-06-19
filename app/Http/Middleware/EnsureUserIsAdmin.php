@@ -15,7 +15,7 @@ class EnsureUserIsAdmin
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if (! $request->user() || $request->user()->role !== 'pengurus') {
+        if (! $request->user() || !in_array($request->user()->role, ['pengurus', 'bendahara', 'ketua'])) {
             abort(403, 'Unauthorized action.');
         }
 
