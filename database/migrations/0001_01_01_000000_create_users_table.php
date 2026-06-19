@@ -16,6 +16,7 @@ return new class extends Migration
             $table->string('name');
             $table->string('identity_number')->unique()->comment('NIP/NIM');
             $table->string('email')->unique();
+            $table->string('phone')->nullable()->comment('Nomor Telepon/WhatsApp');
             $table->enum('role', ['anggota', 'bendahara', 'pengurus', 'ketua', 'pengawas'])->default('anggota');
             $table->decimal('monthly_saving_nominal', 15, 2)->default(0)->comment('Nominal potongan wajib bulanan');
             $table->decimal('max_salary_deduction_limit', 15, 2)->default(0)->comment('Limit maksimal gaji yang boleh dipotong');
