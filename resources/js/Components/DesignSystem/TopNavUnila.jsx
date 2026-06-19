@@ -1,12 +1,13 @@
 import { Link } from '@inertiajs/react';
+import ApplicationLogo from '@/Components/ApplicationLogo';
 
 export default function TopNavUnila({ auth }) {
     return (
         <nav className="ds-top-nav-unila">
             <div className="flex items-center gap-4">
-                <div className="font-bold text-lg ds-display-mega" style={{ fontSize: '24px', letterSpacing: '0px' }}>
-                    Koperasi Institusi
-                </div>
+                <Link href="/">
+                    <ApplicationLogo theme="dark" />
+                </Link>
             </div>
             <div className="flex items-center gap-6">
                 {auth?.user ? (

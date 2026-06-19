@@ -1,5 +1,6 @@
 import { Link, usePage } from '@inertiajs/react';
 import Dropdown from '@/Components/Dropdown';
+import ApplicationLogo from '@/Components/ApplicationLogo';
 
 export default function MemberLayout({ auth, children }) {
     const { url } = usePage();
@@ -15,10 +16,9 @@ export default function MemberLayout({ auth, children }) {
         <div style={{ minHeight: '100vh', backgroundColor: 'var(--color-surface-soft)', display: 'flex', flexDirection: 'column' }}>
             {/* Top Navigation Bar */}
             <header style={{ backgroundColor: 'var(--color-primary)', color: 'white', height: '64px', display: 'flex', alignItems: 'center', padding: '0 var(--spacing-xl)', justifyContent: 'space-between', flexShrink: 0 }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-xs)' }}>
-                    <div style={{ width: '24px', height: '24px', backgroundColor: 'white', borderRadius: '50%' }}></div>
-                    <span style={{ fontFamily: 'var(--font-display)', fontWeight: 600, fontSize: '18px', color: 'white' }}>Koperasi</span>
-                </div>
+                <Link href="/">
+                    <ApplicationLogo theme="dark" />
+                </Link>
 
                 <nav style={{ display: 'flex', gap: 'var(--spacing-xl)' }}>
                     {navLinks.map((link, idx) => (

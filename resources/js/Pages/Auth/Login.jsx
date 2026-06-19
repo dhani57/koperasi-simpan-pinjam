@@ -1,5 +1,6 @@
 import { Head, Link, useForm } from '@inertiajs/react';
 import { useState } from 'react';
+import ApplicationLogo from '@/Components/ApplicationLogo';
 
 export default function Login({ status, canResetPassword }) {
     const { data, setData, post, processing, errors, reset } = useForm({
@@ -60,14 +61,7 @@ export default function Login({ status, canResetPassword }) {
 
                 <div style={{ maxWidth: '480px', margin: '0 auto', position: 'relative', zIndex: 2 }}>
                     <div style={{ marginBottom: 'var(--spacing-xxl)' }}>
-                        <div style={{ display: 'inline-flex', alignItems: 'center', gap: 'var(--spacing-sm)', marginBottom: 'var(--spacing-xl)', padding: '8px 16px', background: 'rgba(255,255,255,0.05)', borderRadius: 'var(--rounded-full)', backdropFilter: 'blur(10px)' }}>
-                            <div style={{ width: '24px', height: '24px', backgroundColor: 'var(--color-canvas)', borderRadius: 'var(--rounded-full)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                                <span style={{ color: 'var(--color-primary)', fontWeight: 'bold', fontSize: '14px' }}>K</span>
-                            </div>
-                            <span style={{ color: 'var(--color-on-dark)', fontSize: '16px', fontWeight: '600', letterSpacing: '0.5px' }}>
-                                Koperasi Internal
-                            </span>
-                        </div>
+                        <ApplicationLogo theme="dark" style={{ marginBottom: 'var(--spacing-xl)' }} />
                         <h2 className="ds-display-sm" style={{ marginBottom: 'var(--spacing-sm)', color: 'var(--color-on-dark)', lineHeight: '1.2' }}>
                             Platform Finansial<br/>Generasi Baru.
                         </h2>

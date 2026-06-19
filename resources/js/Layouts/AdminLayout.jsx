@@ -1,5 +1,6 @@
 import { Link } from '@inertiajs/react';
 import Dropdown from '@/Components/Dropdown';
+import ApplicationLogo from '@/Components/ApplicationLogo';
 
 export default function AdminLayout({ auth, children, title }) {
     return (
@@ -8,11 +9,10 @@ export default function AdminLayout({ auth, children, title }) {
             {/* Sidebar */}
             <aside style={{ width: '260px', backgroundColor: 'var(--color-surface-dark)', display: 'flex', flexDirection: 'column', position: 'fixed', height: '100vh', top: 0, left: 0, zIndex: 40, color: 'var(--color-on-dark)' }}>
                 {/* Brand Logo */}
-                <div style={{ padding: 'var(--spacing-xl) var(--spacing-lg)', display: 'flex', alignItems: 'center', gap: '12px', borderBottom: '1px solid rgba(255, 255, 255, 0.1)' }}>
-                    <div style={{ width: '32px', height: '32px', backgroundColor: 'var(--color-canvas)', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--color-surface-dark)', fontWeight: 'bold' }}>
-                        K
-                    </div>
-                    <span style={{ fontSize: '20px', fontWeight: 700, letterSpacing: '-0.5px', color: 'var(--color-on-dark)' }}>Koperasi.</span>
+                <div style={{ padding: 'var(--spacing-xl) var(--spacing-lg)', borderBottom: '1px solid rgba(255, 255, 255, 0.1)' }}>
+                    <Link href="/">
+                        <ApplicationLogo theme="dark" />
+                    </Link>
                 </div>
 
                 {/* Navigation Menu */}

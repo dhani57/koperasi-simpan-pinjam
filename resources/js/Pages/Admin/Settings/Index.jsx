@@ -5,7 +5,7 @@ import InputLabel from '@/Components/InputLabel';
 import TextInput from '@/Components/TextInput';
 import InputError from '@/Components/InputError';
 import ButtonPrimary from '@/Components/DesignSystem/ButtonPrimary';
-import Toast from '@/Components/DesignSystem/Toast';
+import Notification from '@/Components/DesignSystem/Notification';
 
 export default function Index({ auth, settings }) {
     let initialInactiveMonths = [];
@@ -22,22 +22,27 @@ export default function Index({ auth, settings }) {
         inactive_months: initialInactiveMonths,
     });
 
-    const [toast, setToast] = useState({ show: false, message: '', type: 'error' });
+    const [notif, setNotif] = useState({ show: false, title: '', message: '', type: 'error' });
 
     const submit = (e) => {
         e.preventDefault();
-        post(route('admin.settings.store'));
+        post(route('admin.settings.store'), {
+            onSuccess: () => {
+                setNotif({ show: true, title: 'Berhasil', message: 'Parameter sistem berhasil diperbarui.', type: 'success' });
+            }
+        });
     };
 
     return (
         <AdminLayout auth={auth} title="Parameter Sistem">
             <Head title="Parameter Sistem" />
             
-            <Toast 
-                show={toast.show} 
-                message={toast.message} 
-                type={toast.type} 
-                onClose={() => setToast({ ...toast, show: false })} 
+            <Notification 
+                show={notif.show} 
+                title={notif.title}
+                message={notif.message} 
+                type={notif.type} 
+                onClose={() => setNotif({ ...notif, show: false })} 
             />
 
             <form onSubmit={submit} className="max-w-4xl space-y-8">
@@ -140,9 +145,10 @@ export default function Index({ auth, settings }) {
                                             if (updated.length < 2) {
                                                 updated.push(month.value);
                                             } else {
-                                                setToast({
+                                                setNotif({
                                                     show: true,
-                                                    message: 'Batas maksimal tercapai! Hanya dapat memilih 2 bulan non-aktif dalam setahun.',
+                                                    title: 'Maksimal 2 Bulan',
+                                                    message: 'Hanya dapat memilih 2 bulan non-aktif dalam setahun.',
                                                     type: 'error'
                                                 });
                                                 return;
