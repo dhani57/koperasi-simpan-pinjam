@@ -16,6 +16,7 @@ return new class extends Migration
             $table->integer('month');
             $table->integer('year');
             $table->enum('status', ['draf', 'diekspor_ke_hrd', 'selesai_divalidasi'])->default('draf');
+            $table->boolean('is_active')->default(true)->comment('Status aktif/non-aktif');
             $table->timestamps();
 
             $table->unique(['month', 'year']);
