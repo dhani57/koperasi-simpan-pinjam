@@ -89,10 +89,10 @@ export default function Print({ auth, mutations }) {
                                             {mut.description || mut.type.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
                                         </td>
                                         <td style={{ border: '1px solid black', padding: '10px', textAlign: 'right' }}>
-                                            {!positive ? \`Rp \${formatRp(absAmount)}\` : '-'}
+                                            {!positive ? `Rp ${formatRp(absAmount)}` : '-'}
                                         </td>
                                         <td style={{ border: '1px solid black', padding: '10px', textAlign: 'right' }}>
-                                            {positive ? \`Rp \${formatRp(absAmount)}\` : '-'}
+                                            {positive ? `Rp ${formatRp(absAmount)}` : '-'}
                                         </td>
                                     </tr>
                                 );
