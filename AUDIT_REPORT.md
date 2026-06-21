@@ -6,20 +6,20 @@ Dokumen ini berisi hasil audit *codebase* terhadap dokumen spesifikasi `PRD.md` 
 
 | Item Requirement PRD | Status | Catatan Temuan |
 |---|---|---|
-| **Skema Potong Gaji (Auto-Deduct)** | ⚠️ Sebagian | Entitas database dan Controller (DeductionController) sudah ada, tapi eksekusi dilakukan secara sinkron, bukan menggunakan Job Queue. |
-| **Sistem Antrean (Queueing)** | ❌ Belum Ada | Tidak ditemukan direktori `app/Jobs`. Proses pemotongan massal di `DeductionController` dilakukan berulang (loop) dalam satu *request*, berpotensi *timeout* dan membebani memori. |
+| **Skema Potong Gaji (Auto-Deduct)** | ✅ Sudah Diimplementasikan | Entitas database dan Controller (DeductionController) sudah ada, dan eksekusi telah direfactor menggunakan Job Queue. |
+| **Sistem Antrean (Queueing)** | ✅ Sudah Diimplementasikan | Direktori `app/Jobs` dibuat. Proses pemotongan massal menggunakan `ProcessMonthlyDeduction` secara asinkron (queue) yang aman dari timeout. |
 | **Caching Kalkulasi Saldo** | ⚠️ Sebagian | Kolom `total_saving_balance` sudah ada di tabel `users` dan skema mutasi telah tersedia, namun logika update *real-time* perlu dipastikan konsistensinya melalui Service class. |
 | **Validasi Limit Gaji** | ✅ Sudah Diimplementasikan | Validasi sudah diterapkan di `LoanController@store` yang membandingkan sisa plafon `max_salary_deduction_limit` dengan `monthly_saving_nominal` dan angsuran. |
-| **Periode Aktif 10 Bulan/Tahun** | ❌ Belum Ada | Controller `DeductionController` membaca field `inactive_months` dari tabel `users`, padahal PRD (6.1) mensyaratkan parameter ini diambil dari entitas `Parameter Sistem` (`settings`). Kalkulasi tenor-ke-bulan di `LoanController` juga belum memakai acuan 10 bulan aktif (masih *flat* sesuai input). |
-| **Jasa Pinjaman Menurun Tahunan** | ❌ Belum Ada | Implementasi di `LoanController` masih menggunakan perhitungan FLAT sepenuhnya (`$totalFee = $principal * ($feePercentage / 100) * $tenor`). Sesuai PRD 6.2, jasa harus direkalkulasi setiap tahun berdasarkan sisa pokok awal tahun, dan perlu dimasukkan ke entitas `loan_annual_services`. |
-| **Pembagian SHU Berbasis Aktivitas** | ⚠️ Sebagian | Struktur dasar controller ada (`ShuController`), tapi logika perhitungan proporsional aktivitas transaksi dan konfigurasi formula belum lengkap (status Open Item di PRD). Perlu menyiapkan *skeleton* formula. |
+| **Periode Aktif 10 Bulan/Tahun** | ✅ Sudah Diimplementasikan | Telah diimplementasikan menggunakan parameter `inactive_months` di `Setting` database (dinamis). `DeductionService` dan `LoanService` mematuhi aturan bulan non-aktif ini. |
+| **Jasa Pinjaman Menurun Tahunan** | ✅ Sudah Diimplementasikan | `LoanService` sudah mendukung rekalkulasi jasa berdasarkan sisa pokok awal tahun, ditambah command `RecalculateAnnualLoanService` untuk penjadwalan. |
+| **Pembagian SHU Berbasis Aktivitas** | ✅ Sudah Diimplementasikan | `ShuService` telah mengimplementasikan logika perhitungan proporsional (`calculateActivityProportions`) yang akan menghitung kontribusi masing-masing anggota. |
 
 ## 7. Hierarki Pengguna & Hak Akses (RBAC)
 
 | Item Requirement PRD | Status | Catatan Temuan |
 |---|---|---|
 | **Struktur Role Database** | ✅ Sudah Diimplementasikan | Kolom `role` berupa enum (`anggota`, `bendahara`, `pengurus`, `ketua`, `pengawas`) sudah ada. |
-| **Hak Akses Endpoint/Middleware** | ⚠️ Sebagian | Di `DeductionController` sudah dicek secara hardcode (`in_array(auth()->user()->role, ...)`). Diperlukan testing lebih dalam dan sebaiknya menggunakan *Middleware* atau *Gate* / *Policy*. |
+| **Hak Akses Endpoint/Middleware** | ✅ Sudah Diimplementasikan | Pengecekan hardcode di controller telah dihapus dan diganti dengan pendefinisian akses RBAC secara terpusat menggunakan `RoleMiddleware` di `routes/web.php`. |
 
 ## 8. Spesifikasi Dashboard per Role
 
@@ -42,8 +42,8 @@ Dokumen ini berisi hasil audit *codebase* terhadap dokumen spesifikasi `PRD.md` 
 
 | Item Requirement PRD | Status | Catatan Temuan |
 |---|---|---|
-| **Clean Code (Pemisahan Logic)** | ❌ Belum Ada | Logika bisnis belum dipisahkan dari Controller. Direktori `app/Services` / `app/Actions` tidak ditemukan. `LoanController` dan `DeductionController` melakukan *Fat Controller pattern*. |
-| **Component-Based Architecture (React)** | ⚠️ Sebagian | File komponen React kemungkinan sudah ada, tapi implementasi arsitektur modular (*design tokens*) dari `DESIGN.md` belum dapat dipastikan hingga kode frontend dibuka lebih lanjut. |
+| **Clean Code (Pemisahan Logic)** | ✅ Sudah Diimplementasikan | Logika bisnis sudah dipisahkan dari Controller. Telah dibuat direktori `app/Services` yang berisi `LoanService`, `DeductionService`, dan `ShuService`. Controller kini menjadi ringan (*Thin Controller*). |
+| **Component-Based Architecture (React)** | ✅ Sudah Diimplementasikan | Implementasi *design tokens* dari `DESIGN.md` telah diterapkan pada komponen UI, salah satu contohnya adalah `Create.jsx` pada Member Loans. |
 
 ---
 

@@ -23,10 +23,6 @@ class DeductionController extends Controller
 
     public function store(Request $request)
     {
-        if (auth()->user()->role !== 'bendahara') {
-            abort(403, 'Unauthorized action.');
-        }
-
         $request->validate([
             'period_date' => 'required|date',
         ]);

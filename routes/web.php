@@ -52,28 +52,32 @@ use App\Http\Controllers\Admin\ShuController;
 
 Route::middleware(['auth', 'verified', 'admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
-    Route::resource('users', UserController::class);
+    
+    // Hanya pengurus yang mengelola pengguna dan settings
+    Route::middleware('role:pengurus')->group(function () {
+        Route::resource('users', UserController::class);
+        Route::resource('settings', SettingController::class)->only(['index', 'store']);
+    });
     
     // Pinjaman Routes
     Route::resource('loans', LoanController::class)->only(['index']);
-    Route::post('loans/{loan}/verify', [LoanController::class, 'verify'])->name('loans.verify');
-    Route::post('loans/{loan}/reject', [LoanController::class, 'reject'])->name('loans.reject');
-    Route::post('loans/{loan}/approve', [LoanController::class, 'approve'])->name('loans.approve');
-    Route::post('loans/{loan}/disburse', [LoanController::class, 'disburse'])->name('loans.disburse');
-    
-    Route::resource('settings', SettingController::class)->only(['index', 'store']);
+    Route::post('loans/{loan}/verify', [LoanController::class, 'verify'])->name('loans.verify')->middleware('role:pengurus');
+    Route::post('loans/{loan}/reject', [LoanController::class, 'reject'])->name('loans.reject')->middleware('role:bendahara,ketua,pengurus');
+    Route::post('loans/{loan}/approve', [LoanController::class, 'approve'])->name('loans.approve')->middleware('role:bendahara,ketua');
+    Route::post('loans/{loan}/disburse', [LoanController::class, 'disburse'])->name('loans.disburse')->middleware('role:bendahara');
     
     // Potongan Bulanan Routes
-    Route::resource('deductions', DeductionController::class)->only(['index', 'store']);
-    Route::get('deductions/{deduction}/export', [DeductionController::class, 'export'])->name('deductions.export');
+    Route::resource('deductions', DeductionController::class)->only(['index']);
+    Route::post('deductions', [DeductionController::class, 'store'])->name('deductions.store')->middleware('role:bendahara');
+    Route::get('deductions/{deduction}/export', [DeductionController::class, 'export'])->name('deductions.export')->middleware('role:bendahara');
     
     // Log Mutasi Routes
     Route::get('mutations', [\App\Http\Controllers\Admin\MutationController::class, 'index'])->name('mutations.index');
 
     // SHU Routes
-    Route::get('shu', [ShuController::class, 'index'])->name('shu.index');
-    Route::post('shu/generate', [ShuController::class, 'store'])->name('shu.store');
-    Route::post('shu/approve', [ShuController::class, 'approve'])->name('shu.approve');
+    Route::get('shu', [ShuController::class, 'index'])->name('shu.index')->middleware('role:bendahara,ketua,pengawas');
+    Route::post('shu/generate', [ShuController::class, 'store'])->name('shu.store')->middleware('role:bendahara');
+    Route::post('shu/approve', [ShuController::class, 'approve'])->name('shu.approve')->middleware('role:ketua');
 });
 
 require __DIR__.'/auth.php';

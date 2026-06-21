@@ -9,10 +9,6 @@ class ShuController extends Controller
 {
     public function index(\App\Services\ShuService $shuService)
     {
-        if (!in_array(auth()->user()->role, ['bendahara', 'ketua', 'pengawas'])) {
-            abort(403, 'Unauthorized action.');
-        }
-
         $year = request('year', now()->year);
         $shuData = $shuService->calculateActivityProportions($year);
 
@@ -25,10 +21,6 @@ class ShuController extends Controller
 
     public function store(Request $request)
     {
-        if (auth()->user()->role !== 'bendahara') {
-            abort(403, 'Unauthorized action.');
-        }
-
         // Simulate SHU generation
         // In a real application, this would calculate profits based on loans, settings, and distribute to members
         // For now, we will just return a success message.
@@ -41,10 +33,6 @@ class ShuController extends Controller
 
     public function approve(Request $request)
     {
-        if (auth()->user()->role !== 'ketua') {
-            abort(403, 'Unauthorized action.');
-        }
-
         return redirect()->back()->with('success', 'Distribusi SHU telah disetujui dan dibagikan ke saldo anggota.');
     }
 }

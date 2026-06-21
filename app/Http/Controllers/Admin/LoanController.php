@@ -14,12 +14,8 @@ class LoanController extends Controller
         return inertia('Admin/Loans/Index', ['loans' => $loans]);
     }
 
-    public function verify(Loan $loan)
+    public function verify(Request $request, Loan $loan)
     {
-        if (auth()->user()->role !== 'pengurus') {
-            abort(403, 'Unauthorized action.');
-        }
-
         if ($loan->status !== 'diajukan') {
             return redirect()->back()->with('error', 'Hanya pinjaman dengan status diajukan yang dapat diverifikasi.');
         }
@@ -68,14 +64,10 @@ class LoanController extends Controller
         return redirect()->back()->with('success', 'Pinjaman berhasil disetujui.');
     }
 
-    public function disburse(Loan $loan)
+    public function disburse(Request $request, Loan $loan)
     {
-        if (auth()->user()->role !== 'bendahara') {
-            abort(403, 'Unauthorized action.');
-        }
-
         if ($loan->status !== 'disetujui') {
-            return redirect()->back()->with('error', 'Hanya pinjaman yang telah disetujui yang dapat dicairkan.');
+            return redirect()->back()->with('error', 'Hanya pinjaman dengan status disetujui yang dapat dicairkan.');
         }
 
         $loan->update([
