@@ -44,18 +44,21 @@ export default function UpdatePasswordForm({ className = '' }) {
     };
 
     return (
-        <section className={className}>
-            <header>
-                <h2 className="ds-title-md">
-                    Ubah Password
-                </h2>
-
-                <p className="mt-1 text-sm text-gray-600">
-                    Pastikan akun Anda menggunakan password yang panjang dan acak untuk tetap aman.
-                </p>
+        <section className={`md:grid md:grid-cols-3 md:gap-6 ${className}`}>
+            <header className="md:col-span-1">
+                <div className="px-4 sm:px-0">
+                    <h3 className="text-lg font-medium leading-6 text-gray-900 ds-typography-title-lg">
+                        Ubah Password
+                    </h3>
+                    <p className="mt-1 text-sm text-gray-600">
+                        Pastikan akun Anda menggunakan password yang panjang dan acak untuk tetap aman.
+                    </p>
+                </div>
             </header>
 
-            <form onSubmit={updatePassword} className="mt-6 space-y-6">
+            <div className="mt-5 md:mt-0 md:col-span-2">
+                <form onSubmit={updatePassword}>
+                    <div className="px-4 py-5 bg-white sm:p-6 shadow sm:rounded-t-xl space-y-6 border border-gray-200 border-b-0">
                 <div>
                     <InputLabel
                         htmlFor="current_password"
@@ -121,24 +124,26 @@ export default function UpdatePasswordForm({ className = '' }) {
                     />
                 </div>
 
-                <div className="flex items-center gap-4 pt-4 border-t border-slate-200">
-                    <ButtonPrimary disabled={processing}>Simpan Perubahan</ButtonPrimary>
-
-                    <Transition
-                        show={recentlySuccessful}
-                        enter="transition ease-in-out duration-300"
-                        enterFrom="opacity-0"
-                        enterTo="opacity-100"
-                        leave="transition ease-in-out duration-300"
-                        leaveFrom="opacity-100"
-                        leaveTo="opacity-0"
-                    >
-                        <p className="text-sm font-medium text-green-600">
-                            Berhasil disimpan.
-                        </p>
-                    </Transition>
-                </div>
-            </form>
+                    </div>
+                    <div className="flex items-center justify-end gap-4 px-4 py-4 bg-gray-50 text-right sm:px-6 shadow sm:rounded-b-xl border border-gray-200">
+                        <Transition
+                            show={recentlySuccessful}
+                            enter="transition ease-in-out duration-300"
+                            enterFrom="opacity-0"
+                            enterTo="opacity-100"
+                            leave="transition ease-in-out duration-300"
+                            leaveFrom="opacity-100"
+                            leaveTo="opacity-0"
+                        >
+                            <p className="text-sm font-medium text-green-600">
+                                Berhasil disimpan.
+                            </p>
+                        </Transition>
+                        
+                        <ButtonPrimary disabled={processing}>Simpan Perubahan</ButtonPrimary>
+                    </div>
+                </form>
+            </div>
         </section>
     );
 }

@@ -33,23 +33,30 @@ export default function Edit({ auth, mustVerifyEmail, status, roleData }) {
         >
             <Head title="Profil" />
 
-            <div className={isAdmin ? '' : 'py-8'}>
-                <div className={isAdmin ? 'space-y-8' : 'mx-auto max-w-4xl space-y-6'}>
+            <div className="max-w-7xl mx-auto py-10 sm:px-6 lg:px-8">
+                <div className="space-y-10 sm:space-y-16">
                     
-                    <div className="ds-product-ui-card-light" style={{ maxWidth: '800px', margin: '0 auto' }}>
-                        <UpdateProfileInformationForm
-                            mustVerifyEmail={mustVerifyEmail}
-                            status={status}
-                        />
+                    <UpdateProfileInformationForm
+                        mustVerifyEmail={mustVerifyEmail}
+                        status={status}
+                    />
+
+                    {/* Pembatas opsional jika ingin lebih tegas, tapi space-y-16 sudah cukup */}
+                    <div className="hidden sm:block" aria-hidden="true">
+                        <div className="py-5">
+                            <div className="border-t border-gray-200"></div>
+                        </div>
                     </div>
 
-                    <div className="ds-product-ui-card-light" style={{ maxWidth: '800px', margin: '0 auto' }}>
-                        {renderRoleSpecificProfile()}
+                    {renderRoleSpecificProfile()}
+
+                    <div className="hidden sm:block" aria-hidden="true">
+                        <div className="py-5">
+                            <div className="border-t border-gray-200"></div>
+                        </div>
                     </div>
 
-                    <div className="ds-product-ui-card-light" style={{ maxWidth: '800px', margin: '0 auto' }}>
-                        <UpdatePasswordForm />
-                    </div>
+                    <UpdatePasswordForm />
 
                 </div>
             </div>
