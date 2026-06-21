@@ -1,9 +1,9 @@
 import { Head, Link } from '@inertiajs/react';
 import AdminLayout from '@/Layouts/AdminLayout';
 import ButtonPrimary from '@/Components/DesignSystem/ButtonPrimary';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { LineChart, Line, BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 
-export default function Dashboard({ auth, stats, chartData }) {
+export default function Dashboard({ auth, stats, roleData }) {
     const getDashboardTitle = () => {
         switch(auth.user.role) {
             case 'pengurus': return 'Dasbor Pengurus';
@@ -149,35 +149,325 @@ export default function Dashboard({ auth, stats, chartData }) {
 
                 </div>
 
-                {/* Chart Area (Spans 12 columns) */}
-                <div className="col-span-12" style={{ backgroundColor: 'var(--color-canvas)', borderRadius: 'var(--rounded-xl)', padding: '32px', boxShadow: '0 2px 6px rgba(0,0,0,0.02)', marginTop: 'var(--spacing-md)' }}>
-                    <div style={{ marginBottom: '24px' }}>
-                        <h3 style={{ fontSize: '18px', fontWeight: 600, color: 'var(--color-ink)' }}>Tren Aliran Kas (Simulasi)</h3>
-                        <p style={{ fontSize: '14px', color: 'var(--color-muted)', marginTop: '4px' }}>Perbandingan akumulasi Simpanan masuk dan Pinjaman keluar selama 6 bulan terakhir.</p>
-                    </div>
-                    
-                    <div style={{ width: '100%', height: '350px' }}>
-                        <ResponsiveContainer width="100%" height="100%">
-                            <LineChart data={chartData} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
-                                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f0f0f0" />
-                                <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{fill: '#888', fontSize: 12}} dy={10} />
-                                <YAxis 
-                                    axisLine={false} 
-                                    tickLine={false} 
-                                    tick={{fill: '#888', fontSize: 12}} 
-                                    tickFormatter={(val) => `Rp${(val/1000000).toFixed(0)}M`}
-                                />
-                                <Tooltip 
-                                    formatter={(value) => `Rp${new Intl.NumberFormat('id-ID').format(value)}`}
-                                    contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}
-                                />
-                                <Legend wrapperStyle={{ paddingTop: '20px' }} />
-                                <Line type="monotone" dataKey="Simpanan" stroke="var(--color-semantic-up)" strokeWidth={3} activeDot={{ r: 8 }} />
-                                <Line type="monotone" dataKey="Pinjaman" stroke="var(--color-primary)" strokeWidth={3} />
-                            </LineChart>
-                        </ResponsiveContainer>
-                    </div>
-                </div>
+                {/* Role Specific Areas */}
+                
+                {/* 1. Pengurus */}
+                {auth.user.role === 'pengurus' && (
+                    <>
+                        <div className="col-span-12" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--spacing-lg)', marginTop: 'var(--spacing-md)' }}>
+                            <div style={{ backgroundColor: 'var(--color-canvas)', borderRadius: 'var(--rounded-xl)', padding: '24px', boxShadow: '0 2px 6px rgba(0,0,0,0.02)' }}>
+                                <h3 style={{ fontSize: '16px', fontWeight: 600, color: 'var(--color-ink)', marginBottom: '16px' }}>Pertumbuhan Anggota</h3>
+                                <div style={{ width: '100%', height: '250px' }}>
+                                    <ResponsiveContainer width="100%" height="100%">
+                                        <LineChart data={roleData.member_growth}>
+                                            <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f0f0f0" />
+                                            <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{fill: '#888', fontSize: 12}} />
+                                            <YAxis axisLine={false} tickLine={false} tick={{fill: '#888', fontSize: 12}} />
+                                            <Tooltip contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }} />
+                                            <Line type="monotone" dataKey="Anggota_Baru" stroke="var(--color-primary)" strokeWidth={3} />
+                                        </LineChart>
+                                    </ResponsiveContainer>
+                                </div>
+                            </div>
+                            
+                            <div style={{ backgroundColor: 'var(--color-canvas)', borderRadius: 'var(--rounded-xl)', padding: '24px', boxShadow: '0 2px 6px rgba(0,0,0,0.02)' }}>
+                                <h3 style={{ fontSize: '16px', fontWeight: 600, color: 'var(--color-ink)', marginBottom: '16px' }}>Distribusi Limit Potongan</h3>
+                                <div style={{ width: '100%', height: '250px' }}>
+                                    <ResponsiveContainer width="100%" height="100%">
+                                        <BarChart data={roleData.limit_distribution}>
+                                            <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f0f0f0" />
+                                            <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{fill: '#888', fontSize: 12}} />
+                                            <YAxis axisLine={false} tickLine={false} tick={{fill: '#888', fontSize: 12}} />
+                                            <Tooltip contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }} />
+                                            <Bar dataKey="Jumlah" fill="var(--color-accent-teal)" radius={[4, 4, 0, 0]} />
+                                        </BarChart>
+                                    </ResponsiveContainer>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="col-span-8" style={{ backgroundColor: 'var(--color-canvas)', borderRadius: 'var(--rounded-xl)', padding: '24px', boxShadow: '0 2px 6px rgba(0,0,0,0.02)', marginTop: 'var(--spacing-md)' }}>
+                            <h3 style={{ fontSize: '16px', fontWeight: 600, color: 'var(--color-ink)', marginBottom: '16px' }}>Antrian Verifikasi Pinjaman</h3>
+                            {roleData.pending_verifications && roleData.pending_verifications.length > 0 ? (
+                                <table style={{ width: '100%', textAlign: 'left', borderCollapse: 'collapse' }}>
+                                    <thead>
+                                        <tr style={{ borderBottom: '1px solid var(--color-hairline)' }}>
+                                            <th style={{ padding: '12px 8px', fontSize: '13px', color: 'var(--color-muted)', fontWeight: 500 }}>Anggota</th>
+                                            <th style={{ padding: '12px 8px', fontSize: '13px', color: 'var(--color-muted)', fontWeight: 500 }}>Nominal</th>
+                                            <th style={{ padding: '12px 8px', fontSize: '13px', color: 'var(--color-muted)', fontWeight: 500 }}>Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {roleData.pending_verifications.map((loan, idx) => (
+                                            <tr key={idx} style={{ borderBottom: '1px solid var(--color-hairline)' }}>
+                                                <td style={{ padding: '12px 8px', fontSize: '14px', fontWeight: 500 }}>{loan.user?.name}</td>
+                                                <td style={{ padding: '12px 8px', fontSize: '14px', fontFamily: 'var(--font-mono)' }}>Rp{numberFormat(loan.principal_amount)}</td>
+                                                <td style={{ padding: '12px 8px', fontSize: '14px' }}><span style={{ backgroundColor: 'var(--color-surface-soft)', padding: '4px 8px', borderRadius: '4px', fontSize: '12px' }}>{loan.status}</span></td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            ) : (
+                                <div style={{ padding: '20px', textAlign: 'center', color: 'var(--color-muted)', fontSize: '14px' }}>Tidak ada antrian verifikasi.</div>
+                            )}
+                        </div>
+
+                        <div className="col-span-4" style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-md)', marginTop: 'var(--spacing-md)' }}>
+                            <div style={{ backgroundColor: 'var(--color-canvas)', borderRadius: 'var(--rounded-xl)', padding: '24px', boxShadow: '0 2px 6px rgba(0,0,0,0.02)' }}>
+                                <h3 style={{ fontSize: '16px', fontWeight: 600, color: 'var(--color-ink)', marginBottom: '16px' }}>Parameter Sistem</h3>
+                                {Object.entries(roleData.system_parameters || {}).map(([key, value]) => (
+                                    <div key={key} style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px', fontSize: '14px' }}>
+                                        <span style={{ color: 'var(--color-muted)' }}>{key}</span>
+                                        <span style={{ fontWeight: 600 }}>{value}</span>
+                                    </div>
+                                ))}
+                            </div>
+                            {roleData.alerts && roleData.alerts.length > 0 && (
+                                <div style={{ backgroundColor: 'rgba(235, 168, 52, 0.1)', border: '1px solid #eba834', borderRadius: 'var(--rounded-xl)', padding: '16px' }}>
+                                    <h3 style={{ fontSize: '14px', fontWeight: 600, color: '#b87e14', marginBottom: '8px' }}>Peringatan (Alert)</h3>
+                                    {roleData.alerts.map((alert, idx) => (
+                                        <div key={idx} style={{ fontSize: '13px', color: '#b87e14' }}>• {alert.message}</div>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
+                    </>
+                )}
+
+                {/* 2. Bendahara */}
+                {auth.user.role === 'bendahara' && (
+                    <>
+                        <div className="col-span-12" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--spacing-lg)', marginTop: 'var(--spacing-md)' }}>
+                            <div style={{ backgroundColor: 'var(--color-canvas)', borderRadius: 'var(--rounded-xl)', padding: '24px', boxShadow: '0 2px 6px rgba(0,0,0,0.02)' }}>
+                                <h3 style={{ fontSize: '16px', fontWeight: 600, color: 'var(--color-ink)', marginBottom: '16px' }}>Arus Kas (Cash Flow)</h3>
+                                <div style={{ width: '100%', height: '250px' }}>
+                                    <ResponsiveContainer width="100%" height="100%">
+                                        <LineChart data={roleData.cash_flow}>
+                                            <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f0f0f0" />
+                                            <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{fill: '#888', fontSize: 12}} />
+                                            <YAxis axisLine={false} tickLine={false} tick={{fill: '#888', fontSize: 12}} tickFormatter={(val) => `Rp${(val/1000000).toFixed(0)}M`} />
+                                            <Tooltip formatter={(value) => `Rp${new Intl.NumberFormat('id-ID').format(value)}`} />
+                                            <Legend />
+                                            <Line type="monotone" dataKey="Masuk" stroke="var(--color-semantic-up)" strokeWidth={3} />
+                                            <Line type="monotone" dataKey="Keluar" stroke="var(--color-semantic-down)" strokeWidth={3} />
+                                        </LineChart>
+                                    </ResponsiveContainer>
+                                </div>
+                            </div>
+                            
+                            <div style={{ backgroundColor: 'var(--color-canvas)', borderRadius: 'var(--rounded-xl)', padding: '24px', boxShadow: '0 2px 6px rgba(0,0,0,0.02)' }}>
+                                <h3 style={{ fontSize: '16px', fontWeight: 600, color: 'var(--color-ink)', marginBottom: '16px' }}>Komposisi Pinjaman</h3>
+                                <div style={{ width: '100%', height: '250px' }}>
+                                    <ResponsiveContainer width="100%" height="100%">
+                                        <PieChart>
+                                            <Pie data={roleData.loan_composition} cx="50%" cy="50%" innerRadius={60} outerRadius={80} paddingAngle={5} dataKey="value">
+                                                {roleData.loan_composition?.map((entry, index) => (
+                                                    <Cell key={`cell-${index}`} fill={['var(--color-semantic-up)', 'var(--color-primary)', 'var(--color-accent-yellow)'][index % 3]} />
+                                                ))}
+                                            </Pie>
+                                            <Tooltip />
+                                            <Legend />
+                                        </PieChart>
+                                    </ResponsiveContainer>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="col-span-8" style={{ backgroundColor: 'var(--color-canvas)', borderRadius: 'var(--rounded-xl)', padding: '24px', boxShadow: '0 2px 6px rgba(0,0,0,0.02)', marginTop: 'var(--spacing-md)' }}>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+                                <h3 style={{ fontSize: '16px', fontWeight: 600, color: 'var(--color-ink)' }}>Antrian Approval Bendahara</h3>
+                            </div>
+                            {roleData.approval_queue && roleData.approval_queue.length > 0 ? (
+                                <table style={{ width: '100%', textAlign: 'left', borderCollapse: 'collapse' }}>
+                                    <thead>
+                                        <tr style={{ borderBottom: '1px solid var(--color-hairline)' }}>
+                                            <th style={{ padding: '12px 8px', fontSize: '13px', color: 'var(--color-muted)', fontWeight: 500 }}>Anggota</th>
+                                            <th style={{ padding: '12px 8px', fontSize: '13px', color: 'var(--color-muted)', fontWeight: 500 }}>Nominal</th>
+                                            <th style={{ padding: '12px 8px', fontSize: '13px', color: 'var(--color-muted)', fontWeight: 500 }}>Aksi</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {roleData.approval_queue.map((loan, idx) => (
+                                            <tr key={idx} style={{ borderBottom: '1px solid var(--color-hairline)' }}>
+                                                <td style={{ padding: '12px 8px', fontSize: '14px', fontWeight: 500 }}>{loan.user?.name}</td>
+                                                <td style={{ padding: '12px 8px', fontSize: '14px', fontFamily: 'var(--font-mono)' }}>Rp{numberFormat(loan.principal_amount)}</td>
+                                                <td style={{ padding: '12px 8px', fontSize: '14px' }}>
+                                                    <Link href={route('admin.loans.index')} style={{ color: 'var(--color-primary)', fontSize: '13px', fontWeight: 600 }}>Proses</Link>
+                                                </td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            ) : (
+                                <div style={{ padding: '20px', textAlign: 'center', color: 'var(--color-muted)', fontSize: '14px' }}>Tidak ada antrian persetujuan.</div>
+                            )}
+                        </div>
+
+                        <div className="col-span-4" style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-md)', marginTop: 'var(--spacing-md)' }}>
+                            <div style={{ backgroundColor: 'var(--color-canvas)', borderRadius: 'var(--rounded-xl)', padding: '24px', boxShadow: '0 2px 6px rgba(0,0,0,0.02)' }}>
+                                <h3 style={{ fontSize: '16px', fontWeight: 600, color: 'var(--color-ink)', marginBottom: '16px' }}>Aksi Cepat</h3>
+                                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                                    <Link href={route('admin.deductions.index')} style={{ display: 'block', padding: '12px', backgroundColor: 'var(--color-surface-soft)', borderRadius: '8px', fontSize: '14px', fontWeight: 500, color: 'var(--color-ink)', textAlign: 'center' }}>Proses Potongan Bulanan</Link>
+                                    <Link href={route('admin.shu.index')} style={{ display: 'block', padding: '12px', backgroundColor: 'var(--color-surface-soft)', borderRadius: '8px', fontSize: '14px', fontWeight: 500, color: 'var(--color-ink)', textAlign: 'center' }}>Hitung SHU Tahunan</Link>
+                                </div>
+                            </div>
+                        </div>
+                    </>
+                )}
+
+                {/* 3. Ketua */}
+                {auth.user.role === 'ketua' && (
+                    <>
+                        <div className="col-span-12" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--spacing-lg)', marginTop: 'var(--spacing-md)' }}>
+                            <div style={{ backgroundColor: 'var(--color-canvas)', borderRadius: 'var(--rounded-xl)', padding: '24px', boxShadow: '0 2px 6px rgba(0,0,0,0.02)' }}>
+                                <h3 style={{ fontSize: '16px', fontWeight: 600, color: 'var(--color-ink)', marginBottom: '16px' }}>Tren Dana Koperasi</h3>
+                                <div style={{ width: '100%', height: '250px' }}>
+                                    <ResponsiveContainer width="100%" height="100%">
+                                        <LineChart data={roleData.asset_trend}>
+                                            <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f0f0f0" />
+                                            <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{fill: '#888', fontSize: 12}} />
+                                            <YAxis axisLine={false} tickLine={false} tick={{fill: '#888', fontSize: 12}} tickFormatter={(val) => `Rp${(val/1000000).toFixed(0)}M`} />
+                                            <Tooltip formatter={(value) => `Rp${new Intl.NumberFormat('id-ID').format(value)}`} />
+                                            <Line type="monotone" dataKey="Aset" stroke="var(--color-primary)" strokeWidth={3} />
+                                        </LineChart>
+                                    </ResponsiveContainer>
+                                </div>
+                            </div>
+                            
+                            <div style={{ backgroundColor: 'var(--color-canvas)', borderRadius: 'var(--rounded-xl)', padding: '24px', boxShadow: '0 2px 6px rgba(0,0,0,0.02)' }}>
+                                <h3 style={{ fontSize: '16px', fontWeight: 600, color: 'var(--color-ink)', marginBottom: '16px' }}>Simpanan vs Pinjaman</h3>
+                                <div style={{ width: '100%', height: '250px' }}>
+                                    <ResponsiveContainer width="100%" height="100%">
+                                        <BarChart data={roleData.savings_vs_loans}>
+                                            <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f0f0f0" />
+                                            <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{fill: '#888', fontSize: 12}} />
+                                            <YAxis axisLine={false} tickLine={false} tick={{fill: '#888', fontSize: 12}} tickFormatter={(val) => `Rp${(val/1000000).toFixed(0)}M`} />
+                                            <Tooltip formatter={(value) => `Rp${new Intl.NumberFormat('id-ID').format(value)}`} />
+                                            <Legend />
+                                            <Bar dataKey="Simpanan" fill="var(--color-semantic-up)" radius={[4, 4, 0, 0]} />
+                                            <Bar dataKey="Pinjaman" fill="var(--color-primary)" radius={[4, 4, 0, 0]} />
+                                        </BarChart>
+                                    </ResponsiveContainer>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="col-span-8" style={{ backgroundColor: 'var(--color-canvas)', borderRadius: 'var(--rounded-xl)', padding: '24px', boxShadow: '0 2px 6px rgba(0,0,0,0.02)', marginTop: 'var(--spacing-md)' }}>
+                            <h3 style={{ fontSize: '16px', fontWeight: 600, color: 'var(--color-ink)', marginBottom: '16px' }}>Approval Tingkat Eksekutif</h3>
+                            {roleData.executive_approvals && roleData.executive_approvals.length > 0 ? (
+                                <table style={{ width: '100%', textAlign: 'left', borderCollapse: 'collapse' }}>
+                                    <thead>
+                                        <tr style={{ borderBottom: '1px solid var(--color-hairline)' }}>
+                                            <th style={{ padding: '12px 8px', fontSize: '13px', color: 'var(--color-muted)', fontWeight: 500 }}>Anggota / Keterangan</th>
+                                            <th style={{ padding: '12px 8px', fontSize: '13px', color: 'var(--color-muted)', fontWeight: 500 }}>Nominal</th>
+                                            <th style={{ padding: '12px 8px', fontSize: '13px', color: 'var(--color-muted)', fontWeight: 500 }}>Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {roleData.executive_approvals.map((item, idx) => (
+                                            <tr key={idx} style={{ borderBottom: '1px solid var(--color-hairline)' }}>
+                                                <td style={{ padding: '12px 8px', fontSize: '14px', fontWeight: 500 }}>{item.user?.name || 'Sistem'}</td>
+                                                <td style={{ padding: '12px 8px', fontSize: '14px', fontFamily: 'var(--font-mono)' }}>Rp{numberFormat(item.principal_amount || 0)}</td>
+                                                <td style={{ padding: '12px 8px', fontSize: '14px' }}>{item.status}</td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            ) : (
+                                <div style={{ padding: '20px', textAlign: 'center', color: 'var(--color-muted)', fontSize: '14px' }}>Tidak ada antrian persetujuan eksekutif.</div>
+                            )}
+                        </div>
+
+                        <div className="col-span-4" style={{ backgroundColor: 'var(--color-canvas)', borderRadius: 'var(--rounded-xl)', padding: '24px', boxShadow: '0 2px 6px rgba(0,0,0,0.02)', marginTop: 'var(--spacing-md)' }}>
+                            <h3 style={{ fontSize: '16px', fontWeight: 600, color: 'var(--color-ink)', marginBottom: '16px' }}>Top Anggota (Simpanan)</h3>
+                            {roleData.top_members?.map((member, idx) => (
+                                <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '12px', alignItems: 'center' }}>
+                                    <span style={{ fontSize: '14px', fontWeight: 500 }}>{member.name.split(' ')[0]}</span>
+                                    <span style={{ fontSize: '13px', fontFamily: 'var(--font-mono)', color: 'var(--color-muted)' }}>Rp{numberFormat(member.total_saving_balance)}</span>
+                                </div>
+                            ))}
+                        </div>
+                    </>
+                )}
+
+                {/* 4. Pengawas */}
+                {auth.user.role === 'pengawas' && (
+                    <>
+                        <div className="col-span-12" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--spacing-lg)', marginTop: 'var(--spacing-md)' }}>
+                            <div style={{ backgroundColor: 'var(--color-canvas)', borderRadius: 'var(--rounded-xl)', padding: '24px', boxShadow: '0 2px 6px rgba(0,0,0,0.02)' }}>
+                                <h3 style={{ fontSize: '16px', fontWeight: 600, color: 'var(--color-ink)', marginBottom: '16px' }}>Tren Transaksi (Berhasil vs Gagal)</h3>
+                                <div style={{ width: '100%', height: '250px' }}>
+                                    <ResponsiveContainer width="100%" height="100%">
+                                        <BarChart data={roleData.transaction_trend}>
+                                            <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f0f0f0" />
+                                            <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{fill: '#888', fontSize: 12}} />
+                                            <YAxis axisLine={false} tickLine={false} tick={{fill: '#888', fontSize: 12}} />
+                                            <Tooltip />
+                                            <Legend />
+                                            <Bar dataKey="Berhasil" fill="var(--color-semantic-up)" radius={[4, 4, 0, 0]} />
+                                            <Bar dataKey="Gagal" fill="var(--color-semantic-down)" radius={[4, 4, 0, 0]} />
+                                        </BarChart>
+                                    </ResponsiveContainer>
+                                </div>
+                            </div>
+                            
+                            <div style={{ backgroundColor: 'var(--color-canvas)', borderRadius: 'var(--rounded-xl)', padding: '24px', boxShadow: '0 2px 6px rgba(0,0,0,0.02)' }}>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+                                    <h3 style={{ fontSize: '16px', fontWeight: 600, color: 'var(--color-ink)' }}>Riwayat Jasa Tahunan</h3>
+                                </div>
+                                <div style={{ overflowX: 'auto' }}>
+                                    <table style={{ width: '100%', textAlign: 'left', borderCollapse: 'collapse' }}>
+                                        <thead>
+                                            <tr style={{ borderBottom: '1px solid var(--color-hairline)' }}>
+                                                <th style={{ padding: '8px 4px', fontSize: '12px', color: 'var(--color-muted)', fontWeight: 500 }}>Pinjaman</th>
+                                                <th style={{ padding: '8px 4px', fontSize: '12px', color: 'var(--color-muted)', fontWeight: 500 }}>Tahun Ke</th>
+                                                <th style={{ padding: '8px 4px', fontSize: '12px', color: 'var(--color-muted)', fontWeight: 500 }}>Pokok Sisa</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {roleData.annual_services?.map((svc, idx) => (
+                                                <tr key={idx} style={{ borderBottom: '1px solid var(--color-hairline)' }}>
+                                                    <td style={{ padding: '8px 4px', fontSize: '13px' }}>{svc.loan?.user?.name}</td>
+                                                    <td style={{ padding: '8px 4px', fontSize: '13px' }}>{svc.year_number}</td>
+                                                    <td style={{ padding: '8px 4px', fontSize: '13px', fontFamily: 'var(--font-mono)' }}>Rp{numberFormat(svc.remaining_principal)}</td>
+                                                </tr>
+                                            ))}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="col-span-12" style={{ backgroundColor: 'var(--color-canvas)', borderRadius: 'var(--rounded-xl)', padding: '24px', boxShadow: '0 2px 6px rgba(0,0,0,0.02)', marginTop: 'var(--spacing-md)' }}>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+                                <h3 style={{ fontSize: '16px', fontWeight: 600, color: 'var(--color-ink)' }}>Log Mutasi Terbaru</h3>
+                                <Link href={route('admin.mutations.index')} style={{ fontSize: '13px', color: 'var(--color-primary)', fontWeight: 600 }}>Lihat Semua Data</Link>
+                            </div>
+                            <div style={{ overflowX: 'auto' }}>
+                                <table style={{ width: '100%', textAlign: 'left', borderCollapse: 'collapse' }}>
+                                    <thead>
+                                        <tr style={{ borderBottom: '1px solid var(--color-hairline)' }}>
+                                            <th style={{ padding: '12px 8px', fontSize: '13px', color: 'var(--color-muted)', fontWeight: 500 }}>Tanggal</th>
+                                            <th style={{ padding: '12px 8px', fontSize: '13px', color: 'var(--color-muted)', fontWeight: 500 }}>Anggota</th>
+                                            <th style={{ padding: '12px 8px', fontSize: '13px', color: 'var(--color-muted)', fontWeight: 500 }}>Tipe</th>
+                                            <th style={{ padding: '12px 8px', fontSize: '13px', color: 'var(--color-muted)', fontWeight: 500 }}>Nominal</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {roleData.mutation_logs?.map((log, idx) => (
+                                            <tr key={idx} style={{ borderBottom: '1px solid var(--color-hairline)' }}>
+                                                <td style={{ padding: '12px 8px', fontSize: '14px' }}>{new Date(log.created_at).toLocaleDateString('id-ID')}</td>
+                                                <td style={{ padding: '12px 8px', fontSize: '14px', fontWeight: 500 }}>{log.user?.name}</td>
+                                                <td style={{ padding: '12px 8px', fontSize: '14px' }}>{log.type}</td>
+                                                <td style={{ padding: '12px 8px', fontSize: '14px', fontFamily: 'var(--font-mono)' }}>Rp{numberFormat(Math.abs(log.amount))}</td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </>
+                )}
 
             </div>
         </AdminLayout>
