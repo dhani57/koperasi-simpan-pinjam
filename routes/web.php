@@ -53,10 +53,14 @@ use App\Http\Controllers\Admin\ShuController;
 Route::middleware(['auth', 'verified', 'admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     
-    // Hanya pengurus yang mengelola pengguna dan settings
+    // Users and Settings - Read Only untuk pengawas
+    Route::get('users', [UserController::class, 'index'])->name('users.index')->middleware('role:pengurus,pengawas');
+    Route::get('settings', [SettingController::class, 'index'])->name('settings.index')->middleware('role:pengurus,pengawas');
+    
+    // Hanya pengurus yang mengelola pengguna dan settings (Create/Edit/Delete)
     Route::middleware('role:pengurus')->group(function () {
-        Route::resource('users', UserController::class);
-        Route::resource('settings', SettingController::class)->only(['index', 'store']);
+        Route::resource('users', UserController::class)->except(['index']);
+        Route::post('settings', [SettingController::class, 'store'])->name('settings.store');
     });
     
     // Pinjaman Routes
