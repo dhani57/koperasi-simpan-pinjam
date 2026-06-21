@@ -22,6 +22,7 @@ class Loan extends Model
         'disbursed_at',
         'admin_verified_at',
         'admin_verified_by',
+        'transfer_proof_path',
     ];
 
     protected $casts = [
