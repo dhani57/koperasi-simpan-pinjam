@@ -116,13 +116,19 @@ class DatabaseSeeder extends Seeder
         }
 
         // 5. Loans
-        $loanStatuses = ['diajukan', 'disetujui', 'aktif', 'ditolak', 'lunas'];
+        $loanStatuses = ['diajukan', 'disetujui', 'menunggu_pencairan', 'aktif', 'lunas', 'ditolak'];
         $activeLoans = [];
         
         foreach (array_slice($members, 0, 15) as $index => $member) { // Give loans to first 15 members
             $status = $loanStatuses[$index % count($loanStatuses)];
             $principal = fake()->randomElement([5000000, 10000000, 15000000]);
             $tenor = fake()->randomElement([12, 24, 36]);
+
+            // Guarantee at least one 36-month active loan for testing
+            if ($index === 3) { // $index 3 is 'aktif' based on the array above
+                $principal = 15000000;
+                $tenor = 36;
+            }
             
             $loan = Loan::create([
                 'user_id' => $member->id,
@@ -134,9 +140,10 @@ class DatabaseSeeder extends Seeder
                 'current_remaining_principal' => $status === 'aktif' ? $principal * 0.8 : $principal, // 80% left if active
                 'current_year_monthly_fee' => ($principal * 1.5) / 100,
                 'status' => $status,
+                'transfer_proof_path' => in_array($status, ['menunggu_pencairan', 'aktif', 'lunas']) ? 'transfer_proofs/dummy.png' : null,
                 'disbursed_at' => in_array($status, ['aktif', 'lunas']) ? now()->subMonths(3) : null,
-                'admin_verified_at' => in_array($status, ['disetujui', 'aktif', 'lunas', 'ditolak']) ? now()->subMonths(4) : null,
-                'admin_verified_by' => in_array($status, ['disetujui', 'aktif', 'lunas', 'ditolak']) ? User::where('role', 'pengurus')->first()->id : null,
+                'admin_verified_at' => in_array($status, ['disetujui', 'menunggu_pencairan', 'aktif', 'lunas', 'ditolak']) ? now()->subMonths(4) : null,
+                'admin_verified_by' => in_array($status, ['disetujui', 'menunggu_pencairan', 'aktif', 'lunas', 'ditolak']) ? User::where('role', 'pengurus')->first()->id : null,
             ]);
 
             if ($status === 'aktif') {
