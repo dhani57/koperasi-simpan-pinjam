@@ -21,7 +21,7 @@ return new class extends Migration
             $table->decimal('monthly_principal_installment', 15, 2)->comment('Cicilan pokok per bulan');
             $table->decimal('current_remaining_principal', 15, 2)->default(0)->comment('Sisa pokok pinjaman saat ini');
             $table->decimal('current_year_monthly_fee', 15, 2)->default(0)->comment('Jasa per bulan tahun berjalan (cache)');
-            $table->enum('status', ['diajukan', 'disetujui', 'aktif', 'lunas', 'ditolak'])->default('diajukan');
+            $table->enum('status', ['diajukan', 'disetujui', 'menunggu_pencairan', 'aktif', 'lunas', 'ditolak'])->default('diajukan');
             $table->timestamp('disbursed_at')->nullable()->comment('Waktu pencairan dana');
             $table->timestamp('admin_verified_at')->nullable()->comment('Waktu diverifikasi awal oleh Admin');
             $table->foreignId('admin_verified_by')->nullable()->constrained('users')->onDelete('set null');
