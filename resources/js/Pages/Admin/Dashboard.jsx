@@ -14,15 +14,6 @@ export default function Dashboard({ auth, stats, roleData }) {
         }
     };
 
-    const getHeroImage = () => {
-        switch(auth.user.role) {
-            case 'bendahara': return '/images/treasurer_welcome_hero.png';
-            case 'ketua': return '/images/chairman_welcome_hero.png';
-            case 'pengawas': return '/images/auditor_welcome_hero.png';
-            default: return '/images/admin_welcome_hero.png';
-        }
-    };
-
     return (
         <AdminLayout auth={auth} title={getDashboardTitle()}>
             <Head title={getDashboardTitle()} />
@@ -74,9 +65,10 @@ export default function Dashboard({ auth, stats, roleData }) {
                                 </ButtonPrimary>
                             )}
                         </div>
-                        {/* Hero Illustration */}
-                        <div className="hidden md:flex" style={{ position: 'absolute', right: 0, bottom: 0, height: '120%', width: '30%', alignItems: 'flex-end', justifyContent: 'flex-end', pointerEvents: 'none' }}>
-                            <img src={getHeroImage()} alt="Hero Illustration" style={{ height: '100%', objectFit: 'contain', transform: 'translateY(10%)' }} />
+                        {/* Decorative Background Elements */}
+                        <div className="hidden md:block" style={{ position: 'absolute', right: 0, top: 0, bottom: 0, width: '50%', pointerEvents: 'none', overflow: 'hidden' }}>
+                            <div style={{ position: 'absolute', right: '-10%', top: '-20%', width: '350px', height: '350px', borderRadius: '50%', background: 'linear-gradient(135deg, var(--color-primary) 0%, transparent 100%)', opacity: 0.08 }}></div>
+                            <div style={{ position: 'absolute', right: '20%', bottom: '-15%', width: '200px', height: '200px', borderRadius: '50%', background: 'linear-gradient(135deg, var(--color-primary) 0%, transparent 100%)', opacity: 0.06 }}></div>
                         </div>
                     </div>
                 </div>
