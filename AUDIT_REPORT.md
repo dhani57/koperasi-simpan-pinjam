@@ -56,3 +56,25 @@ Fokus perbaikan pada **Langkah 3** akan mencakup:
 4. **Parameter 10 Bulan Aktif (Bagian 6.1)**: Memindahkan logika bulan non-aktif ke `settings` table, dan memastikan konversi tenor (1 tahun = 10 bulan) diterapkan secara global.
 5. **Konstruksi SHU (Bagian 6.3)**: Memastikan kerangka perhitungan SHU berbasis metrik mutasi, siap menerima formula dinamis.
 6. **Frontend & Desain**: Menyempurnakan komponen UI dengan implementasi *design token* sesuai `DESIGN.md`.
+
+---
+
+## 12. Keamanan Sistem (Wajib MVP)
+
+| Item Requirement PRD | Status | Catatan Temuan |
+|---|---|---|
+| **HTTPS + HSTS** | ✅ Sudah Diimplementasikan | Di-enforce pada `AppServiceProvider` via `URL::forceScheme('https')` dan melalui custom `SecurityHeadersMiddleware`. |
+| **Hashing Password** | ✅ Sudah Diimplementasikan | Menggunakan Bcrypt via sistem autentikasi bawaan Laravel (`Hash::make`). |
+| **Rate Limiting Login** | ✅ Sudah Diimplementasikan | Ditangani di `LoginRequest` dengan batas default 5 percobaan (`RateLimiter::tooManyAttempts`). |
+| **CSRF** | ✅ Sudah Diimplementasikan | Terpasang *default* pada *web routes* Laravel. |
+| **Authorization Policy per role** | ✅ Sudah Diimplementasikan | `LoanPolicy` dan kontrol hak akses granular (seperti `verify`, `approve`, `disburse`) sudah menggantikan pengecekan `if` hardcode. |
+| **Validasi Input** | ✅ Sudah Diimplementasikan | `FormRequest` telah digunakan secara konsisten (contoh: `DisburseLoanRequest`). |
+| **Least privilege DB user** | ⚠️ Rekomendasi Deployment | Aplikasi lokal sudah dipisah, namun *best-practice* pembatasan `DROP` dsb perlu diatur oleh tim DevOps di ranah *production*. |
+| **Backup Terjadwal** | ✅ Sudah Diimplementasikan | `BackupDatabaseCommand` disiapkan memanggil `pg_dump` otomatis dan terdaftar pada `console.php` (menjalankan harian). |
+| **Constraint immutable tabel Mutasi** | ✅ Sudah Diimplementasikan | *Triggers* `BEFORE UPDATE` dan `BEFORE DELETE` aktif pada PostgreSQL database menolak modifikasi historis. |
+| **Bukti transfer wajib pencairan** | ✅ Sudah Diimplementasikan | Endpoint `disburse` kini meminta file, dan status dialihkan ke `menunggu_pencairan`. |
+| **Maker-checker klaim eksternal** | ✅ Sudah Diimplementasikan | Ada *workflow* ganda: Bendahara mengirimkan bukti (*maker*), Ketua memverifikasi keaktifannya (*checker*). |
+
+---
+
+*Laporan selesai.*
