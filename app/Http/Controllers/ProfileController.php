@@ -18,9 +18,34 @@ class ProfileController extends Controller
      */
     public function edit(Request $request): Response
     {
+        $user = $request->user();
+        $roleData = [];
+
+        if ($user->role === 'anggota') {
+            $roleData['active_loans_count'] = 0; // Placeholder
+            $roleData['shu_history'] = []; // Placeholder
+        } else {
+            $roleData['activity_logs'] = \App\Models\UserActivityLog::where('user_id', $user->id)
+                ->orderBy('created_at', 'desc')
+                ->take(10)
+                ->get();
+            
+            if ($user->role === 'pengurus') {
+                $roleData['active_parameters'] = \App\Models\Setting::all();
+            }
+            if ($user->role === 'bendahara') {
+                $roleData['approved_loans_count'] = 0; // Placeholder
+                $roleData['disbursed_loans_count'] = 0; // Placeholder
+            }
+            if ($user->role === 'ketua') {
+                $roleData['approved_decisions_count'] = 0; // Placeholder
+            }
+        }
+
         return Inertia::render('Profile/Edit', [
-            'mustVerifyEmail' => $request->user() instanceof MustVerifyEmail,
+            'mustVerifyEmail' => $user instanceof MustVerifyEmail,
             'status' => session('status'),
+            'roleData' => $roleData,
         ]);
     }
 
@@ -29,13 +54,19 @@ class ProfileController extends Controller
      */
     public function update(ProfileUpdateRequest $request): RedirectResponse
     {
-        $request->user()->fill($request->validated());
+        $user = $request->user();
+        $user->fill($request->validated());
 
-        if ($request->user()->isDirty('email')) {
-            $request->user()->email_verified_at = null;
+        if ($request->hasFile('profile_photo')) {
+            $path = $request->file('profile_photo')->store('profile-photos', 'public');
+            $user->profile_photo_path = $path;
         }
 
-        $request->user()->save();
+        if ($user->isDirty('email')) {
+            $user->email_verified_at = null;
+        }
+
+        $user->save();
 
         return Redirect::route('profile.edit');
     }
