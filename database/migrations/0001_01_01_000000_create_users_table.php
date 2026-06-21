@@ -21,6 +21,13 @@ return new class extends Migration
             $table->decimal('monthly_saving_nominal', 15, 2)->default(0)->comment('Nominal potongan wajib bulanan');
             $table->decimal('max_salary_deduction_limit', 15, 2)->default(0)->comment('Limit maksimal gaji yang boleh dipotong');
             $table->decimal('total_saving_balance', 15, 2)->default(0)->comment('Total saldo simpanan saat ini');
+            $table->string('profile_photo_path')->nullable();
+            $table->string('department')->nullable();
+            $table->date('joined_at')->nullable();
+            $table->string('job_title')->nullable();
+            $table->date('job_start_date')->nullable();
+            $table->date('job_end_date')->nullable();
+            $table->timestamp('last_login_at')->nullable();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
             $table->rememberToken();
