@@ -4,9 +4,17 @@ namespace App\Http\Controllers\Member;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use App\Services\LoanService;
 
 class LoanController extends Controller
 {
+    protected LoanService $loanService;
+
+    public function __construct(LoanService $loanService)
+    {
+        $this->loanService = $loanService;
+    }
+
     public function index()
     {
         $loans = \App\Models\Loan::where('user_id', auth()->id())
@@ -32,7 +40,10 @@ class LoanController extends Controller
 
         // Plafon tersedia
         $activeLoans = \App\Models\Loan::where('user_id', $user->id)->whereIn('status', ['disetujui', 'aktif'])->get();
-        $totalLoanInstallments = $activeLoans->sum('monthly_installment');
+        $totalLoanInstallments = 0;
+        foreach ($activeLoans as $loan) {
+            $totalLoanInstallments += ($loan->monthly_principal_installment + $loan->current_year_monthly_fee);
+        }
         $availableLimit = $user->max_salary_deduction_limit - ($user->monthly_saving_nominal + $totalLoanInstallments);
 
         return inertia('Member/Loans/Create', [
@@ -48,26 +59,12 @@ class LoanController extends Controller
         
         $request->validate([
             'principal_amount' => 'required|numeric|min:100000',
-            'tenor_months' => 'required|integer|min:1|max:60',
+            'tenor_years' => 'required|integer|min:1|max:5',
         ]);
 
         $principal = $request->principal_amount;
-        $tenor = $request->tenor_months;
+        $tenorYears = $request->tenor_years;
         $feePercentage = \App\Models\Setting::where('key', 'default_cooperative_fee_percentage')->value('value') ?? 1.5;
-        
-        // Hitung cicilan
-        $totalFee = $principal * ($feePercentage / 100) * $tenor;
-        $totalRepayment = $principal + $totalFee;
-        $monthlyInstallment = ceil($totalRepayment / $tenor);
-        
-        // Validasi Limit
-        $activeLoans = \App\Models\Loan::where('user_id', $user->id)->whereIn('status', ['disetujui', 'aktif'])->get();
-        $totalLoanInstallments = $activeLoans->sum('monthly_installment');
-        $availableLimit = $user->max_salary_deduction_limit - ($user->monthly_saving_nominal + $totalLoanInstallments);
-
-        if ($monthlyInstallment > $availableLimit) {
-            return back()->withErrors(['principal_amount' => 'Cicilan per bulan (Rp ' . number_format($monthlyInstallment, 0, ',', '.') . ') melebihi sisa plafon gaji Anda (Rp ' . number_format($availableLimit, 0, ',', '.') . ').']);
-        }
         
         // Cek lagi apakah ada pinjaman aktif
         $hasActiveLoan = \App\Models\Loan::where('user_id', $user->id)
@@ -78,14 +75,16 @@ class LoanController extends Controller
             return back()->withErrors(['principal_amount' => 'Anda masih memiliki pinjaman aktif atau dalam proses pengajuan.']);
         }
 
-        \App\Models\Loan::create([
-            'user_id' => $user->id,
-            'principal_amount' => $principal,
-            'cooperative_fee_percentage' => $feePercentage,
-            'tenor_months' => $tenor,
-            'monthly_installment' => $monthlyInstallment,
-            'status' => 'diajukan'
-        ]);
+        // Simulasi untuk mendapatkan cicilan tahun pertama
+        $simulation = $this->loanService->calculateSimulation($principal, $tenorYears, (float)$feePercentage);
+        $firstYearMonthly = $simulation['yearly_breakdown'][0]['monthly_total'];
+
+        // Validasi Limit
+        if (!$this->loanService->validateLimit($user, $firstYearMonthly)) {
+            return back()->withErrors(['principal_amount' => 'Cicilan bulan pertama (Rp ' . number_format($firstYearMonthly, 0, ',', '.') . ') melebihi sisa plafon gaji Anda.']);
+        }
+        
+        $this->loanService->createLoan($user, $principal, $tenorYears);
 
         return redirect()->route('member.loans.index')->with('success', 'Pengajuan pinjaman berhasil dibuat dan menunggu verifikasi.');
     }

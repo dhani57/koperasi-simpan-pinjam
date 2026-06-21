@@ -7,14 +7,20 @@ use Illuminate\Http\Request;
 
 class ShuController extends Controller
 {
-    public function index()
+    public function index(\App\Services\ShuService $shuService)
     {
         if (!in_array(auth()->user()->role, ['bendahara', 'ketua', 'pengawas'])) {
             abort(403, 'Unauthorized action.');
         }
 
+        $year = request('year', now()->year);
+        $shuData = $shuService->calculateActivityProportions($year);
+
         // Just display a page to trigger SHU
-        return inertia('Admin/Shu/Index');
+        return inertia('Admin/Shu/Index', [
+            'year' => $year,
+            'shuData' => $shuData
+        ]);
     }
 
     public function store(Request $request)

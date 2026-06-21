@@ -44,50 +44,19 @@ class DeductionController extends Controller
             return redirect()->back()->with('error', 'Tagihan untuk periode ini sudah pernah di-generate.');
         }
 
-        \DB::beginTransaction();
         try {
             $period = DeductionPeriod::create([
                 'month' => $month,
                 'year' => $year,
                 'status' => 'draf',
+                'is_active' => true,
             ]);
 
-            $members = User::where('role', 'anggota')->get();
+            // Dispatch job instead of running synchronously
+            \App\Jobs\ProcessMonthlyDeduction::dispatch($period);
 
-            foreach ($members as $member) {
-                // Check if this month is inactive for this member
-                $inactiveMonths = $member->inactive_months ? json_decode($member->inactive_months, true) : [];
-                $isInactive = in_array($month, $inactiveMonths);
-
-                $savingNominal = $isInactive ? 0 : $member->monthly_saving_nominal;
-
-                // Get active loans
-                $activeLoans = Loan::where('user_id', $member->id)->where('status', 'aktif')->get();
-                $loanInstallment = 0;
-                
-                if (!$isInactive) {
-                    foreach ($activeLoans as $loan) {
-                        $loanInstallment += $loan->monthly_installment; // assuming monthly_installment exists on loan
-                        // Alternatively, calculate based on principal and fee
-                    }
-                }
-
-                if ($savingNominal > 0 || $loanInstallment > 0) {
-                    DeductionDetail::create([
-                        'deduction_period_id' => $period->id,
-                        'user_id' => $member->id,
-                        'saving_deduction_amount' => $savingNominal,
-                        'loan_deduction_amount' => $loanInstallment,
-                        'total_deduction_amount' => $savingNominal + $loanInstallment,
-                        'status' => 'pending', // Can be updated when payroll confirms
-                    ]);
-                }
-            }
-
-            \DB::commit();
-            return redirect()->back()->with('success', 'Berhasil melakukan generate tagihan potongan bulanan.');
+            return redirect()->back()->with('success', 'Berhasil memulai proses antrean generate tagihan potongan bulanan. Silakan tunggu beberapa saat.');
         } catch (\Exception $e) {
-            \DB::rollback();
             return redirect()->back()->with('error', 'Gagal generate tagihan: ' . $e->getMessage());
         }
     }

@@ -5,25 +5,29 @@ import MemberLayout from '@/Layouts/MemberLayout';
 export default function Create({ auth, hasActiveLoan, defaultFee, availableLimit }) {
     const { data, setData, post, processing, errors } = useForm({
         principal_amount: '',
-        tenor_months: 3,
+        tenor_years: 1,
     });
 
     const [simulation, setSimulation] = useState(null);
 
     useEffect(() => {
-        if (data.principal_amount && data.tenor_months) {
+        if (data.principal_amount && data.tenor_years) {
+            // We use a simplified approximation here for frontend display,
+            // the exact details per year are handled by LoanService in backend.
             const principal = parseFloat(data.principal_amount);
-            const tenor = parseInt(data.tenor_months);
-            if (principal > 0 && tenor > 0) {
-                const totalFee = principal * (defaultFee / 100) * tenor;
-                const totalRepayment = principal + totalFee;
-                const monthly = Math.ceil(totalRepayment / tenor);
+            const tenorYears = parseInt(data.tenor_years);
+            if (principal > 0 && tenorYears > 0) {
+                // Approximate first year
+                const activeMonths = 10; // Will be verified by backend
+                const totalTenorMonths = tenorYears * activeMonths;
+                const pokokSebulan = principal / totalTenorMonths;
+                const jasaSebulan = principal * (defaultFee / 100);
+                const monthly = Math.ceil(pokokSebulan + jasaSebulan);
+                
                 setSimulation({
                     monthly,
-                    totalFee,
-                    totalRepayment,
-                    jasaSebulan: principal * (defaultFee / 100),
-                    pokokSebulan: principal / tenor
+                    jasaSebulan,
+                    pokokSebulan
                 });
             } else {
                 setSimulation(null);
@@ -31,7 +35,7 @@ export default function Create({ auth, hasActiveLoan, defaultFee, availableLimit
         } else {
             setSimulation(null);
         }
-    }, [data.principal_amount, data.tenor_months, defaultFee]);
+    }, [data.principal_amount, data.tenor_years, defaultFee]);
 
     const submit = (e) => {
         e.preventDefault();
@@ -96,27 +100,27 @@ export default function Create({ auth, hasActiveLoan, defaultFee, availableLimit
                             </div>
 
                             <div>
-                                <label style={{ display: 'block', fontWeight: 600, fontSize: '13px', marginBottom: '12px' }}>Pilihan Tenor (Bulan)</label>
+                                <label style={{ display: 'block', fontWeight: 600, fontSize: '13px', marginBottom: '12px' }}>Pilihan Tenor (Tahun)</label>
                                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '12px' }}>
-                                    {[3, 6, 12].map(months => (
+                                    {[1, 2, 3].map(years => (
                                         <div 
-                                            key={months}
-                                            onClick={() => setData('tenor_months', months)}
+                                            key={years}
+                                            onClick={() => setData('tenor_years', years)}
                                             style={{ 
-                                                border: data.tenor_months === months ? '2px solid var(--color-primary)' : '1px solid var(--color-hairline)',
+                                                border: data.tenor_years === years ? '2px solid var(--color-primary)' : '1px solid var(--color-hairline)',
                                                 borderRadius: 'var(--rounded-md)',
                                                 padding: '16px',
                                                 textAlign: 'center',
                                                 cursor: 'pointer',
-                                                backgroundColor: data.tenor_months === months ? 'var(--color-surface-soft)' : 'white'
+                                                backgroundColor: data.tenor_years === years ? 'var(--color-surface-soft)' : 'white'
                                             }}
                                         >
-                                            <div style={{ fontWeight: 600, color: data.tenor_months === months ? 'var(--color-primary)' : 'var(--color-ink)', marginBottom: '4px' }}>{months} Bulan</div>
+                                            <div style={{ fontWeight: 600, color: data.tenor_years === years ? 'var(--color-primary)' : 'var(--color-ink)', marginBottom: '4px' }}>{years} Tahun</div>
                                             <div style={{ fontSize: '11px', color: 'var(--color-muted)' }}>Jasa {defaultFee}% / bln</div>
                                         </div>
                                     ))}
                                 </div>
-                                {errors.tenor_months && <div style={{ color: 'var(--color-semantic-down)', fontSize: '12px', marginTop: '4px' }}>{errors.tenor_months}</div>}
+                                {errors.tenor_years && <div style={{ color: 'var(--color-semantic-down)', fontSize: '12px', marginTop: '4px' }}>{errors.tenor_years}</div>}
                             </div>
                         </div>
 
@@ -125,7 +129,7 @@ export default function Create({ auth, hasActiveLoan, defaultFee, availableLimit
                             <div style={{ backgroundColor: 'var(--color-surface-dark)', color: 'white', borderRadius: 'var(--rounded-lg)', padding: 'var(--spacing-xl)', marginBottom: 'var(--spacing-lg)' }}>
                                 <h3 style={{ fontSize: '16px', fontWeight: 600, marginBottom: '16px' }}>Simulasi Transparansi</h3>
                                 <p style={{ fontSize: '13px', color: 'rgba(255,255,255,0.7)', marginBottom: '24px', lineHeight: '1.5' }}>
-                                    Jika Anda meminjam <strong style={{ color: 'white' }}>Rp {formatRp(data.principal_amount)}</strong> selama <strong style={{ color: 'white' }}>{data.tenor_months} Bulan</strong>, berikut adalah estimasi total potongan gaji Anda bulan depan:
+                                    Jika Anda meminjam <strong style={{ color: 'white' }}>Rp {formatRp(data.principal_amount)}</strong> selama <strong style={{ color: 'white' }}>{data.tenor_years} Tahun</strong>, berikut adalah estimasi total potongan gaji Anda di <strong>Tahun Pertama</strong> (10 Bulan):
                                 </p>
 
                                 <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>

@@ -26,5 +26,20 @@ class SettingSeeder extends Seeder
             ['key' => 'loan_interest_rate'],
             ['value' => '1.5', 'type' => 'float', 'description' => 'Persentase jasa/bunga pinjaman per bulan (%)']
         );
+
+        \App\Models\Setting::updateOrCreate(
+            ['key' => 'default_cooperative_fee_percentage'],
+            ['value' => '1.5', 'type' => 'float', 'description' => 'Persentase jasa koperasi per bulan (%)']
+        );
+
+        \App\Models\Setting::updateOrCreate(
+            ['key' => 'inactive_months'],
+            ['value' => json_encode([6, 12]), 'type' => 'json', 'description' => 'Bulan non-aktif dalam periode tahunan (contoh: 6 dan 12)']
+        );
+        
+        \App\Models\Setting::updateOrCreate(
+            ['key' => 'shu_formula_base'],
+            ['value' => 'total_mutation_amount', 'type' => 'string', 'description' => 'Basis formula SHU (menunggu keputusan final client)']
+        );
     }
 }
