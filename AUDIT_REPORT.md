@@ -25,11 +25,11 @@ Dokumen ini berisi hasil audit *codebase* terhadap dokumen spesifikasi `PRD.md` 
 
 | Item Requirement PRD | Status | Catatan Temuan |
 |---|---|---|
-| **Dashboard Anggota** | ⚠️ Sebagian | Views untuk dashboard React tersedia (`DashboardController`), namun perlu diverifikasi jika *widget* telah menggunakan token UI dari `DESIGN.md` dan menampilkan metrik akurat. |
-| **Dashboard Pengurus / Admin** | ⚠️ Sebagian | *Sama dengan atas* |
-| **Dashboard Bendahara** | ⚠️ Sebagian | *Sama dengan atas* |
-| **Dashboard Ketua** | ⚠️ Sebagian | *Sama dengan atas* |
-| **Dashboard Pengawas** | ⚠️ Sebagian | *Sama dengan atas* |
+| **Dashboard Anggota** | ✅ Sudah Diimplementasikan | Widget saldo, pinjaman aktif, mutasi, dan "SHU Diterima" telah diimplementasikan sesuai Bagian 8.1. |
+| **Dashboard Admin/Pengurus** | ✅ Sudah Diimplementasikan | Menampilkan statistik jumlah anggota aktif, pengajuan menunggu verifikasi, dan status *job queue*. |
+| **Dashboard Bendahara** | ✅ Sudah Diimplementasikan | Menampilkan total simpanan, pinjaman *outstanding*, daftar menunggu approval, dan nilai pencairan bulan ini. |
+| **Dashboard Ketua** | ✅ Sudah Diimplementasikan | Menampilkan total aset koperasi, pinjaman *outstanding*, dan estimasi SHU. |
+| **Dashboard Pengawas** | ✅ Sudah Diimplementasikan | Menampilkan ringkasan total transaksi bulanan, potongan gagal, dan rekalkulasi tertunda. |
 
 ## 9. Persyaratan Database
 

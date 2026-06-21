@@ -1,7 +1,7 @@
 import { Head, Link } from '@inertiajs/react';
 import MemberLayout from '@/Layouts/MemberLayout';
 
-export default function Dashboard({ auth, totalSimpanan, simpananRutin, plafonTersedia, activeLoans, recentMutations }) {
+export default function Dashboard({ auth, totalSimpanan, simpananRutin, plafonTersedia, activeLoans, recentMutations, lastShu }) {
     // Kalkulasi untuk "Estimasi Potongan Gaji"
     const estimasiPotongan = simpananRutin + activeLoans.reduce((acc, loan) => acc + parseFloat(loan.monthly_installment), 0);
     
@@ -44,8 +44,8 @@ export default function Dashboard({ auth, totalSimpanan, simpananRutin, plafonTe
                     <div style={{ position: 'absolute', top: '10%', right: '-5%', width: '150px', height: '150px', borderRadius: '50%', border: '20px solid rgba(255,255,255,0.05)' }}></div>
                 </div>
 
-                {/* Two White Cards */}
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--spacing-lg)', marginBottom: 'var(--spacing-xl)' }}>
+                {/* Cards Grid */}
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 'var(--spacing-lg)', marginBottom: 'var(--spacing-xl)' }}>
                     <div style={{ backgroundColor: 'white', borderRadius: 'var(--rounded-lg)', padding: 'var(--spacing-lg)', border: '1px solid var(--color-hairline)' }}>
                         <div style={{ fontSize: '13px', color: 'var(--color-muted)', marginBottom: '8px' }}>Total Kontribusi Simpanan</div>
                         <div style={{ fontFamily: 'var(--font-mono)', fontSize: '24px', fontWeight: 600 }}>
@@ -56,6 +56,12 @@ export default function Dashboard({ auth, totalSimpanan, simpananRutin, plafonTe
                         <div style={{ fontSize: '13px', color: 'var(--color-muted)', marginBottom: '8px' }}>Sisa Pokok Pinjaman Aktif</div>
                         <div style={{ fontFamily: 'var(--font-mono)', fontSize: '24px', fontWeight: 600 }}>
                             Rp {new Intl.NumberFormat('id-ID').format(totalPokokPinjamanAktif)}
+                        </div>
+                    </div>
+                    <div style={{ backgroundColor: 'white', borderRadius: 'var(--rounded-lg)', padding: 'var(--spacing-lg)', border: '1px solid var(--color-hairline)' }}>
+                        <div style={{ fontSize: '13px', color: 'var(--color-muted)', marginBottom: '8px' }}>SHU Diterima (Terakhir)</div>
+                        <div style={{ fontFamily: 'var(--font-mono)', fontSize: '24px', fontWeight: 600, color: 'var(--color-semantic-up)' }}>
+                            Rp {new Intl.NumberFormat('id-ID').format(lastShu || 0)}
                         </div>
                     </div>
                 </div>

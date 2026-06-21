@@ -75,53 +75,77 @@ export default function Dashboard({ auth, stats, chartData }) {
                 {/* Metric Grid (Spans 12 columns, 4 cards side-by-side) */}
                 <div className="col-span-12" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 'var(--spacing-lg)' }}>
                     
-                    {/* Metric 1: Total Anggota */}
-                    <div style={{ backgroundColor: 'var(--color-canvas)', borderRadius: 'var(--rounded-xl)', padding: '24px', boxShadow: '0 2px 6px rgba(0,0,0,0.02)', display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                        <div style={{ width: '40px', height: '40px', borderRadius: '8px', backgroundColor: 'rgba(11, 94, 168, 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--color-primary)' }}>
-                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
-                        </div>
-                        <div>
-                            <div style={{ fontSize: '14px', color: 'var(--color-muted)', fontWeight: 500 }}>Total Anggota</div>
-                            <div style={{ fontSize: '20px', fontWeight: 700, color: 'var(--color-ink)', marginTop: '4px' }}>{stats.total_members}</div>
-                            <div style={{ fontSize: '12px', color: 'var(--color-semantic-up)', display: 'flex', alignItems: 'center', gap: '4px', marginTop: '8px' }}>
-                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="18 15 12 9 6 15"></polyline></svg>
-                                <span>Aktif</span>
+                    {auth.user.role === 'pengurus' && (
+                        <>
+                            <div style={{ backgroundColor: 'var(--color-canvas)', borderRadius: 'var(--rounded-xl)', padding: '24px', boxShadow: '0 2px 6px rgba(0,0,0,0.02)' }}>
+                                <div style={{ fontSize: '14px', color: 'var(--color-muted)', fontWeight: 500 }}>Total Anggota Aktif</div>
+                                <div style={{ fontSize: '24px', fontWeight: 700, color: 'var(--color-ink)', marginTop: '8px' }}>{stats.total_members}</div>
                             </div>
-                        </div>
-                    </div>
+                            <div style={{ backgroundColor: 'var(--color-canvas)', borderRadius: 'var(--rounded-xl)', padding: '24px', boxShadow: '0 2px 6px rgba(0,0,0,0.02)' }}>
+                                <div style={{ fontSize: '14px', color: 'var(--color-muted)', fontWeight: 500 }}>Menunggu Verifikasi</div>
+                                <div style={{ fontSize: '24px', fontWeight: 700, color: 'var(--color-ink)', marginTop: '8px' }}>{stats.pending_verification}</div>
+                            </div>
+                            <div style={{ backgroundColor: 'var(--color-canvas)', borderRadius: 'var(--rounded-xl)', padding: '24px', boxShadow: '0 2px 6px rgba(0,0,0,0.02)' }}>
+                                <div style={{ fontSize: '14px', color: 'var(--color-muted)', fontWeight: 500 }}>Status Job Queue</div>
+                                <div style={{ fontSize: '24px', fontWeight: 700, color: 'var(--color-semantic-up)', marginTop: '8px' }}>{stats.job_queue_status}</div>
+                            </div>
+                        </>
+                    )}
 
-                    {/* Metric 2: Dana Tersimpan */}
-                    <div style={{ backgroundColor: 'var(--color-canvas)', borderRadius: 'var(--rounded-xl)', padding: '24px', boxShadow: '0 2px 6px rgba(0,0,0,0.02)', display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                        <div style={{ width: '40px', height: '40px', borderRadius: '8px', backgroundColor: 'rgba(5, 177, 105, 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--color-semantic-up)' }}>
-                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="6" width="20" height="12" rx="2"></rect><circle cx="12" cy="12" r="2"></circle><path d="M6 12h.01M18 12h.01"></path></svg>
-                        </div>
-                        <div>
-                            <div style={{ fontSize: '14px', color: 'var(--color-muted)', fontWeight: 500 }}>Dana Tersimpan</div>
-                            <div style={{ fontSize: '16px', fontWeight: 700, color: 'var(--color-ink)', marginTop: '4px', fontFamily: 'var(--font-mono)' }}>Rp{numberFormat(stats.total_savings)}</div>
-                        </div>
-                    </div>
+                    {auth.user.role === 'bendahara' && (
+                        <>
+                            <div style={{ backgroundColor: 'var(--color-canvas)', borderRadius: 'var(--rounded-xl)', padding: '24px', boxShadow: '0 2px 6px rgba(0,0,0,0.02)' }}>
+                                <div style={{ fontSize: '14px', color: 'var(--color-muted)', fontWeight: 500 }}>Total Simpanan</div>
+                                <div style={{ fontSize: '20px', fontWeight: 700, color: 'var(--color-ink)', marginTop: '8px', fontFamily: 'var(--font-mono)' }}>Rp {numberFormat(stats.total_savings)}</div>
+                            </div>
+                            <div style={{ backgroundColor: 'var(--color-canvas)', borderRadius: 'var(--rounded-xl)', padding: '24px', boxShadow: '0 2px 6px rgba(0,0,0,0.02)' }}>
+                                <div style={{ fontSize: '14px', color: 'var(--color-muted)', fontWeight: 500 }}>Pinjaman Outstanding</div>
+                                <div style={{ fontSize: '20px', fontWeight: 700, color: 'var(--color-ink)', marginTop: '8px', fontFamily: 'var(--font-mono)' }}>Rp {numberFormat(stats.total_active_loans)}</div>
+                            </div>
+                            <div style={{ backgroundColor: 'var(--color-canvas)', borderRadius: 'var(--rounded-xl)', padding: '24px', boxShadow: '0 2px 6px rgba(0,0,0,0.02)' }}>
+                                <div style={{ fontSize: '14px', color: 'var(--color-muted)', fontWeight: 500 }}>Menunggu Approval</div>
+                                <div style={{ fontSize: '24px', fontWeight: 700, color: 'var(--color-ink)', marginTop: '8px' }}>{stats.pending_approval}</div>
+                            </div>
+                            <div style={{ backgroundColor: 'var(--color-canvas)', borderRadius: 'var(--rounded-xl)', padding: '24px', boxShadow: '0 2px 6px rgba(0,0,0,0.02)' }}>
+                                <div style={{ fontSize: '14px', color: 'var(--color-muted)', fontWeight: 500 }}>Pencairan Bulan Ini</div>
+                                <div style={{ fontSize: '20px', fontWeight: 700, color: 'var(--color-semantic-up)', marginTop: '8px', fontFamily: 'var(--font-mono)' }}>Rp {numberFormat(stats.disbursement_this_month)}</div>
+                            </div>
+                        </>
+                    )}
 
-                    {/* Metric 3: Pinjaman Aktif */}
-                    <div style={{ backgroundColor: 'var(--color-canvas)', borderRadius: 'var(--rounded-xl)', padding: '24px', boxShadow: '0 2px 6px rgba(0,0,0,0.02)', display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                        <div style={{ width: '40px', height: '40px', borderRadius: '8px', backgroundColor: 'rgba(235, 168, 52, 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#eba834' }}>
-                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect><line x1="1" y1="10" x2="23" y2="10"></line></svg>
-                        </div>
-                        <div>
-                            <div style={{ fontSize: '14px', color: 'var(--color-muted)', fontWeight: 500 }}>Pinjaman Aktif</div>
-                            <div style={{ fontSize: '16px', fontWeight: 700, color: 'var(--color-ink)', marginTop: '4px', fontFamily: 'var(--font-mono)' }}>Rp{numberFormat(stats.total_active_loans)}</div>
-                        </div>
-                    </div>
+                    {auth.user.role === 'ketua' && (
+                        <>
+                            <div style={{ backgroundColor: 'var(--color-canvas)', borderRadius: 'var(--rounded-xl)', padding: '24px', boxShadow: '0 2px 6px rgba(0,0,0,0.02)' }}>
+                                <div style={{ fontSize: '14px', color: 'var(--color-muted)', fontWeight: 500 }}>Total Aset Koperasi</div>
+                                <div style={{ fontSize: '20px', fontWeight: 700, color: 'var(--color-ink)', marginTop: '8px', fontFamily: 'var(--font-mono)' }}>Rp {numberFormat(stats.total_assets)}</div>
+                            </div>
+                            <div style={{ backgroundColor: 'var(--color-canvas)', borderRadius: 'var(--rounded-xl)', padding: '24px', boxShadow: '0 2px 6px rgba(0,0,0,0.02)' }}>
+                                <div style={{ fontSize: '14px', color: 'var(--color-muted)', fontWeight: 500 }}>Pinjaman Outstanding</div>
+                                <div style={{ fontSize: '20px', fontWeight: 700, color: 'var(--color-ink)', marginTop: '8px', fontFamily: 'var(--font-mono)' }}>Rp {numberFormat(stats.total_active_loans)}</div>
+                            </div>
+                            <div style={{ backgroundColor: 'var(--color-canvas)', borderRadius: 'var(--rounded-xl)', padding: '24px', boxShadow: '0 2px 6px rgba(0,0,0,0.02)' }}>
+                                <div style={{ fontSize: '14px', color: 'var(--color-muted)', fontWeight: 500 }}>Total Estimasi SHU</div>
+                                <div style={{ fontSize: '20px', fontWeight: 700, color: 'var(--color-semantic-up)', marginTop: '8px', fontFamily: 'var(--font-mono)' }}>Rp {numberFormat(stats.total_shu_expected)}</div>
+                            </div>
+                        </>
+                    )}
 
-                    {/* Metric 4: Potensi Jasa */}
-                    <div style={{ backgroundColor: 'var(--color-canvas)', borderRadius: 'var(--rounded-xl)', padding: '24px', boxShadow: '0 2px 6px rgba(0,0,0,0.02)', display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                        <div style={{ width: '40px', height: '40px', borderRadius: '8px', backgroundColor: 'rgba(156, 39, 176, 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#9c27b0' }}>
-                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg>
-                        </div>
-                        <div>
-                            <div style={{ fontSize: '14px', color: 'var(--color-muted)', fontWeight: 500 }}>Potensi Jasa</div>
-                            <div style={{ fontSize: '16px', fontWeight: 700, color: 'var(--color-ink)', marginTop: '4px', fontFamily: 'var(--font-mono)' }}>Rp{numberFormat(stats.total_expected_interest)}</div>
-                        </div>
-                    </div>
+                    {auth.user.role === 'pengawas' && (
+                        <>
+                            <div style={{ backgroundColor: 'var(--color-canvas)', borderRadius: 'var(--rounded-xl)', padding: '24px', boxShadow: '0 2px 6px rgba(0,0,0,0.02)' }}>
+                                <div style={{ fontSize: '14px', color: 'var(--color-muted)', fontWeight: 500 }}>Total Transaksi (Bulan Ini)</div>
+                                <div style={{ fontSize: '24px', fontWeight: 700, color: 'var(--color-ink)', marginTop: '8px' }}>{stats.total_transactions}</div>
+                            </div>
+                            <div style={{ backgroundColor: 'var(--color-canvas)', borderRadius: 'var(--rounded-xl)', padding: '24px', boxShadow: '0 2px 6px rgba(0,0,0,0.02)' }}>
+                                <div style={{ fontSize: '14px', color: 'var(--color-muted)', fontWeight: 500 }}>Jumlah Potongan Gagal</div>
+                                <div style={{ fontSize: '24px', fontWeight: 700, color: 'var(--color-semantic-down)', marginTop: '8px' }}>{stats.failed_deductions}</div>
+                            </div>
+                            <div style={{ backgroundColor: 'var(--color-canvas)', borderRadius: 'var(--rounded-xl)', padding: '24px', boxShadow: '0 2px 6px rgba(0,0,0,0.02)' }}>
+                                <div style={{ fontSize: '14px', color: 'var(--color-muted)', fontWeight: 500 }}>Belum Direkalkulasi</div>
+                                <div style={{ fontSize: '24px', fontWeight: 700, color: 'var(--color-ink)', marginTop: '8px' }}>{stats.pending_recalculation}</div>
+                            </div>
+                        </>
+                    )}
 
                 </div>
 

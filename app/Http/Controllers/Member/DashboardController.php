@@ -25,12 +25,19 @@ class DashboardController extends Controller
             ->take(5)
             ->get();
 
+        // SHU Terakhir
+        $lastShu = \App\Models\Mutation::where('user_id', $user->id)
+            ->where('type', 'like', '%shu%')
+            ->orderBy('created_at', 'desc')
+            ->first();
+
         return inertia('Member/Dashboard', [
             'totalSimpanan' => $user->total_saving_balance,
             'simpananRutin' => $user->monthly_saving_nominal,
             'plafonTersedia' => max(0, $availableLimit),
             'activeLoans' => $activeLoans,
             'recentMutations' => $recentMutations,
+            'lastShu' => $lastShu ? $lastShu->amount : 0,
         ]);
     }
 }

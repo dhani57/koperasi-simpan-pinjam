@@ -9,18 +9,38 @@ class DashboardController extends Controller
 {
     public function index()
     {
+        $role = auth()->user()->role;
+        $stats = [];
+        
         $totalMembers = \App\Models\User::where('role', 'anggota')->count();
         $totalSavings = \App\Models\User::sum('total_saving_balance');
-
-        // Total Pinjaman Aktif
         $totalActiveLoans = \App\Models\Loan::whereIn('status', ['aktif', 'disetujui'])->sum('principal_amount');
-
-        // Potensi Jasa (Bunga) dari Pinjaman Aktif
-        // Perhitungan sederhana: (Angsuran per bulan * Tenor) - Pokok
-        $activeLoans = \App\Models\Loan::whereIn('status', ['aktif', 'disetujui'])->get();
-        $totalExpectedInterest = $activeLoans->sum(function ($loan) {
-            return ($loan->monthly_installment * $loan->tenor_months) - $loan->principal_amount;
-        });
+        
+        // Data base on role
+        if ($role === 'pengurus') {
+            $stats['total_members'] = $totalMembers;
+            $stats['pending_verification'] = \App\Models\Loan::where('status', 'diajukan')->count();
+            // Job queue check could check jobs or failed_jobs table, mock for now
+            $stats['job_queue_status'] = 'OK';
+        } elseif ($role === 'bendahara') {
+            $stats['total_savings'] = $totalSavings;
+            $stats['total_active_loans'] = $totalActiveLoans;
+            $stats['pending_approval'] = \App\Models\Loan::where('status', 'diajukan')->count(); // For bendahara approval
+            $stats['disbursement_this_month'] = \App\Models\Loan::where('status', 'disetujui')
+                ->whereMonth('updated_at', now()->month)
+                ->sum('principal_amount');
+            // Mock progress potongan
+            $stats['deduction_progress'] = 85; 
+        } elseif ($role === 'ketua') {
+            $stats['total_assets'] = $totalSavings + $totalActiveLoans;
+            $stats['total_active_loans'] = $totalActiveLoans;
+            $stats['total_shu_expected'] = 2150000; // Mock SHU for now
+            $stats['pending_executive_approval'] = \App\Models\Loan::where('status', 'disetujui')->count(); 
+        } elseif ($role === 'pengawas') {
+            $stats['total_transactions'] = \App\Models\Mutation::whereMonth('created_at', now()->month)->count();
+            $stats['failed_deductions'] = \App\Models\DeductionDetail::where('status', 'gagal')->count();
+            $stats['pending_recalculation'] = 0; // Mock
+        }
 
         // Mock Data Grafik (6 Bulan Terakhir)
         $chartData = [];
@@ -34,12 +54,7 @@ class DashboardController extends Controller
         }
 
         return inertia('Admin/Dashboard', [
-            'stats' => [
-                'total_members' => $totalMembers,
-                'total_savings' => $totalSavings,
-                'total_active_loans' => $totalActiveLoans,
-                'total_expected_interest' => $totalExpectedInterest,
-            ],
+            'stats' => $stats,
             'chartData' => $chartData
         ]);
     }
