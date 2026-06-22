@@ -2,7 +2,7 @@ import InputError from '@/Components/InputError';
 import PrimaryButton from '@/Components/PrimaryButton';
 import TextInput from '@/Components/TextInput';
 import GuestLayout from '@/Layouts/GuestLayout';
-import { Head, useForm } from '@inertiajs/react';
+import { Head, Link, useForm } from '@inertiajs/react';
 
 export default function ForgotPassword({ status }) {
     const { data, setData, post, processing, errors } = useForm({
@@ -52,10 +52,16 @@ export default function ForgotPassword({ status }) {
                     <InputError message={errors.email} className="mt-2" />
                 </div>
 
-                <div className="mt-8">
+                <div className="mt-8 flex flex-col items-center gap-4">
                     <PrimaryButton className="w-full" disabled={processing}>
                         Send Reset Link
                     </PrimaryButton>
+                    <Link
+                        href={route('login')}
+                        className="text-sm font-medium text-[#0B5EA8] hover:text-[#084A85] transition-colors"
+                    >
+                        &larr; Back to login
+                    </Link>
                 </div>
             </form>
         </GuestLayout>
