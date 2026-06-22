@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Loan;
+use Illuminate\Support\Facades\Gate;
 
 class LoanController extends Controller
 {
@@ -16,7 +17,7 @@ class LoanController extends Controller
 
     public function verify(Request $request, Loan $loan)
     {
-        $this->authorize('verify', $loan);
+        Gate::authorize('verify', $loan);
 
         if ($loan->status !== 'diajukan') {
             return redirect()->back()->with('error', 'Hanya pinjaman dengan status diajukan yang dapat diverifikasi.');
@@ -32,7 +33,7 @@ class LoanController extends Controller
 
     public function reject(Loan $loan, Request $request)
     {
-        $this->authorize('reject', $loan);
+        Gate::authorize('reject', $loan);
 
         if ($loan->status !== 'diajukan' && $loan->status !== 'diverifikasi') { // Assuming diverifikasi might be a status, but let's allow bendahara to reject too
             // If the status is already active/disetujui, we can't reject
@@ -49,7 +50,7 @@ class LoanController extends Controller
 
     public function approve(Loan $loan)
     {
-        $this->authorize('approve', $loan);
+        Gate::authorize('approve', $loan);
 
         if ($loan->status !== 'diajukan' && $loan->status !== 'diverifikasi') {
             return redirect()->back()->with('error', 'Pinjaman tidak valid untuk disetujui.');
@@ -80,7 +81,7 @@ class LoanController extends Controller
 
     public function verifyDisbursement(Request $request, Loan $loan)
     {
-        $this->authorize('verifyDisbursement', $loan);
+        Gate::authorize('verifyDisbursement', $loan);
 
         if ($loan->status !== 'menunggu_pencairan') {
             return redirect()->back()->with('error', 'Hanya pinjaman dengan status menunggu pencairan yang dapat diverifikasi.');
