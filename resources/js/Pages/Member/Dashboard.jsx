@@ -45,7 +45,7 @@ export default function Dashboard({ auth, totalSimpanan, simpananRutin, plafonTe
                 </div>
 
                 {/* Cards Grid */}
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 'var(--spacing-lg)', marginBottom: 'var(--spacing-xl)' }}>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
                     <div style={{ backgroundColor: 'white', borderRadius: 'var(--rounded-lg)', padding: 'var(--spacing-lg)', border: '1px solid var(--color-hairline)' }}>
                         <div style={{ fontSize: '13px', color: 'var(--color-muted)', marginBottom: '8px' }}>Total Kontribusi Simpanan</div>
                         <div style={{ fontFamily: 'var(--font-mono)', fontSize: '24px', fontWeight: 600 }}>
@@ -90,7 +90,7 @@ export default function Dashboard({ auth, totalSimpanan, simpananRutin, plafonTe
                                 }
 
                                 return (
-                                    <div key={idx} style={{ padding: 'var(--spacing-lg)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: idx < recentMutations.length - 1 ? '1px solid var(--color-hairline)' : 'none' }}>
+                                    <div key={idx} className={`p-4 lg:p-6 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 sm:gap-0 ${idx < recentMutations.length - 1 ? 'border-b border-[var(--color-hairline)]' : ''}`}>
                                         <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
                                             <div style={{ width: '40px', height: '40px', borderRadius: '50%', backgroundColor: 'var(--color-surface-soft)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                                                 {icon}
@@ -100,7 +100,7 @@ export default function Dashboard({ auth, totalSimpanan, simpananRutin, plafonTe
                                                 <div style={{ fontSize: '12px', color: 'var(--color-muted)' }}>{mut.type.replace(/_/g, ' ')}</div>
                                             </div>
                                         </div>
-                                        <div style={{ textAlign: 'right' }}>
+                                        <div className="text-left sm:text-right ml-[56px] sm:ml-0">
                                             <div style={{ fontFamily: 'var(--font-mono)', fontWeight: 600, fontSize: '14px', color: amountColor, marginBottom: '4px' }}>
                                                 {amountPrefix}Rp {new Intl.NumberFormat('id-ID').format(Math.abs(mut.amount))}
                                             </div>

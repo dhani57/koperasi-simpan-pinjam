@@ -18,10 +18,10 @@ export default function Dashboard({ auth, stats, roleData }) {
         <AdminLayout auth={auth} title={getDashboardTitle()}>
             <Head title={getDashboardTitle()} />
 
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(12, 1fr)', gap: 'var(--spacing-lg)' }}>
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
                 
                 {/* Hero Welcome Card (Spans 12 columns) */}
-                <div className="col-span-12">
+                <div className="col-span-1 lg:col-span-12">
                     <div style={{ 
                         backgroundColor: 'var(--color-canvas)', 
                         borderRadius: 'var(--rounded-xl)', 
@@ -74,7 +74,7 @@ export default function Dashboard({ auth, stats, roleData }) {
                 </div>
 
                 {/* Metric Grid (Spans 12 columns, 4 cards side-by-side) */}
-                <div className="col-span-12" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 'var(--spacing-lg)' }}>
+                <div className="col-span-1 lg:col-span-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                     
                     {auth.user.role === 'pengurus' && (
                         <>
@@ -155,7 +155,7 @@ export default function Dashboard({ auth, stats, roleData }) {
                 {/* 1. Pengurus */}
                 {auth.user.role === 'pengurus' && (
                     <>
-                        <div className="col-span-12" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--spacing-lg)', marginTop: 'var(--spacing-md)' }}>
+                        <div className="col-span-1 lg:col-span-12 grid grid-cols-1 lg:grid-cols-2 gap-6 mt-4">
                             <div style={{ backgroundColor: 'var(--color-canvas)', borderRadius: 'var(--rounded-xl)', padding: '24px', boxShadow: '0 2px 6px rgba(0,0,0,0.02)' }}>
                                 <h3 style={{ fontSize: '16px', fontWeight: 600, color: 'var(--color-ink)', marginBottom: '16px' }}>Pertumbuhan Anggota</h3>
                                 <div style={{ width: '100%', height: '250px' }}>
@@ -187,10 +187,11 @@ export default function Dashboard({ auth, stats, roleData }) {
                             </div>
                         </div>
 
-                        <div className="col-span-8" style={{ backgroundColor: 'var(--color-canvas)', borderRadius: 'var(--rounded-xl)', padding: '24px', boxShadow: '0 2px 6px rgba(0,0,0,0.02)', marginTop: 'var(--spacing-md)' }}>
+                        <div className="col-span-1 lg:col-span-8" style={{ backgroundColor: 'var(--color-canvas)', borderRadius: 'var(--rounded-xl)', padding: '24px', boxShadow: '0 2px 6px rgba(0,0,0,0.02)', marginTop: 'var(--spacing-md)' }}>
                             <h3 style={{ fontSize: '16px', fontWeight: 600, color: 'var(--color-ink)', marginBottom: '16px' }}>Antrian Verifikasi Pinjaman</h3>
                             {roleData.pending_verifications && roleData.pending_verifications.length > 0 ? (
-                                <table style={{ width: '100%', textAlign: 'left', borderCollapse: 'collapse' }}>
+                                <div className="overflow-x-auto w-full">
+                                <table style={{ width: '100%', textAlign: 'left', borderCollapse: 'collapse', minWidth: '400px' }}>
                                     <thead>
                                         <tr style={{ borderBottom: '1px solid var(--color-hairline)' }}>
                                             <th style={{ padding: '12px 8px', fontSize: '13px', color: 'var(--color-muted)', fontWeight: 500 }}>Anggota</th>
@@ -208,12 +209,13 @@ export default function Dashboard({ auth, stats, roleData }) {
                                         ))}
                                     </tbody>
                                 </table>
+                                </div>
                             ) : (
                                 <div style={{ padding: '20px', textAlign: 'center', color: 'var(--color-muted)', fontSize: '14px' }}>Tidak ada antrian verifikasi.</div>
                             )}
                         </div>
 
-                        <div className="col-span-4" style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-md)', marginTop: 'var(--spacing-md)' }}>
+                        <div className="col-span-1 lg:col-span-4 flex flex-col gap-4 mt-4">
                             <div style={{ backgroundColor: 'var(--color-canvas)', borderRadius: 'var(--rounded-xl)', padding: '24px', boxShadow: '0 2px 6px rgba(0,0,0,0.02)' }}>
                                 <h3 style={{ fontSize: '16px', fontWeight: 600, color: 'var(--color-ink)', marginBottom: '16px' }}>Parameter Sistem</h3>
                                 {Object.entries(roleData.system_parameters || {}).map(([key, value]) => (
@@ -238,7 +240,7 @@ export default function Dashboard({ auth, stats, roleData }) {
                 {/* 2. Bendahara */}
                 {auth.user.role === 'bendahara' && (
                     <>
-                        <div className="col-span-12" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--spacing-lg)', marginTop: 'var(--spacing-md)' }}>
+                        <div className="col-span-1 lg:col-span-12 grid grid-cols-1 lg:grid-cols-2 gap-6 mt-4">
                             <div style={{ backgroundColor: 'var(--color-canvas)', borderRadius: 'var(--rounded-xl)', padding: '24px', boxShadow: '0 2px 6px rgba(0,0,0,0.02)' }}>
                                 <h3 style={{ fontSize: '16px', fontWeight: 600, color: 'var(--color-ink)', marginBottom: '16px' }}>Arus Kas (Cash Flow)</h3>
                                 <div style={{ width: '100%', height: '250px' }}>
@@ -274,12 +276,13 @@ export default function Dashboard({ auth, stats, roleData }) {
                             </div>
                         </div>
 
-                        <div className="col-span-8" style={{ backgroundColor: 'var(--color-canvas)', borderRadius: 'var(--rounded-xl)', padding: '24px', boxShadow: '0 2px 6px rgba(0,0,0,0.02)', marginTop: 'var(--spacing-md)' }}>
+                        <div className="col-span-1 lg:col-span-8" style={{ backgroundColor: 'var(--color-canvas)', borderRadius: 'var(--rounded-xl)', padding: '24px', boxShadow: '0 2px 6px rgba(0,0,0,0.02)', marginTop: 'var(--spacing-md)' }}>
                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
                                 <h3 style={{ fontSize: '16px', fontWeight: 600, color: 'var(--color-ink)' }}>Antrian Approval Bendahara</h3>
                             </div>
                             {roleData.approval_queue && roleData.approval_queue.length > 0 ? (
-                                <table style={{ width: '100%', textAlign: 'left', borderCollapse: 'collapse' }}>
+                                <div className="overflow-x-auto w-full">
+                                <table style={{ width: '100%', textAlign: 'left', borderCollapse: 'collapse', minWidth: '400px' }}>
                                     <thead>
                                         <tr style={{ borderBottom: '1px solid var(--color-hairline)' }}>
                                             <th style={{ padding: '12px 8px', fontSize: '13px', color: 'var(--color-muted)', fontWeight: 500 }}>Anggota</th>
@@ -299,12 +302,13 @@ export default function Dashboard({ auth, stats, roleData }) {
                                         ))}
                                     </tbody>
                                 </table>
+                                </div>
                             ) : (
                                 <div style={{ padding: '20px', textAlign: 'center', color: 'var(--color-muted)', fontSize: '14px' }}>Tidak ada antrian persetujuan.</div>
                             )}
                         </div>
 
-                        <div className="col-span-4" style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-md)', marginTop: 'var(--spacing-md)' }}>
+                        <div className="col-span-1 lg:col-span-4 flex flex-col gap-4 mt-4">
                             <div style={{ backgroundColor: 'var(--color-canvas)', borderRadius: 'var(--rounded-xl)', padding: '24px', boxShadow: '0 2px 6px rgba(0,0,0,0.02)' }}>
                                 <h3 style={{ fontSize: '16px', fontWeight: 600, color: 'var(--color-ink)', marginBottom: '16px' }}>Aksi Cepat</h3>
                                 <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
@@ -319,7 +323,7 @@ export default function Dashboard({ auth, stats, roleData }) {
                 {/* 3. Ketua */}
                 {auth.user.role === 'ketua' && (
                     <>
-                        <div className="col-span-12" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--spacing-lg)', marginTop: 'var(--spacing-md)' }}>
+                        <div className="col-span-1 lg:col-span-12 grid grid-cols-1 lg:grid-cols-2 gap-6 mt-4">
                             <div style={{ backgroundColor: 'var(--color-canvas)', borderRadius: 'var(--rounded-xl)', padding: '24px', boxShadow: '0 2px 6px rgba(0,0,0,0.02)' }}>
                                 <h3 style={{ fontSize: '16px', fontWeight: 600, color: 'var(--color-ink)', marginBottom: '16px' }}>Tren Dana Koperasi</h3>
                                 <div style={{ width: '100%', height: '250px' }}>
@@ -353,10 +357,11 @@ export default function Dashboard({ auth, stats, roleData }) {
                             </div>
                         </div>
 
-                        <div className="col-span-8" style={{ backgroundColor: 'var(--color-canvas)', borderRadius: 'var(--rounded-xl)', padding: '24px', boxShadow: '0 2px 6px rgba(0,0,0,0.02)', marginTop: 'var(--spacing-md)' }}>
+                        <div className="col-span-1 lg:col-span-8" style={{ backgroundColor: 'var(--color-canvas)', borderRadius: 'var(--rounded-xl)', padding: '24px', boxShadow: '0 2px 6px rgba(0,0,0,0.02)', marginTop: 'var(--spacing-md)' }}>
                             <h3 style={{ fontSize: '16px', fontWeight: 600, color: 'var(--color-ink)', marginBottom: '16px' }}>Approval Tingkat Eksekutif</h3>
                             {roleData.executive_approvals && roleData.executive_approvals.length > 0 ? (
-                                <table style={{ width: '100%', textAlign: 'left', borderCollapse: 'collapse' }}>
+                                <div className="overflow-x-auto w-full">
+                                <table style={{ width: '100%', textAlign: 'left', borderCollapse: 'collapse', minWidth: '400px' }}>
                                     <thead>
                                         <tr style={{ borderBottom: '1px solid var(--color-hairline)' }}>
                                             <th style={{ padding: '12px 8px', fontSize: '13px', color: 'var(--color-muted)', fontWeight: 500 }}>Anggota / Keterangan</th>
@@ -374,12 +379,13 @@ export default function Dashboard({ auth, stats, roleData }) {
                                         ))}
                                     </tbody>
                                 </table>
+                                </div>
                             ) : (
                                 <div style={{ padding: '20px', textAlign: 'center', color: 'var(--color-muted)', fontSize: '14px' }}>Tidak ada antrian persetujuan eksekutif.</div>
                             )}
                         </div>
 
-                        <div className="col-span-4" style={{ backgroundColor: 'var(--color-canvas)', borderRadius: 'var(--rounded-xl)', padding: '24px', boxShadow: '0 2px 6px rgba(0,0,0,0.02)', marginTop: 'var(--spacing-md)' }}>
+                        <div className="col-span-1 lg:col-span-4" style={{ backgroundColor: 'var(--color-canvas)', borderRadius: 'var(--rounded-xl)', padding: '24px', boxShadow: '0 2px 6px rgba(0,0,0,0.02)', marginTop: 'var(--spacing-md)' }}>
                             <h3 style={{ fontSize: '16px', fontWeight: 600, color: 'var(--color-ink)', marginBottom: '16px' }}>Top Anggota (Simpanan)</h3>
                             {roleData.top_members?.map((member, idx) => (
                                 <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '12px', alignItems: 'center' }}>
@@ -394,7 +400,7 @@ export default function Dashboard({ auth, stats, roleData }) {
                 {/* 4. Pengawas */}
                 {auth.user.role === 'pengawas' && (
                     <>
-                        <div className="col-span-12" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--spacing-lg)', marginTop: 'var(--spacing-md)' }}>
+                        <div className="col-span-1 lg:col-span-12 grid grid-cols-1 lg:grid-cols-2 gap-6 mt-4">
                             <div style={{ backgroundColor: 'var(--color-canvas)', borderRadius: 'var(--rounded-xl)', padding: '24px', boxShadow: '0 2px 6px rgba(0,0,0,0.02)' }}>
                                 <h3 style={{ fontSize: '16px', fontWeight: 600, color: 'var(--color-ink)', marginBottom: '16px' }}>Tren Transaksi (Berhasil vs Gagal)</h3>
                                 <div style={{ width: '100%', height: '250px' }}>
@@ -439,13 +445,13 @@ export default function Dashboard({ auth, stats, roleData }) {
                             </div>
                         </div>
 
-                        <div className="col-span-12" style={{ backgroundColor: 'var(--color-canvas)', borderRadius: 'var(--rounded-xl)', padding: '24px', boxShadow: '0 2px 6px rgba(0,0,0,0.02)', marginTop: 'var(--spacing-md)' }}>
+                        <div className="col-span-1 lg:col-span-12" style={{ backgroundColor: 'var(--color-canvas)', borderRadius: 'var(--rounded-xl)', padding: '24px', boxShadow: '0 2px 6px rgba(0,0,0,0.02)', marginTop: 'var(--spacing-md)' }}>
                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
                                 <h3 style={{ fontSize: '16px', fontWeight: 600, color: 'var(--color-ink)' }}>Log Mutasi Terbaru</h3>
                                 <Link href={route('admin.mutations.index')} style={{ fontSize: '13px', color: 'var(--color-primary)', fontWeight: 600 }}>Lihat Semua Data</Link>
                             </div>
-                            <div style={{ overflowX: 'auto' }}>
-                                <table style={{ width: '100%', textAlign: 'left', borderCollapse: 'collapse' }}>
+                            <div className="overflow-x-auto w-full">
+                                <table style={{ width: '100%', textAlign: 'left', borderCollapse: 'collapse', minWidth: '400px' }}>
                                     <thead>
                                         <tr style={{ borderBottom: '1px solid var(--color-hairline)' }}>
                                             <th style={{ padding: '12px 8px', fontSize: '13px', color: 'var(--color-muted)', fontWeight: 500 }}>Tanggal</th>
