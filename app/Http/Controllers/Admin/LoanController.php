@@ -21,7 +21,7 @@ class LoanController extends Controller
         $loans = Loan::with(['user', 'verifiedBy'])
             ->when($search, function ($query, $search) {
                 $query->whereHas('user', function ($q) use ($search) {
-                    $q->where('name', 'like', "%{$search}%");
+                    $q->whereRaw('lower(name) like lower(?)', ["%{$search}%"]);
                 });
             })
             ->when($status, function ($query, $status) {
