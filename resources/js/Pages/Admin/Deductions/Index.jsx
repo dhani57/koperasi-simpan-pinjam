@@ -2,17 +2,36 @@ import React, { useState } from 'react';
 import { Head, useForm, Link, router } from '@inertiajs/react';
 import AdminLayout from '@/Layouts/AdminLayout';
 
-export default function Index({ auth, periods }) {
-    const { data, setData, post, processing, errors } = useForm({
-        period_date: new Date().toISOString().slice(0, 7) + '-01', // Default to current month, first day
+export default function Index({ auth, periods, inactiveMonths = [] }) {
+    const monthsList = [
+        { value: '01', label: 'Januari' }, { value: '02', label: 'Februari' },
+        { value: '03', label: 'Maret' }, { value: '04', label: 'April' },
+        { value: '05', label: 'Mei' }, { value: '06', label: 'Juni' },
+        { value: '07', label: 'Juli' }, { value: '08', label: 'Agustus' },
+        { value: '09', label: 'September' }, { value: '10', label: 'Oktober' },
+        { value: '11', label: 'November' }, { value: '12', label: 'Desember' }
+    ];
+    const activeMonths = monthsList.filter(m => !inactiveMonths.includes(parseInt(m.value, 10)));
+    
+    const currentYear = new Date().getFullYear();
+    
+    const { data, setData, post, processing, errors, transform } = useForm({
+        selectedMonth: activeMonths.length > 0 ? activeMonths[0].value : '01',
+        selectedYear: currentYear.toString(),
     });
+
+    transform((data) => ({
+        ...data,
+        period_date: `${data.selectedYear}-${data.selectedMonth}-01`,
+    }));
 
     const formatMonth = (dateString) => new Intl.DateTimeFormat('id-ID', { year: 'numeric', month: 'long' }).format(new Date(dateString));
     const formatRp = (num) => new Intl.NumberFormat('id-ID').format(num);
 
     const submit = (e) => {
         e.preventDefault();
-        if (confirm(`Anda yakin ingin memicu tagihan potongan massal untuk bulan ${formatMonth(data.period_date)}?\nProses ini akan membaca data semua simpanan dan pinjaman anggota aktif.`)) {
+        const periodStr = `${data.selectedYear}-${data.selectedMonth}-01`;
+        if (confirm(`Anda yakin ingin memicu tagihan potongan massal untuk bulan ${formatMonth(periodStr)}?\nProses ini akan membaca data semua simpanan dan pinjaman anggota aktif.`)) {
             post(route('admin.deductions.store'));
         }
     };
@@ -31,17 +50,34 @@ export default function Index({ auth, periods }) {
                         </p>
 
                         <form onSubmit={submit}>
-                            <div style={{ marginBottom: '16px' }}>
-                                <label style={{ display: 'block', fontSize: '13px', fontWeight: 600, marginBottom: '8px' }}>Pilih Bulan & Tahun</label>
-                                <input 
-                                    type="month" 
-                                    value={data.period_date.slice(0, 7)}
-                                    onChange={e => setData('period_date', e.target.value + '-01')}
-                                    required
-                                    style={{ width: '100%', padding: '10px 12px', border: '1px solid var(--color-hairline)', borderRadius: 'var(--rounded-md)' }}
-                                />
-                                {errors.period_date && <div style={{ color: 'var(--color-semantic-down)', fontSize: '12px', marginTop: '4px' }}>{errors.period_date}</div>}
+                            <div style={{ marginBottom: '16px', display: 'flex', gap: '12px' }}>
+                                <div style={{ flex: 1 }}>
+                                    <label style={{ display: 'block', fontSize: '13px', fontWeight: 600, marginBottom: '8px' }}>Bulan</label>
+                                    <select 
+                                        value={data.selectedMonth}
+                                        onChange={e => setData('selectedMonth', e.target.value)}
+                                        required
+                                        style={{ width: '100%', padding: '10px 12px', border: '1px solid var(--color-hairline)', borderRadius: 'var(--rounded-md)', backgroundColor: 'white' }}
+                                    >
+                                        {activeMonths.map(m => (
+                                            <option key={m.value} value={m.value}>{m.label}</option>
+                                        ))}
+                                    </select>
+                                </div>
+                                <div style={{ flex: 1 }}>
+                                    <label style={{ display: 'block', fontSize: '13px', fontWeight: 600, marginBottom: '8px' }}>Tahun</label>
+                                    <input 
+                                        type="number" 
+                                        value={data.selectedYear}
+                                        onChange={e => setData('selectedYear', e.target.value)}
+                                        required
+                                        min={2020}
+                                        max={2100}
+                                        style={{ width: '100%', padding: '10px 12px', border: '1px solid var(--color-hairline)', borderRadius: 'var(--rounded-md)' }}
+                                    />
+                                </div>
                             </div>
+                            {errors.period_date && <div style={{ color: 'var(--color-semantic-down)', fontSize: '12px', marginBottom: '16px' }}>{errors.period_date}</div>}
 
                             <button 
                                 type="submit" 

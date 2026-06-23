@@ -18,7 +18,14 @@ class DeductionController extends Controller
         }
 
         $periods = DeductionPeriod::orderBy('year', 'desc')->orderBy('month', 'desc')->paginate(10);
-        return inertia('Admin/Deductions/Index', ['periods' => $periods]);
+        
+        $inactiveMonthsSetting = \App\Models\Setting::where('key', 'inactive_months')->value('value');
+        $inactiveMonths = $inactiveMonthsSetting ? json_decode($inactiveMonthsSetting, true) : [];
+
+        return inertia('Admin/Deductions/Index', [
+            'periods' => $periods,
+            'inactiveMonths' => $inactiveMonths
+        ]);
     }
 
     public function store(Request $request)
