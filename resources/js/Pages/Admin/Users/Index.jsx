@@ -1,9 +1,29 @@
-import { Head, Link, useForm } from '@inertiajs/react';
+import React, { useState, useEffect, useRef } from 'react';
+import { Head, Link, useForm, router } from '@inertiajs/react';
 import AdminLayout from '@/Layouts/AdminLayout';
 import ButtonPrimary from '@/Components/DesignSystem/ButtonPrimary';
 
-export default function Index({ auth, users }) {
+export default function Index({ auth, users, filters }) {
     const { delete: destroy } = useForm();
+    const [search, setSearch] = useState(filters?.search || '');
+    const initialRender = useRef(true);
+
+    useEffect(() => {
+        if (initialRender.current) {
+            initialRender.current = false;
+            return;
+        }
+
+        const debounceTimer = setTimeout(() => {
+            router.get(
+                route('admin.users.index'),
+                { search },
+                { preserveState: true, preserveScroll: true, replace: true }
+            );
+        }, 300);
+
+        return () => clearTimeout(debounceTimer);
+    }, [search]);
 
     const handleDelete = (id) => {
         if (confirm('Yakin ingin menghapus anggota ini? Data finansial mungkin terpengaruh.')) {
@@ -15,13 +35,22 @@ export default function Index({ auth, users }) {
         <AdminLayout auth={auth} title="Manajemen Anggota">
             <Head title="Manajemen Anggota" />
 
-            {auth.user.role !== 'pengawas' && (
-                <div style={{ marginBottom: 'var(--spacing-lg)', display: 'flex', justifyContent: 'flex-end' }}>
-                    <ButtonPrimary href={route('admin.users.create')}>
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
+                <input
+                    type="text"
+                    placeholder="Cari NIP/NIM, nama, email..."
+                    className="ds-text-input text-sm w-full md:w-64"
+                    style={{ minHeight: '40px' }}
+                    value={search}
+                    onChange={(e) => setSearch(e.target.value)}
+                />
+                
+                {auth.user.role !== 'pengawas' && (
+                    <ButtonPrimary href={route('admin.users.create')} className="w-full md:w-auto text-center justify-center">
                         + Tambah Anggota Baru
                     </ButtonPrimary>
-                </div>
-            )}
+                )}
+            </div>
 
             <div style={{ backgroundColor: 'var(--color-canvas)', borderRadius: 'var(--rounded-lg)', border: '1px solid var(--color-hairline)', overflow: 'hidden' }}>
                 <div className="overflow-x-auto">

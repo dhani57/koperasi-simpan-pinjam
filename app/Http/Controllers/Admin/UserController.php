@@ -15,8 +15,18 @@ class UserController extends Controller
             abort(403, 'Unauthorized action.');
         }
 
-        $users = User::latest()->paginate(10);
-        return inertia('Admin/Users/Index', ['users' => $users]);
+        $search = request('search');
+
+        $users = User::when($search, function ($query, $search) {
+            $query->whereRaw('lower(name) like lower(?)', ["%{$search}%"])
+                  ->orWhereRaw('lower(identity_number) like lower(?)', ["%{$search}%"])
+                  ->orWhereRaw('lower(email) like lower(?)', ["%{$search}%"]);
+        })->latest()->paginate(10)->appends(request()->query());
+
+        return inertia('Admin/Users/Index', [
+            'users' => $users,
+            'filters' => ['search' => $search]
+        ]);
     }
 
     public function create()
