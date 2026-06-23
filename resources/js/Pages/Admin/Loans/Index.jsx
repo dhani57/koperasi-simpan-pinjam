@@ -77,7 +77,7 @@ export default function Index({ auth, loans }) {
                                                         </form>
                                                         <form method="post" action={route('admin.loans.reject', loan.id)} style={{ display: 'inline' }}>
                                                             <input type="hidden" name="_token" value={document.head.querySelector('meta[name="csrf-token"]')?.content} />
-                                                            <button type="submit" className="ds-button-secondary" style={{ padding: '6px 12px', fontSize: '12px', color: 'var(--color-semantic-down)' }}>Tolak</button>
+                                                            <button type="submit" className="ds-button-primary" style={{ padding: '6px 12px', fontSize: '12px', backgroundColor: '#ef4444', color: 'white', border: 'none' }}>Tolak</button>
                                                         </form>
                                                     </>
                                                 )}
@@ -94,7 +94,7 @@ export default function Index({ auth, loans }) {
                                                         </form>
                                                         <form method="post" action={route('admin.loans.reject', loan.id)} style={{ display: 'inline' }}>
                                                             <input type="hidden" name="_token" value={document.head.querySelector('meta[name="csrf-token"]')?.content} />
-                                                            <button type="submit" className="ds-button-secondary" style={{ padding: '6px 12px', fontSize: '12px', color: 'var(--color-semantic-down)' }}>Tolak</button>
+                                                            <button type="submit" className="ds-button-primary" style={{ padding: '6px 12px', fontSize: '12px', backgroundColor: '#ef4444', color: 'white', border: 'none' }}>Tolak</button>
                                                         </form>
                                                     </>
                                                 )}

@@ -90,7 +90,7 @@ export default function Show({ auth, loan, limitInfo }) {
                                     </form>
                                     <form method="post" action={route('admin.loans.reject', loan.id)} style={{ flex: 1 }}>
                                         <input type="hidden" name="_token" value={document.head.querySelector('meta[name="csrf-token"]')?.content} />
-                                        <button type="submit" className="ds-button-secondary" style={{ width: '100%', padding: '12px', color: 'var(--color-semantic-down)' }}>Tolak</button>
+                                        <button type="submit" className="ds-button-primary" style={{ width: '100%', padding: '12px', backgroundColor: '#ef4444', color: 'white', border: 'none' }}>Tolak</button>
                                     </form>
                                 </div>
                             ) : isBendahara && loan.status === 'disetujui' ? (
