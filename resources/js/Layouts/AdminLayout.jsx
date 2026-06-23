@@ -212,7 +212,7 @@ export default function AdminLayout({ auth, children, title }) {
                         </div>
 
                         {/* Profile Area */}
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginLeft: 'auto' }}>
                             <div className="flex items-center">
                                 <Dropdown>
                                     <Dropdown.Trigger>
