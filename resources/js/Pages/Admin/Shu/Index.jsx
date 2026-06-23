@@ -67,14 +67,6 @@ export default function Index({ auth, year, shuData, filters }) {
                             </p>
                         </div>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
-                            <input
-                                type="text"
-                                placeholder="Cari anggota..."
-                                className="ds-text-input text-sm"
-                                style={{ minHeight: '40px', width: '200px' }}
-                                value={search}
-                                onChange={(e) => setSearch(e.target.value)}
-                            />
                             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                                 <label htmlFor="year" style={{ fontSize: '14px', fontWeight: 600 }}>Tahun:</label>
                                 <select 
@@ -111,7 +103,17 @@ export default function Index({ auth, year, shuData, filters }) {
 
                 {/* Details Table */}
                 <div style={{ backgroundColor: 'white', borderRadius: 'var(--rounded-xl)', padding: '24px', border: '1px solid var(--color-hairline)', overflowX: 'auto' }}>
-                    <h3 className="ds-title-md" style={{ marginBottom: '16px' }}>Rincian Pembagian per Anggota</h3>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '16px', marginBottom: '16px' }}>
+                        <h3 className="ds-title-md" style={{ margin: 0 }}>Rincian Pembagian per Anggota</h3>
+                        <input
+                            type="text"
+                            placeholder="Cari anggota..."
+                            className="ds-text-input text-sm"
+                            style={{ minHeight: '40px', width: '100%', maxWidth: '300px' }}
+                            value={search}
+                            onChange={(e) => setSearch(e.target.value)}
+                        />
+                    </div>
                     <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
                         <thead>
                             <tr style={{ borderBottom: '1px solid var(--color-hairline)' }}>
