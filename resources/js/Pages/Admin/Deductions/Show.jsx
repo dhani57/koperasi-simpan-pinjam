@@ -20,7 +20,16 @@ export default function Show({ auth, period, details }) {
                 </Link>
                 <div style={{ display: 'flex', gap: '12px' }}>
                     {auth.user.role === 'bendahara' && period.status === 'draf' && (
-                        <form method="post" action={route('admin.deductions.selesai', period.id)} style={{ margin: 0 }}>
+                        <form 
+                            method="post" 
+                            action={route('admin.deductions.selesai', period.id)} 
+                            style={{ margin: 0 }}
+                            onSubmit={(e) => {
+                                if (!window.confirm('Apakah Anda yakin semua potongan tagihan ini telah berhasil dilakukan di luar sistem (Payroll)? Aksi ini akan secara permanen menambah saldo simpanan dan mengurangi sisa pinjaman anggota.')) {
+                                    e.preventDefault();
+                                }
+                            }}
+                        >
                             <input type="hidden" name="_token" value={document.head.querySelector('meta[name="csrf-token"]')?.content} />
                             <input type="hidden" name="_method" value="patch" />
                             <button type="submit" className="ds-button-primary" style={{ padding: '8px 16px', fontSize: '14px', backgroundColor: '#10b981', color: 'white', border: 'none' }}>
