@@ -1,5 +1,5 @@
 import { Head, router } from '@inertiajs/react';
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import AdminLayout from '@/Layouts/AdminLayout';
 
 export default function Index({ auth, loans, filters }) {
@@ -12,15 +12,24 @@ export default function Index({ auth, loans, filters }) {
 
     const [search, setSearch] = useState(filters?.search || '');
     const [status, setStatus] = useState(filters?.status || '');
+    const initialRender = useRef(true);
 
-    const handleFilter = (e) => {
-        e.preventDefault();
-        router.get(
-            route('admin.loans.index'),
-            { search, status },
-            { preserveState: true, preserveScroll: true }
-        );
-    };
+    useEffect(() => {
+        if (initialRender.current) {
+            initialRender.current = false;
+            return;
+        }
+
+        const debounceTimer = setTimeout(() => {
+            router.get(
+                route('admin.loans.index'),
+                { search, status },
+                { preserveState: true, preserveScroll: true, replace: true }
+            );
+        }, 300);
+
+        return () => clearTimeout(debounceTimer);
+    }, [search, status]);
 
     return (
         <AdminLayout auth={auth} title={isPengurus ? "Verifikasi Pinjaman" : "Persetujuan Pinjaman"}>
@@ -30,7 +39,7 @@ export default function Index({ auth, loans, filters }) {
                 <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
                     <h2 className="ds-title-md m-0">Daftar Pengajuan Pinjaman</h2>
                     
-                    <form onSubmit={handleFilter} className="w-full md:w-auto flex flex-col sm:flex-row gap-3">
+                    <div className="w-full md:w-auto flex flex-col sm:flex-row gap-3">
                         <input
                             type="text"
                             placeholder="Cari anggota..."
@@ -56,10 +65,7 @@ export default function Index({ auth, loans, filters }) {
                             <option value="lunas">Lunas</option>
                             <option value="ditolak">Ditolak</option>
                         </select>
-                        <button type="submit" className="ds-button-primary" style={{ padding: '8px 16px', height: '40px' }}>
-                            Terapkan
-                        </button>
-                    </form>
+                    </div>
                 </div>
 
                 {loans.data.length === 0 ? (
