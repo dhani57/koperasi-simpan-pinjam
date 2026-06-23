@@ -3,6 +3,7 @@ import InputLabel from '@/Components/InputLabel';
 import ButtonPrimary from '@/Components/DesignSystem/ButtonPrimary';
 import { Transition } from '@headlessui/react';
 import { Link, useForm, usePage } from '@inertiajs/react';
+import React, { useState } from 'react';
 
 export default function UpdateProfileInformation({
     mustVerifyEmail,
@@ -11,14 +12,42 @@ export default function UpdateProfileInformation({
 }) {
     const user = usePage().props.auth.user;
 
-    const { data, setData, post, errors, processing, recentlySuccessful } =
-        useForm({
+    const { data, setData, post, errors, clearErrors, processing, recentlySuccessful } = useForm({
             name: user.name,
             email: user.email,
             phone: user.phone || '',
             profile_photo: null,
             _method: 'patch',
         });
+
+    const [previewPhoto, setPreviewPhoto] = useState(null);
+
+    const handlePhotoChange = (e) => {
+        const file = e.target.files[0];
+        clearErrors('profile_photo');
+        if (file) {
+            if (file.size > 2 * 1024 * 1024) {
+                alert('Ukuran file maksimal adalah 2MB. Silakan pilih file yang lebih kecil.');
+                e.target.value = '';
+                setData('profile_photo', null);
+                setPreviewPhoto(null);
+                return;
+            }
+            setData('profile_photo', file);
+            setPreviewPhoto(URL.createObjectURL(file));
+        } else {
+            setData('profile_photo', null);
+            setPreviewPhoto(null);
+        }
+    };
+
+    const cancelPhotoChange = () => {
+        setData('profile_photo', null);
+        setPreviewPhoto(null);
+        clearErrors('profile_photo');
+        const fileInput = document.getElementById('profile_photo_input');
+        if (fileInput) fileInput.value = '';
+    };
 
     const submit = (e) => {
         e.preventDefault();
@@ -44,26 +73,42 @@ export default function UpdateProfileInformation({
                     <div className="px-4 py-5 bg-white sm:p-6 shadow sm:rounded-t-xl space-y-6 border border-gray-200 border-b-0">
                 <div className="flex items-center gap-6">
                     <div className="shrink-0">
-                        {user.profile_photo_path ? (
-                            <img className="h-24 w-24 object-cover rounded-full" src={`/storage/${user.profile_photo_path}`} alt="Avatar Profile" />
+                        {previewPhoto ? (
+                            <img className="h-24 w-24 object-cover rounded-full border border-gray-200" src={previewPhoto} alt="Preview Profile" />
+                        ) : user.profile_photo_path ? (
+                            <img className="h-24 w-24 object-cover rounded-full border border-gray-200" src={`/storage/${user.profile_photo_path}`} alt="Avatar Profile" />
                         ) : (
-                            <div className="h-24 w-24 rounded-full bg-gray-200 flex items-center justify-center text-gray-500 text-3xl font-bold">
+                            <div className="h-24 w-24 rounded-full bg-gray-200 flex items-center justify-center text-gray-500 text-3xl font-bold border border-gray-200">
                                 {user.name.charAt(0)}
                             </div>
                         )}
                     </div>
                     <div>
                         <InputLabel value="Foto Profil" className="ds-label" />
-                        <input
-                            type="file"
-                            className="mt-1 block w-full text-sm text-gray-500
-                              file:mr-4 file:py-2 file:px-4
-                              file:rounded-full file:border-0
-                              file:text-sm file:font-semibold
-                              file:bg-blue-50 file:text-blue-700
-                              hover:file:bg-blue-100"
-                            onChange={(e) => setData('profile_photo', e.target.files[0])}
-                        />
+                        <div className="flex items-center gap-2">
+                            <input
+                                id="profile_photo_input"
+                                type="file"
+                                accept="image/*"
+                                className="mt-1 block w-full text-sm text-gray-500
+                                  file:mr-4 file:py-2 file:px-4
+                                  file:rounded-full file:border-0
+                                  file:text-sm file:font-semibold
+                                  file:bg-blue-50 file:text-blue-700
+                                  hover:file:bg-blue-100"
+                                onChange={handlePhotoChange}
+                            />
+                            {previewPhoto && (
+                                <button
+                                    type="button"
+                                    onClick={cancelPhotoChange}
+                                    className="mt-1 px-3 py-1.5 text-sm bg-gray-100 text-gray-700 rounded-full hover:bg-gray-200 transition-colors"
+                                >
+                                    Batal
+                                </button>
+                            )}
+                        </div>
+                        <p className="mt-1 text-xs text-gray-500">(Maksimal ukuran 2MB, format gambar: JPG, JPEG, PNG)</p>
                         <InputError className="mt-2" message={errors.profile_photo} />
                     </div>
                 </div>

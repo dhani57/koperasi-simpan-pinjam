@@ -224,9 +224,13 @@ export default function AdminLayout({ auth, children, title }) {
                                                 type="button"
                                                 className="inline-flex items-center gap-2 px-1 lg:px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-transparent hover:bg-white/10 focus:outline-none transition ease-in-out duration-150"
                                             >
-                                                <div style={{ width: '32px', height: '32px', borderRadius: '50%', backgroundColor: 'rgba(255, 255, 255, 0.2)', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold' }}>
-                                                    {auth.user.name.charAt(0)}
-                                                </div>
+                                                {auth.user.profile_photo_path ? (
+                                                    <img src={`/storage/${auth.user.profile_photo_path}`} alt="Profile" style={{ width: '32px', height: '32px', borderRadius: '50%', objectFit: 'cover', border: '2px solid rgba(255,255,255,0.2)' }} />
+                                                ) : (
+                                                    <div style={{ width: '32px', height: '32px', borderRadius: '50%', backgroundColor: 'rgba(255, 255, 255, 0.2)', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold' }}>
+                                                        {auth.user.name.charAt(0)}
+                                                    </div>
+                                                )}
                                                 <span className="hidden sm:inline-flex">{auth.user.name}</span>
                                                 <svg className="ms-1 lg:ms-2 -me-0.5 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
                                                     <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
