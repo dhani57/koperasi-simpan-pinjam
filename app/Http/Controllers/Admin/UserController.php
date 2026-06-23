@@ -34,10 +34,26 @@ class UserController extends Controller
             'role' => ['required', Rule::in(['anggota', 'bendahara', 'pengurus', 'ketua', 'pengawas'])],
             'monthly_saving_nominal' => 'required|numeric|min:0',
             'max_salary_deduction_limit' => 'required|numeric|min:0',
+            'total_saving_balance' => 'nullable|numeric|min:0',
             'password' => 'required|string|min:8|confirmed',
         ]);
 
-        User::create($validated);
+        $initialBalance = $validated['total_saving_balance'] ?? 0;
+        $validated['total_saving_balance'] = $initialBalance;
+
+        \Illuminate\Support\Facades\DB::transaction(function () use ($validated, $initialBalance) {
+            $user = User::create($validated);
+
+            if ($initialBalance > 0) {
+                \App\Models\Mutation::create([
+                    'user_id' => $user->id,
+                    'type' => 'simpanan',
+                    'amount' => $initialBalance,
+                    'balance_after' => $initialBalance,
+                    'description' => 'Migrasi Saldo Simpanan Sebelumnya'
+                ]);
+            }
+        });
 
         return redirect()->route('admin.users.index')->with('success', 'Anggota berhasil ditambahkan.');
     }

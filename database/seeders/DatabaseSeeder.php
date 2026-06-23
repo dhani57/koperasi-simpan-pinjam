@@ -108,7 +108,7 @@ class DatabaseSeeder extends Seeder
                 'type' => 'simpanan',
                 'amount' => $initialSaving,
                 'balance_after' => $initialSaving,
-                'description' => 'Simpanan Pokok & Wajib (Akumulasi)',
+                'description' => 'Migrasi Saldo Simpanan Sebelumnya',
                 'created_at' => now()->subMonths(6)
             ]);
 

@@ -11,6 +11,7 @@ export default function Create({ auth }) {
         role: 'anggota',
         monthly_saving_nominal: 0,
         max_salary_deduction_limit: 0,
+        total_saving_balance: 0,
         password: '',
         password_confirmation: '',
     });
@@ -69,6 +70,14 @@ export default function Create({ auth }) {
                             <InputLabel htmlFor="max_salary_deduction_limit" value="Limit Maksimal Gaji (Rp)" className="ds-label" />
                             <input id="max_salary_deduction_limit" type="number" min="0" className="ds-text-input" value={data.max_salary_deduction_limit} onChange={e => setData('max_salary_deduction_limit', e.target.value)} required />
                             {errors.max_salary_deduction_limit && <div className="ds-error-text">{errors.max_salary_deduction_limit}</div>}
+                        </div>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-6">
+                        <div>
+                            <InputLabel htmlFor="total_saving_balance" value="Saldo Awal Simpanan (Opsional/Migrasi)" className="ds-label" />
+                            <input id="total_saving_balance" type="number" min="0" className="ds-text-input" value={data.total_saving_balance || ''} onChange={e => setData('total_saving_balance', e.target.value)} placeholder="0" />
+                            {errors.total_saving_balance && <div className="ds-error-text">{errors.total_saving_balance}</div>}
                         </div>
                     </div>
 
