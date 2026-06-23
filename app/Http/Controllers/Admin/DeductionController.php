@@ -172,13 +172,13 @@ class DeductionController extends Controller
         $callback = function() use($details) {
             echo "<html><head><meta http-equiv='Content-Type' content='text/html; charset=utf-8'></head><body>";
             echo "<table border='1' style='border-collapse: collapse;'>";
-            echo "<thead><tr style='background-color: #0f4c81; color: #ffffff;'>";
-            echo "<th style='padding: 8px;'>No.</th>";
-            echo "<th style='padding: 8px;'>NIP/NIM</th>";
-            echo "<th style='padding: 8px;'>Nama Anggota</th>";
-            echo "<th style='padding: 8px;'>Potongan Simpanan</th>";
-            echo "<th style='padding: 8px;'>Potongan Pinjaman</th>";
-            echo "<th style='padding: 8px;'>Total Potongan</th>";
+            echo "<thead><tr>";
+            echo "<th style='padding: 8px; background-color: #0f4c81; color: #ffffff;'>No.</th>";
+            echo "<th style='padding: 8px; background-color: #0f4c81; color: #ffffff;'>NIP/NIM</th>";
+            echo "<th style='padding: 8px; background-color: #0f4c81; color: #ffffff;'>Nama Anggota</th>";
+            echo "<th style='padding: 8px; background-color: #0f4c81; color: #ffffff;'>Potongan Simpanan</th>";
+            echo "<th style='padding: 8px; background-color: #0f4c81; color: #ffffff;'>Potongan Pinjaman</th>";
+            echo "<th style='padding: 8px; background-color: #0f4c81; color: #ffffff;'>Total Potongan</th>";
             echo "</tr></thead><tbody>";
             
             $no = 1;
