@@ -22,6 +22,7 @@ export default function Index({ auth, settings }) {
         inactive_months: initialInactiveMonths,
     });
 
+    const isReadOnly = auth.user.role === 'pengawas';
     const [notif, setNotif] = useState({ show: false, title: '', message: '', type: 'error' });
 
     const submit = (e) => {
@@ -64,6 +65,7 @@ export default function Index({ auth, settings }) {
                                 value={data.default_monthly_saving}
                                 onChange={(e) => setData('default_monthly_saving', e.target.value)}
                                 required
+                                disabled={isReadOnly}
                             />
                             <InputError className="mt-2" message={errors.default_monthly_saving} />
                         </div>
@@ -77,6 +79,7 @@ export default function Index({ auth, settings }) {
                                 value={data.default_salary_limit}
                                 onChange={(e) => setData('default_salary_limit', e.target.value)}
                                 required
+                                disabled={isReadOnly}
                             />
                             <InputError className="mt-2" message={errors.default_salary_limit} />
                         </div>
@@ -102,6 +105,7 @@ export default function Index({ auth, settings }) {
                                     value={data.loan_interest_rate}
                                     onChange={(e) => setData('loan_interest_rate', e.target.value)}
                                     required
+                                    disabled={isReadOnly}
                                 />
                                 <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
                                     <span className="text-gray-500 sm:text-sm">%</span>
@@ -139,6 +143,7 @@ export default function Index({ auth, settings }) {
                                     type="checkbox"
                                     className="rounded border-gray-300 text-primary focus:ring-primary"
                                     checked={data.inactive_months.includes(month.value)}
+                                    disabled={isReadOnly}
                                     onChange={(e) => {
                                         let updated = [...data.inactive_months];
                                         if (e.target.checked) {
