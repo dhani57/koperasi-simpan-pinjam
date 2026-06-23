@@ -164,7 +164,7 @@ class DeductionController extends Controller
 
         $callback = function() use($details) {
             $file = fopen('php://output', 'w');
-            fputcsv($file, ['NIK', 'Nama Anggota', 'Potongan Simpanan', 'Potongan Pinjaman', 'Total Potongan']);
+            fputcsv($file, ['NIP/NIM', 'Nama Anggota', 'Potongan Simpanan', 'Potongan Pinjaman', 'Total Potongan']);
 
             foreach ($details as $row) {
                 $loanTotal = $row->loan_principal_amount + $row->loan_fee_amount;
