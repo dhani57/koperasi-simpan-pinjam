@@ -45,6 +45,7 @@ class UserController extends Controller
             'monthly_saving_nominal' => 'required|numeric|min:0',
             'max_salary_deduction_limit' => 'required|numeric|min:0',
             'total_saving_balance' => 'nullable|numeric|min:0',
+            'joined_at' => 'nullable|date',
             'password' => 'required|string|min:8|confirmed',
         ]);
 
@@ -83,6 +84,7 @@ class UserController extends Controller
             'role' => ['required', Rule::in(['anggota', 'bendahara', 'pengurus', 'ketua', 'pengawas'])],
             'monthly_saving_nominal' => 'required|numeric|min:0',
             'max_salary_deduction_limit' => 'required|numeric|min:0',
+            'joined_at' => 'nullable|date',
             'password' => 'nullable|string|min:8|confirmed',
         ]);
 

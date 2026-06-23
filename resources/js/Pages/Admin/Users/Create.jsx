@@ -12,6 +12,7 @@ export default function Create({ auth }) {
         monthly_saving_nominal: 0,
         max_salary_deduction_limit: 0,
         total_saving_balance: 0,
+        joined_at: new Date().toISOString().split('T')[0],
         password: '',
         password_confirmation: '',
     });
@@ -78,6 +79,11 @@ export default function Create({ auth }) {
                             <InputLabel htmlFor="total_saving_balance" value="Saldo Awal Simpanan (Opsional/Migrasi)" className="ds-label" />
                             <input id="total_saving_balance" type="number" min="0" className="ds-text-input" value={data.total_saving_balance || ''} onChange={e => setData('total_saving_balance', e.target.value)} placeholder="0" />
                             {errors.total_saving_balance && <div className="ds-error-text">{errors.total_saving_balance}</div>}
+                        </div>
+                        <div>
+                            <InputLabel htmlFor="joined_at" value={<span>Tanggal Bergabung <span className="text-red-500">*</span></span>} className="ds-label" />
+                            <input id="joined_at" type="date" className="ds-text-input" value={data.joined_at} onChange={e => setData('joined_at', e.target.value)} required />
+                            {errors.joined_at && <div className="ds-error-text">{errors.joined_at}</div>}
                         </div>
                     </div>
 

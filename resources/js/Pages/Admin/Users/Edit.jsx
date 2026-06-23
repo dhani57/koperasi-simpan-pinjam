@@ -11,6 +11,7 @@ export default function Edit({ auth, user }) {
         role: user.role,
         monthly_saving_nominal: user.monthly_saving_nominal,
         max_salary_deduction_limit: user.max_salary_deduction_limit,
+        joined_at: user.joined_at ? user.joined_at.split(' ')[0] : '',
         password: '',
         password_confirmation: '',
     });
@@ -69,6 +70,14 @@ export default function Edit({ auth, user }) {
                             <InputLabel htmlFor="max_salary_deduction_limit" value={<span>Limit Maksimal Gaji (Rp) <span className="text-red-500">*</span></span>} className="ds-label" />
                             <input id="max_salary_deduction_limit" type="number" min="0" className="ds-text-input" value={data.max_salary_deduction_limit} onChange={e => setData('max_salary_deduction_limit', e.target.value)} required />
                             {errors.max_salary_deduction_limit && <div className="ds-error-text">{errors.max_salary_deduction_limit}</div>}
+                        </div>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-6">
+                        <div>
+                            <InputLabel htmlFor="joined_at" value={<span>Tanggal Bergabung</span>} className="ds-label" />
+                            <input id="joined_at" type="date" className="ds-text-input" value={data.joined_at} onChange={e => setData('joined_at', e.target.value)} />
+                            {errors.joined_at && <div className="ds-error-text">{errors.joined_at}</div>}
                         </div>
                     </div>
 

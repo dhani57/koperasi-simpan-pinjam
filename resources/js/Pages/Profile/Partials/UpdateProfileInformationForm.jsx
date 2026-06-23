@@ -117,7 +117,7 @@ export default function UpdateProfileInformation({
                     </div>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                     <div>
                         <InputLabel value="NIP / NIM" className="ds-label" />
                         <input
@@ -133,6 +133,15 @@ export default function UpdateProfileInformation({
                         <input
                             className="ds-text-input bg-gray-100 cursor-not-allowed text-gray-500 capitalize"
                             value={user.role}
+                            disabled
+                        />
+                    </div>
+
+                    <div>
+                        <InputLabel value="Tanggal Bergabung" className="ds-label" />
+                        <input
+                            className="ds-text-input bg-gray-100 cursor-not-allowed text-gray-500"
+                            value={user.joined_at ? new Date(user.joined_at).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' }) : '-'}
                             disabled
                         />
                     </div>
