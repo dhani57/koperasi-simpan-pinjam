@@ -25,9 +25,6 @@ class DashboardController extends Controller
             $stats['pending_verification'] = \App\Models\Loan::where('status', 'diajukan')->count();
             $stats['job_queue_status'] = 'Optimal';
             
-            // Antrian Verifikasi
-            $data['pending_verifications'] = \App\Models\Loan::with('user')->where('status', 'diajukan')->take(5)->get();
-            
             // Pertumbuhan Anggota (Mock)
             $data['member_growth'] = collect($months)->map(fn($m) => ['name' => $m, 'Anggota_Baru' => rand(5, 25)]);
             

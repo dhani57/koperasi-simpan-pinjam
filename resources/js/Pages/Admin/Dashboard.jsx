@@ -82,10 +82,7 @@ export default function Dashboard({ auth, stats, roleData }) {
                                 <div style={{ fontSize: '14px', color: 'var(--color-muted)', fontWeight: 500 }}>Total Anggota Aktif</div>
                                 <div style={{ fontSize: '24px', fontWeight: 700, color: 'var(--color-ink)', marginTop: '8px' }}>{stats.total_members}</div>
                             </div>
-                            <div style={{ backgroundColor: 'var(--color-canvas)', borderRadius: 'var(--rounded-xl)', padding: '24px', boxShadow: '0 2px 6px rgba(0,0,0,0.02)' }}>
-                                <div style={{ fontSize: '14px', color: 'var(--color-muted)', fontWeight: 500 }}>Menunggu Verifikasi</div>
-                                <div style={{ fontSize: '24px', fontWeight: 700, color: 'var(--color-ink)', marginTop: '8px' }}>{stats.pending_verification}</div>
-                            </div>
+
                             <div style={{ backgroundColor: 'var(--color-canvas)', borderRadius: 'var(--rounded-xl)', padding: '24px', boxShadow: '0 2px 6px rgba(0,0,0,0.02)' }}>
                                 <div style={{ fontSize: '14px', color: 'var(--color-muted)', fontWeight: 500 }}>Status Job Queue</div>
                                 <div style={{ fontSize: '24px', fontWeight: 700, color: 'var(--color-semantic-up)', marginTop: '8px' }}>{stats.job_queue_status}</div>
@@ -187,36 +184,8 @@ export default function Dashboard({ auth, stats, roleData }) {
                             </div>
                         </div>
 
-                        <div className="col-span-1 lg:col-span-8" style={{ backgroundColor: 'var(--color-canvas)', borderRadius: 'var(--rounded-xl)', padding: '24px', boxShadow: '0 2px 6px rgba(0,0,0,0.02)', marginTop: 'var(--spacing-md)' }}>
-                            <h3 style={{ fontSize: '16px', fontWeight: 600, color: 'var(--color-ink)', marginBottom: '16px' }}>Antrian Verifikasi Pinjaman</h3>
-                            {roleData.pending_verifications && roleData.pending_verifications.length > 0 ? (
-                                <div className="overflow-x-auto w-full">
-                                <table style={{ width: '100%', textAlign: 'left', borderCollapse: 'collapse', minWidth: '400px' }}>
-                                    <thead>
-                                        <tr style={{ borderBottom: '1px solid var(--color-hairline)' }}>
-                                            <th style={{ padding: '12px 8px', fontSize: '13px', color: 'var(--color-muted)', fontWeight: 500 }}>Anggota</th>
-                                            <th style={{ padding: '12px 8px', fontSize: '13px', color: 'var(--color-muted)', fontWeight: 500 }}>Nominal</th>
-                                            <th style={{ padding: '12px 8px', fontSize: '13px', color: 'var(--color-muted)', fontWeight: 500 }}>Status</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {roleData.pending_verifications.map((loan, idx) => (
-                                            <tr key={idx} style={{ borderBottom: '1px solid var(--color-hairline)' }}>
-                                                <td style={{ padding: '12px 8px', fontSize: '14px', fontWeight: 500 }}>{loan.user?.name}</td>
-                                                <td style={{ padding: '12px 8px', fontSize: '14px', fontFamily: 'var(--font-mono)' }}>Rp{numberFormat(loan.principal_amount)}</td>
-                                                <td style={{ padding: '12px 8px', fontSize: '14px' }}><span style={{ backgroundColor: 'var(--color-surface-soft)', padding: '4px 8px', borderRadius: '4px', fontSize: '12px' }}>{loan.status}</span></td>
-                                            </tr>
-                                        ))}
-                                    </tbody>
-                                </table>
-                                </div>
-                            ) : (
-                                <div style={{ padding: '20px', textAlign: 'center', color: 'var(--color-muted)', fontSize: '14px' }}>Tidak ada antrian verifikasi.</div>
-                            )}
-                        </div>
-
-                        <div className="col-span-1 lg:col-span-4 flex flex-col gap-4 mt-4">
-                            <div style={{ backgroundColor: 'var(--color-canvas)', borderRadius: 'var(--rounded-xl)', padding: '24px', boxShadow: '0 2px 6px rgba(0,0,0,0.02)' }}>
+                        <div className="col-span-1 lg:col-span-12 flex flex-col lg:flex-row gap-6 mt-4">
+                            <div className="flex-1" style={{ backgroundColor: 'var(--color-canvas)', borderRadius: 'var(--rounded-xl)', padding: '24px', boxShadow: '0 2px 6px rgba(0,0,0,0.02)' }}>
                                 <h3 style={{ fontSize: '16px', fontWeight: 600, color: 'var(--color-ink)', marginBottom: '16px' }}>Parameter Sistem</h3>
                                 {Object.entries(roleData.system_parameters || {}).map(([key, value]) => (
                                     <div key={key} style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px', fontSize: '14px' }}>
@@ -226,10 +195,10 @@ export default function Dashboard({ auth, stats, roleData }) {
                                 ))}
                             </div>
                             {roleData.alerts && roleData.alerts.length > 0 && (
-                                <div style={{ backgroundColor: 'rgba(235, 168, 52, 0.1)', border: '1px solid #eba834', borderRadius: 'var(--rounded-xl)', padding: '16px' }}>
-                                    <h3 style={{ fontSize: '14px', fontWeight: 600, color: '#b87e14', marginBottom: '8px' }}>Peringatan (Alert)</h3>
+                                <div className="flex-1" style={{ backgroundColor: 'rgba(235, 168, 52, 0.1)', border: '1px solid #eba834', borderRadius: 'var(--rounded-xl)', padding: '24px' }}>
+                                    <h3 style={{ fontSize: '14px', fontWeight: 600, color: '#b87e14', marginBottom: '16px' }}>Peringatan (Alert)</h3>
                                     {roleData.alerts.map((alert, idx) => (
-                                        <div key={idx} style={{ fontSize: '13px', color: '#b87e14' }}>• {alert.message}</div>
+                                        <div key={idx} style={{ fontSize: '13px', color: '#b87e14', marginBottom: '8px' }}>• {alert.message}</div>
                                     ))}
                                 </div>
                             )}
