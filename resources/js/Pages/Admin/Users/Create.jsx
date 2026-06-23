@@ -8,7 +8,7 @@ export default function Create({ auth }) {
         name: '',
         identity_number: '',
         email: '',
-        role: 'anggota',
+        roles: ['anggota'],
         monthly_saving_nominal: 0,
         max_salary_deduction_limit: 0,
         total_saving_balance: 0,
@@ -20,6 +20,32 @@ export default function Create({ auth }) {
     const submit = (e) => {
         e.preventDefault();
         post(route('admin.users.store'));
+    };
+
+    const availableRoles = [
+        { value: 'anggota', label: 'Anggota' },
+        { value: 'bendahara', label: 'Bendahara' },
+        { value: 'pengurus', label: 'Pengurus (Admin)' },
+        { value: 'ketua', label: 'Ketua' },
+        { value: 'pengawas', label: 'Pengawas' }
+    ];
+
+    const handleRoleChange = (e) => {
+        const value = e.target.value;
+        const checked = e.target.checked;
+        let newRoles = [...data.roles];
+        
+        if (checked) {
+            if (newRoles.length < 2) {
+                newRoles.push(value);
+            } else {
+                alert('Maksimal memilih 2 peran!');
+                return;
+            }
+        } else {
+            newRoles = newRoles.filter(r => r !== value);
+        }
+        setData('roles', newRoles);
     };
 
     return (
@@ -49,15 +75,22 @@ export default function Create({ auth }) {
                             {errors.email && <div className="ds-error-text">{errors.email}</div>}
                         </div>
                         <div>
-                            <InputLabel htmlFor="role" value={<span>Peran <span className="text-red-500">*</span></span>} className="ds-label" />
-                            <select id="role" className="ds-text-input" value={data.role} onChange={e => setData('role', e.target.value)} required>
-                                <option value="anggota">Anggota</option>
-                                <option value="bendahara">Bendahara</option>
-                                <option value="pengurus">Pengurus (Admin)</option>
-                                <option value="ketua">Ketua</option>
-                                <option value="pengawas">Pengawas</option>
-                            </select>
-                            {errors.role && <div className="ds-error-text">{errors.role}</div>}
+                            <InputLabel value={<span>Peran (Maksimal 2) <span className="text-red-500">*</span></span>} className="ds-label mb-3" />
+                            <div className="grid grid-cols-2 gap-3 p-3 border border-slate-200 rounded-lg bg-slate-50">
+                                {availableRoles.map(role => (
+                                    <label key={role.value} className="flex items-center gap-2 text-sm text-slate-700 cursor-pointer">
+                                        <input 
+                                            type="checkbox" 
+                                            value={role.value}
+                                            checked={data.roles.includes(role.value)}
+                                            onChange={handleRoleChange}
+                                            className="rounded border-slate-300 text-[var(--color-primary)] focus:ring-[var(--color-primary)]"
+                                        />
+                                        {role.label}
+                                    </label>
+                                ))}
+                            </div>
+                            {errors.roles && <div className="ds-error-text mt-1">{errors.roles}</div>}
                         </div>
                     </div>
 

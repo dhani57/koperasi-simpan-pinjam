@@ -240,6 +240,11 @@ export default function AdminLayout({ auth, children, title }) {
                                     </Dropdown.Trigger>
 
                                     <Dropdown.Content align="right">
+                                        {auth.user.is_anggota && auth.user.role !== 'anggota' && (
+                                            <Dropdown.Link href={route('dashboard')}>
+                                                Beralih ke Anggota
+                                            </Dropdown.Link>
+                                        )}
                                         <Dropdown.Link href={route('profile.edit')}>Profil</Dropdown.Link>
                                         <Dropdown.Link href={route('logout')} method="post" as="button">
                                             Keluar

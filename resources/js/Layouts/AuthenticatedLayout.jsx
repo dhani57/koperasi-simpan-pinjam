@@ -61,6 +61,11 @@ export default function AuthenticatedLayout({ header, children }) {
                                     </Dropdown.Trigger>
 
                                     <Dropdown.Content>
+                                        {user.is_anggota && user.role !== 'anggota' && (
+                                            <Dropdown.Link href={route('admin.dashboard')}>
+                                                Beralih ke Admin
+                                            </Dropdown.Link>
+                                        )}
                                         <Dropdown.Link
                                             href={route('profile.edit')}
                                         >
@@ -147,6 +152,11 @@ export default function AuthenticatedLayout({ header, children }) {
                         </div>
 
                         <div className="mt-3 space-y-1">
+                            {user.is_anggota && user.role !== 'anggota' && (
+                                <ResponsiveNavLink href={route('admin.dashboard')}>
+                                    Beralih ke Admin
+                                </ResponsiveNavLink>
+                            )}
                             <ResponsiveNavLink href={route('profile.edit')}>
                                 Profile
                             </ResponsiveNavLink>

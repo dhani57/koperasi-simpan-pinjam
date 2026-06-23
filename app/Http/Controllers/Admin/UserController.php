@@ -41,7 +41,8 @@ class UserController extends Controller
             'identity_number' => 'required|string|unique:users',
             'email' => 'required|string|email|max:255|unique:users',
             'phone' => 'nullable|string|max:20',
-            'role' => ['required', Rule::in(['anggota', 'bendahara', 'pengurus', 'ketua', 'pengawas'])],
+            'roles' => ['required', 'array', 'min:1', 'max:2'],
+            'roles.*' => [Rule::in(['anggota', 'bendahara', 'pengurus', 'ketua', 'pengawas'])],
             'monthly_saving_nominal' => 'required|numeric|min:0',
             'max_salary_deduction_limit' => 'required|numeric|min:0',
             'total_saving_balance' => 'nullable|numeric|min:0',
@@ -51,6 +52,16 @@ class UserController extends Controller
 
         $initialBalance = $validated['total_saving_balance'] ?? 0;
         $validated['total_saving_balance'] = $initialBalance;
+
+        $roles = $validated['roles'];
+        if (count($roles) === 2 && !in_array('anggota', $roles)) {
+            return back()->withErrors(['roles' => 'Jika memilih 2 peran, salah satunya harus Anggota.'])->withInput();
+        }
+
+        $validated['is_anggota'] = in_array('anggota', $roles);
+        $adminRoles = array_diff($roles, ['anggota']);
+        $validated['role'] = count($adminRoles) > 0 ? array_values($adminRoles)[0] : 'anggota';
+        unset($validated['roles']);
 
         \Illuminate\Support\Facades\DB::transaction(function () use ($validated, $initialBalance) {
             $user = User::create($validated);
@@ -81,7 +92,8 @@ class UserController extends Controller
             'identity_number' => ['required', 'string', Rule::unique('users')->ignore($user->id)],
             'email' => ['required', 'string', 'email', 'max:255', Rule::unique('users')->ignore($user->id)],
             'phone' => 'nullable|string|max:20',
-            'role' => ['required', Rule::in(['anggota', 'bendahara', 'pengurus', 'ketua', 'pengawas'])],
+            'roles' => ['required', 'array', 'min:1', 'max:2'],
+            'roles.*' => [Rule::in(['anggota', 'bendahara', 'pengurus', 'ketua', 'pengawas'])],
             'monthly_saving_nominal' => 'required|numeric|min:0',
             'max_salary_deduction_limit' => 'required|numeric|min:0',
             'joined_at' => 'nullable|date',
@@ -91,6 +103,16 @@ class UserController extends Controller
         if (empty($validated['password'])) {
             unset($validated['password']);
         }
+
+        $roles = $validated['roles'];
+        if (count($roles) === 2 && !in_array('anggota', $roles)) {
+            return back()->withErrors(['roles' => 'Jika memilih 2 peran, salah satunya harus Anggota.'])->withInput();
+        }
+
+        $validated['is_anggota'] = in_array('anggota', $roles);
+        $adminRoles = array_diff($roles, ['anggota']);
+        $validated['role'] = count($adminRoles) > 0 ? array_values($adminRoles)[0] : 'anggota';
+        unset($validated['roles']);
 
         $user->update($validated);
 

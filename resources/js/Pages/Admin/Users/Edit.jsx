@@ -8,7 +8,7 @@ export default function Edit({ auth, user }) {
         name: user.name,
         identity_number: user.identity_number,
         email: user.email,
-        role: user.role,
+        roles: user.roles_array || ['anggota'],
         monthly_saving_nominal: user.monthly_saving_nominal,
         max_salary_deduction_limit: user.max_salary_deduction_limit,
         joined_at: user.joined_at ? user.joined_at.split(' ')[0] : '',
@@ -19,6 +19,32 @@ export default function Edit({ auth, user }) {
     const submit = (e) => {
         e.preventDefault();
         put(route('admin.users.update', user.id));
+    };
+
+    const availableRoles = [
+        { value: 'anggota', label: 'Anggota' },
+        { value: 'bendahara', label: 'Bendahara' },
+        { value: 'pengurus', label: 'Pengurus (Admin)' },
+        { value: 'ketua', label: 'Ketua' },
+        { value: 'pengawas', label: 'Pengawas' }
+    ];
+
+    const handleRoleChange = (e) => {
+        const value = e.target.value;
+        const checked = e.target.checked;
+        let newRoles = [...data.roles];
+        
+        if (checked) {
+            if (newRoles.length < 2) {
+                newRoles.push(value);
+            } else {
+                alert('Maksimal memilih 2 peran!');
+                return;
+            }
+        } else {
+            newRoles = newRoles.filter(r => r !== value);
+        }
+        setData('roles', newRoles);
     };
 
     return (
@@ -48,15 +74,22 @@ export default function Edit({ auth, user }) {
                             {errors.email && <div className="ds-error-text">{errors.email}</div>}
                         </div>
                         <div>
-                            <InputLabel htmlFor="role" value={<span>Peran <span className="text-red-500">*</span></span>} className="ds-label" />
-                            <select id="role" className="ds-text-input" value={data.role} onChange={e => setData('role', e.target.value)} required>
-                                <option value="anggota">Anggota</option>
-                                <option value="bendahara">Bendahara</option>
-                                <option value="pengurus">Pengurus (Admin)</option>
-                                <option value="ketua">Ketua</option>
-                                <option value="pengawas">Pengawas</option>
-                            </select>
-                            {errors.role && <div className="ds-error-text">{errors.role}</div>}
+                            <InputLabel value={<span>Peran (Maksimal 2) <span className="text-red-500">*</span></span>} className="ds-label mb-3" />
+                            <div className="grid grid-cols-2 gap-3 p-3 border border-slate-200 rounded-lg bg-slate-50">
+                                {availableRoles.map(role => (
+                                    <label key={role.value} className="flex items-center gap-2 text-sm text-slate-700 cursor-pointer">
+                                        <input 
+                                            type="checkbox" 
+                                            value={role.value}
+                                            checked={data.roles.includes(role.value)}
+                                            onChange={handleRoleChange}
+                                            className="rounded border-slate-300 text-[var(--color-primary)] focus:ring-[var(--color-primary)]"
+                                        />
+                                        {role.label}
+                                    </label>
+                                ))}
+                            </div>
+                            {errors.roles && <div className="ds-error-text mt-1">{errors.roles}</div>}
                         </div>
                     </div>
 
