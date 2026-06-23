@@ -129,20 +129,30 @@ class LoanController extends Controller
         return redirect()->back()->with('success', 'Persetujuan pinjaman berhasil dicatat.');
     }
 
-    public function disburse(\App\Http\Requests\Admin\DisburseLoanRequest $request, Loan $loan)
+    public function disburse(Request $request, Loan $loan)
     {
+        Gate::authorize('disburse', $loan);
+
         if ($loan->status !== 'disetujui') {
             return redirect()->back()->with('error', 'Hanya pinjaman dengan status disetujui yang dapat diproses pencairannya.');
         }
 
-        $path = $request->file('transfer_proof')->store('transfer_proofs', 'public');
-
         $loan->update([
-            'status' => 'menunggu_pencairan',
-            'transfer_proof_path' => $path,
+            'status' => 'aktif',
+            'disbursed_at' => now(),
+            'current_remaining_principal' => $loan->principal_amount,
         ]);
 
-        return redirect()->back()->with('success', 'Bukti transfer berhasil diunggah. Menunggu verifikasi pencairan oleh Ketua.');
+        // Merekam mutasi pencairan
+        \App\Models\Mutation::create([
+            'user_id' => $loan->user_id,
+            'type' => 'pencairan_pinjaman',
+            'amount' => $loan->principal_amount,
+            'balance_after' => 0, // In a real scenario, this is derived from member's balance logic if applicable
+            'description' => 'Pencairan pinjaman #' . $loan->id,
+        ]);
+
+        return redirect()->back()->with('success', 'Dana berhasil dikirim dan pinjaman kini telah aktif.');
     }
 
     public function verifyDisbursement(Request $request, Loan $loan)

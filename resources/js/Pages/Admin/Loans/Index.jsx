@@ -110,7 +110,7 @@ export default function Index({ auth, loans }) {
                                                 {isBendahara && loan.status === 'disetujui' && (
                                                     <form method="post" action={route('admin.loans.disburse', loan.id)} style={{ display: 'inline' }}>
                                                         <input type="hidden" name="_token" value={document.head.querySelector('meta[name="csrf-token"]')?.content} />
-                                                        <button type="submit" className="ds-button-primary" style={{ padding: '6px 12px', fontSize: '12px', backgroundColor: '#10b981', color: 'white' }}>Cairkan Dana</button>
+                                                        <button type="submit" className="ds-button-primary" style={{ padding: '6px 12px', fontSize: '12px', backgroundColor: '#10b981', color: 'white' }}>Dana Terkirim</button>
                                                     </form>
                                                 )}
                                             </div>

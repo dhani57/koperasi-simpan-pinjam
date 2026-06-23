@@ -93,6 +93,13 @@ export default function Show({ auth, loan, limitInfo }) {
                                         <button type="submit" className="ds-button-secondary" style={{ width: '100%', padding: '12px', color: 'var(--color-semantic-down)' }}>Tolak</button>
                                     </form>
                                 </div>
+                            ) : isBendahara && loan.status === 'disetujui' ? (
+                                <div style={{ display: 'flex', gap: '12px' }}>
+                                    <form method="post" action={route('admin.loans.disburse', loan.id)} style={{ flex: 1 }}>
+                                        <input type="hidden" name="_token" value={document.head.querySelector('meta[name="csrf-token"]')?.content} />
+                                        <button type="submit" className="ds-button-primary" style={{ width: '100%', padding: '12px', backgroundColor: '#10b981', color: 'white' }}>Dana Terkirim</button>
+                                    </form>
+                                </div>
                             ) : (
                                 <div style={{ textAlign: 'center', padding: '16px', backgroundColor: 'var(--color-surface-soft)', borderRadius: '8px', fontSize: '14px', color: 'var(--color-muted)' }}>
                                     {loan.status === 'disetujui' ? 'Pinjaman ini telah disetujui sepenuhnya.' : 
@@ -105,16 +112,8 @@ export default function Show({ auth, loan, limitInfo }) {
                             {/* Tracking Status */}
                             <div style={{ marginTop: '24px', display: 'flex', flexDirection: 'column', gap: '12px', fontSize: '13px' }}>
                                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                                    <span style={{ color: 'var(--color-muted)' }}>Verifikasi Admin</span>
-                                    {loan.admin_verified_at ? (
-                                        <span style={{ color: 'var(--color-semantic-up)' }}>Selesai ✓</span>
-                                    ) : (
-                                        <span>Menunggu</span>
-                                    )}
-                                </div>
-                                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                                     <span style={{ color: 'var(--color-muted)' }}>Persetujuan Bendahara</span>
-                                    {loan.bendahara_approved_at ? (
+                                    {(loan.bendahara_approved_at || ['disetujui', 'menunggu_pencairan', 'aktif', 'lunas', 'menunggu_ketua'].includes(loan.status)) ? (
                                         <span style={{ color: 'var(--color-semantic-up)' }}>Selesai ✓</span>
                                     ) : (
                                         <span>Menunggu</span>
@@ -122,7 +121,7 @@ export default function Show({ auth, loan, limitInfo }) {
                                 </div>
                                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                                     <span style={{ color: 'var(--color-muted)' }}>Persetujuan Ketua</span>
-                                    {loan.ketua_approved_at ? (
+                                    {(loan.ketua_approved_at || ['disetujui', 'menunggu_pencairan', 'aktif', 'lunas', 'menunggu_bendahara'].includes(loan.status)) ? (
                                         <span style={{ color: 'var(--color-semantic-up)' }}>Selesai ✓</span>
                                     ) : (
                                         <span>Menunggu</span>

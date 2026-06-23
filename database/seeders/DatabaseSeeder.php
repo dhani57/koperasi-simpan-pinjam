@@ -116,38 +116,46 @@ class DatabaseSeeder extends Seeder
         }
 
         // 5. Loans
-        $loanStatuses = ['diajukan', 'disetujui', 'menunggu_pencairan', 'aktif', 'lunas', 'ditolak'];
+        $loanStatuses = ['diajukan', 'disetujui', 'aktif', 'lunas', 'ditolak', 'menunggu_bendahara', 'menunggu_ketua'];
+        $users = User::where('role', 'anggota')->get();
         $activeLoans = [];
-        
-        foreach (array_slice($members, 0, 15) as $index => $member) { // Give loans to first 15 members
-            $status = $loanStatuses[$index % count($loanStatuses)];
-            $principal = fake()->randomElement([5000000, 10000000, 15000000]);
-            $tenor = fake()->randomElement([12, 24, 36]);
 
-            // Guarantee at least one 36-month active loan for testing
-            if ($index === 3) { // $index 3 is 'aktif' based on the array above
-                $principal = 15000000;
-                $tenor = 36;
-            }
-            
-            $loan = Loan::create([
-                'user_id' => $member->id,
-                'principal_amount' => $principal,
-                'cooperative_fee_percentage' => 1.5,
-                'tenor_months' => $tenor,
-                'tenor_years' => ceil($tenor / 12),
-                'monthly_principal_installment' => $principal / $tenor,
-                'current_remaining_principal' => $status === 'aktif' ? $principal * 0.8 : $principal, // 80% left if active
-                'current_year_monthly_fee' => ($principal * 1.5) / 100,
-                'status' => $status,
-                'transfer_proof_path' => in_array($status, ['menunggu_pencairan', 'aktif', 'lunas']) ? 'transfer_proofs/dummy.png' : null,
-                'disbursed_at' => in_array($status, ['aktif', 'lunas']) ? now()->subMonths(3) : null,
-                'admin_verified_at' => in_array($status, ['disetujui', 'menunggu_pencairan', 'aktif', 'lunas', 'ditolak']) ? now()->subMonths(4) : null,
-                'admin_verified_by' => in_array($status, ['disetujui', 'menunggu_pencairan', 'aktif', 'lunas', 'ditolak']) ? User::where('role', 'pengurus')->first()->id : null,
-            ]);
+        foreach ($users as $user) {
+            // Memberikan 1-2 pinjaman history untuk tiap user
+            $numLoans = rand(1, 2);
+            for ($i = 0; $i < $numLoans; $i++) {
+                $status = $loanStatuses[array_rand($loanStatuses)];
+                $principal = rand(1, 15) * 1000000;
+                $tenorYears = rand(1, 3);
+                $feePercentage = 1.5;
 
-            if ($status === 'aktif') {
-                $activeLoans[] = $loan;
+                // Create loan record via service logic approximation
+                // so active months logic is respected
+                $activeMonthsPerYear = 10;
+                $totalTenorMonths = $tenorYears * $activeMonthsPerYear;
+                
+                $monthlyPrincipal = $principal / $totalTenorMonths;
+                $monthlyFee = $principal * ($feePercentage / 100);
+
+                $loan = Loan::create([
+                    'user_id' => $user->id,
+                    'principal_amount' => $principal,
+                    'cooperative_fee_percentage' => $feePercentage,
+                    'tenor_months' => $totalTenorMonths,
+                    'tenor_years' => $tenorYears,
+                    'monthly_principal_installment' => $monthlyPrincipal,
+                    'current_remaining_principal' => $status === 'lunas' ? 0 : $principal,
+                    'current_year_monthly_fee' => $status === 'lunas' ? 0 : $monthlyFee,
+                    'status' => $status,
+                    'transfer_proof_path' => in_array($status, ['aktif', 'lunas']) ? 'transfer_proofs/dummy.png' : null,
+                    'disbursed_at' => in_array($status, ['aktif', 'lunas']) ? now()->subMonths(3) : null,
+                    'admin_verified_at' => in_array($status, ['disetujui', 'aktif', 'lunas', 'ditolak', 'menunggu_bendahara', 'menunggu_ketua']) ? now()->subMonths(4) : null,
+                    'admin_verified_by' => in_array($status, ['disetujui', 'aktif', 'lunas', 'ditolak', 'menunggu_bendahara', 'menunggu_ketua']) ? User::where('role', 'pengurus')->first()->id : null,
+                ]);
+
+                if ($status === 'aktif') {
+                    $activeLoans[] = $loan;
+                }
             }
         }
 

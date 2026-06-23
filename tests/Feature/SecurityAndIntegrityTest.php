@@ -59,9 +59,9 @@ class SecurityAndIntegrityTest extends TestCase
         DB::statement('DELETE FROM mutations WHERE id = ?', [$mutation->id]);
     }
 
-    public function test_disbursement_requires_transfer_proof()
+    public function test_disbursement_success_changes_status_to_aktif()
     {
-        // BEN-03: Cairkan tanpa bukti transfer ditolak
+        // BEN-04: Cairkan langsung menjadi aktif tanpa bukti transfer
         $bendahara = User::factory()->create(['role' => 'bendahara']);
         $this->actingAs($bendahara);
 
@@ -77,39 +77,15 @@ class SecurityAndIntegrityTest extends TestCase
             'status' => 'disetujui'
         ]);
 
-        // Coba cairkan tanpa file upload
-        $response = $this->post("/admin/loans/{$loan->id}/disburse", []);
-
-        $response->assertSessionHasErrors('transfer_proof');
-        $this->assertEquals('disetujui', $loan->fresh()->status);
-    }
-
-    public function test_disbursement_success_with_transfer_proof()
-    {
-        // BEN-04: Cairkan dengan bukti transfer
-        $bendahara = User::factory()->create(['role' => 'bendahara']);
-        $this->actingAs($bendahara);
-
-        $anggota = User::factory()->create(['role' => 'anggota']);
-        $loan = Loan::create([
-            'user_id' => $anggota->id,
-            'principal_amount' => 5000000,
-            'cooperative_fee_percentage' => 1.5,
-            'tenor_months' => 12,
-            'monthly_principal_installment' => 5000000 / 12,
-            'current_remaining_principal' => 5000000,
-            'current_year_monthly_fee' => 75000,
-            'status' => 'disetujui'
-        ]);
-
-        $file = UploadedFile::fake()->image('bukti.jpg');
-
-        $response = $this->post("/admin/loans/{$loan->id}/disburse", [
-            'transfer_proof' => $file
-        ]);
+        $response = $this->post("/admin/loans/{$loan->id}/disburse");
 
         $response->assertSessionHas('success');
-        $this->assertEquals('menunggu_pencairan', $loan->fresh()->status);
-        $this->assertNotNull($loan->fresh()->transfer_proof_path);
+        $this->assertEquals('aktif', $loan->fresh()->status);
+        $this->assertNotNull($loan->fresh()->disbursed_at);
+        $this->assertDatabaseHas('mutations', [
+            'user_id' => $anggota->id,
+            'type' => 'pencairan_pinjaman',
+            'amount' => 5000000
+        ]);
     }
 }
