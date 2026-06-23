@@ -35,7 +35,7 @@ export default function Print({ auth, mutations }) {
 
             {/* Header / Kop Slip */}
             <div style={{ borderBottom: '2px solid black', paddingBottom: '20px', marginBottom: '30px', textAlign: 'center' }}>
-                <h1 style={{ margin: 0, fontSize: '24px', fontWeight: 'bold' }}>KOPERASI KARYAWAN EKSEKUTIF</h1>
+                <h1 style={{ margin: 0, fontSize: '24px', fontWeight: 'bold' }}>KOPERASI INTERNAL</h1>
                 <p style={{ margin: '5px 0 0 0', fontSize: '14px' }}>E-SLIP MUTASI ANGGOTA</p>
             </div>
 

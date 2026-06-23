@@ -260,7 +260,7 @@ export default function Welcome({ auth, adminPhone }) {
             <FooterLight>
                 <div style={{ maxWidth: '1200px', margin: '0 auto', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 'var(--spacing-xl)' }}>
                     <div>
-                        <h3 className="ds-title-md" style={{ color: 'var(--color-ink)' }}>Koperasi Karyawan Eksekutif</h3>
+                        <h3 className="ds-title-md" style={{ color: 'var(--color-ink)' }}>Koperasi Internal</h3>
                         <p style={{ marginTop: 'var(--spacing-sm)' }}>Platform manajemen sirkulasi finansial tertutup yang didesain khusus untuk efisiensi ekosistem internal perusahaan.</p>
                     </div>
                     <div>
