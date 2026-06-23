@@ -34,7 +34,11 @@ export default function UpdateProfileInformation({
                 return;
             }
             setData('profile_photo', file);
-            setPreviewPhoto(URL.createObjectURL(file));
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setPreviewPhoto(reader.result);
+            };
+            reader.readAsDataURL(file);
         } else {
             setData('profile_photo', null);
             setPreviewPhoto(null);
