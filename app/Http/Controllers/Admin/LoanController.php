@@ -103,8 +103,8 @@ class LoanController extends Controller
     {
         Gate::authorize('reject', $loan);
 
-        if ($loan->status !== 'diajukan' && $loan->status !== 'diverifikasi') { // Assuming diverifikasi might be a status, but let's allow bendahara to reject too
-            // If the status is already active/disetujui, we can't reject
+        if ($loan->status !== 'diajukan' && $loan->status !== 'menunggu_ketua' && $loan->status !== 'menunggu_bendahara') {
+            // Jika sudah aktif/disetujui/lunas, tidak bisa ditolak
         }
 
         $loan->update([
@@ -120,7 +120,7 @@ class LoanController extends Controller
     {
         Gate::authorize('approve', $loan);
 
-        $validStatuses = ['diajukan', 'diverifikasi', 'menunggu_bendahara', 'menunggu_ketua'];
+        $validStatuses = ['diajukan', 'menunggu_bendahara', 'menunggu_ketua'];
         if (!in_array($loan->status, $validStatuses)) {
             return redirect()->back()->with('error', 'Pinjaman tidak valid untuk disetujui.');
         }

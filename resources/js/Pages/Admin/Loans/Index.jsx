@@ -56,11 +56,9 @@ export default function Index({ auth, loans, filters }) {
                         >
                             <option value="">Semua Status</option>
                             <option value="diajukan">Diajukan</option>
-                            <option value="diverifikasi">Diverifikasi</option>
                             <option value="menunggu_ketua">Menunggu Ketua</option>
                             <option value="menunggu_bendahara">Menunggu Bendahara</option>
                             <option value="disetujui">Disetujui</option>
-                            <option value="menunggu_pencairan">Menunggu Pencairan</option>
                             <option value="aktif">Aktif (Berjalan)</option>
                             <option value="lunas">Lunas</option>
                             <option value="ditolak">Ditolak</option>
@@ -105,8 +103,8 @@ export default function Index({ auth, loans, filters }) {
                                                 borderRadius: '4px', 
                                                 fontSize: '12px', 
                                                 fontWeight: 600,
-                                                backgroundColor: loan.status === 'aktif' ? '#dcfce7' : (['diajukan', 'diverifikasi', 'menunggu_ketua', 'menunggu_bendahara'].includes(loan.status) ? '#fef3c7' : (loan.status === 'disetujui' ? '#e0e7ff' : '#f1f5f9')),
-                                                color: loan.status === 'aktif' ? '#166534' : (['diajukan', 'diverifikasi', 'menunggu_ketua', 'menunggu_bendahara'].includes(loan.status) ? '#92400e' : (loan.status === 'disetujui' ? '#3730a3' : '#475569'))
+                                                backgroundColor: loan.status === 'aktif' ? '#dcfce7' : (['diajukan', 'menunggu_ketua', 'menunggu_bendahara'].includes(loan.status) ? '#fef3c7' : (loan.status === 'disetujui' ? '#e0e7ff' : '#f1f5f9')),
+                                                color: loan.status === 'aktif' ? '#166534' : (['diajukan', 'menunggu_ketua', 'menunggu_bendahara'].includes(loan.status) ? '#92400e' : (loan.status === 'disetujui' ? '#3730a3' : '#475569'))
                                             }}>
                                                 {loan.status.replace('_', ' ').toUpperCase()}
                                             </span>
@@ -136,8 +134,8 @@ export default function Index({ auth, loans, filters }) {
 
                                                 {/* Bendahara / Ketua Actions */}
                                                 {(
-                                                    (isBendahara && ['diajukan', 'diverifikasi', 'menunggu_bendahara'].includes(loan.status)) ||
-                                                    (isKetua && ['diajukan', 'diverifikasi', 'menunggu_ketua'].includes(loan.status))
+                                                    (isBendahara && ['diajukan', 'menunggu_bendahara'].includes(loan.status)) ||
+                                                    (isKetua && ['diajukan', 'menunggu_ketua'].includes(loan.status))
                                                 ) && (
                                                     <>
                                                         <form method="post" action={route('admin.loans.approve', loan.id)} style={{ display: 'inline' }} onSubmit={(e) => { if(!confirm('Anda yakin ingin menyetujui pengajuan ini?')) e.preventDefault(); }}>
