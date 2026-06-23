@@ -40,10 +40,10 @@ export default function Index({ auth, periods, inactiveMonths = [] }) {
         <AdminLayout auth={auth} title="Potongan Bulanan (Tagihan)">
             <Head title="Potongan Bulanan" />
 
-            <div style={{ display: 'grid', gridTemplateColumns: auth.user.role === 'pengawas' ? '1fr' : '1fr 2fr', gap: '24px' }}>
+            <div className={`grid gap-6 ${auth.user.role === 'pengawas' ? 'grid-cols-1' : 'grid-cols-1 lg:grid-cols-3'}`}>
                 {/* Generate Form */}
                 {auth.user.role !== 'pengawas' && (
-                    <div style={{ backgroundColor: 'white', borderRadius: 'var(--rounded-xl)', padding: '24px', border: '1px solid var(--color-hairline)', alignSelf: 'start' }}>
+                    <div className="lg:col-span-1" style={{ backgroundColor: 'white', borderRadius: 'var(--rounded-xl)', padding: '24px', border: '1px solid var(--color-hairline)', alignSelf: 'start' }}>
                         <h2 className="ds-title-md" style={{ marginBottom: '8px' }}>Buat Tagihan Baru</h2>
                         <p style={{ color: 'var(--color-muted)', fontSize: '13px', marginBottom: '24px' }}>
                             Generate tagihan potongan simpanan rutin dan angsuran pinjaman untuk diserahkan ke bagian Payroll.
@@ -92,7 +92,7 @@ export default function Index({ auth, periods, inactiveMonths = [] }) {
                 )}
 
                 {/* List of Periods */}
-                <div style={{ backgroundColor: 'white', borderRadius: 'var(--rounded-xl)', padding: '24px', border: '1px solid var(--color-hairline)' }}>
+                <div className={auth.user.role === 'pengawas' ? '' : 'lg:col-span-2'} style={{ backgroundColor: 'white', borderRadius: 'var(--rounded-xl)', padding: '24px', border: '1px solid var(--color-hairline)' }}>
                     <h2 className="ds-title-md" style={{ marginBottom: '24px' }}>Riwayat Potongan Bulanan</h2>
 
                     {periods.data.length === 0 ? (
@@ -100,7 +100,8 @@ export default function Index({ auth, periods, inactiveMonths = [] }) {
                             <p style={{ color: 'var(--color-muted)' }}>Belum ada riwayat potongan bulanan.</p>
                         </div>
                     ) : (
-                        <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
+                        <div className="overflow-x-auto">
+                            <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', minWidth: '500px' }}>
                             <thead>
                                 <tr style={{ borderBottom: '1px solid var(--color-hairline)' }}>
                                     <th style={{ padding: '12px', color: 'var(--color-muted)', fontWeight: 600, fontSize: '13px' }}>Periode</th>
@@ -150,7 +151,8 @@ export default function Index({ auth, periods, inactiveMonths = [] }) {
                                     </tr>
                                 ))}
                             </tbody>
-                        </table>
+                            </table>
+                        </div>
                     )}
                 </div>
             </div>

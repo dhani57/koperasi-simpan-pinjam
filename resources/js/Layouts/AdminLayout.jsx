@@ -210,8 +210,8 @@ export default function AdminLayout({ auth, children, title }) {
                         </div>
 
                         {/* Title (Mobile Only) */}
-                        <div className="flex lg:hidden text-white font-semibold text-lg">
-                            Admin
+                        <div className="flex lg:hidden text-white font-semibold text-lg capitalize">
+                            {auth.user.role}
                         </div>
 
                         {/* Profile Area */}
