@@ -114,14 +114,14 @@ export default function Welcome({ auth, adminPhone }) {
 
             <main style={{ flex: 1 }}>
                 <HeroBandDark>
-                    <div ref={heroTextRef} style={{ paddingRight: 'var(--spacing-xl)', maxWidth: '560px' }}>
+                    <div ref={heroTextRef} className="lg:pr-8 max-w-[560px] mx-auto lg:mx-0">
                         <h1 className="ds-display-mega" style={{ marginBottom: 'var(--spacing-md)', opacity: 0 }}>
                             Buku Besar Digital Karyawan.
                         </h1>
                         <p className="ds-body-md" style={{ color: 'var(--color-on-dark-soft)', marginBottom: 'var(--spacing-xl)', opacity: 0 }}>
                             Sistem tertutup dengan integrasi potong gaji otomatis. Aman, transparan, dan tanpa repot. Khusus untuk ekosistem internal perusahaan.
                         </p>
-                        <div style={{ display: 'flex', gap: 'var(--spacing-base)', opacity: 0 }}>
+                        <div className="flex justify-center lg:justify-start gap-4 opacity-0">
                             <ButtonPrimary href={route('login')} className="hover:opacity-90 transition-opacity" style={{ backgroundColor: 'var(--color-canvas)', color: 'var(--color-primary)', boxShadow: '0 4px 12px rgba(0,0,0,0.15)' }}>
                                 Lihat Dashboard
                             </ButtonPrimary>
@@ -131,10 +131,10 @@ export default function Welcome({ auth, adminPhone }) {
                         </div>
                     </div>
                     
-                    <div style={{ flex: 1, display: 'flex', justifyContent: 'center' }}>
-                        {/* Wrapper acts as bounding box for both cards. Margin offsets the absolute card. */}
-                        <div ref={heroCardsRef} style={{ position: 'relative', width: '100%', maxWidth: '440px', marginBottom: '100px', marginRight: '50px' }}>
-                            <ProductUiCardLight style={{ position: 'relative', zIndex: 1, width: '100%', opacity: 0 }}>
+                    <div className="flex-1 flex justify-center mt-12 lg:mt-0 w-full">
+                        {/* Wrapper acts as bounding box for both cards. Margin offsets the absolute card on desktop. */}
+                        <div ref={heroCardsRef} className="relative w-full max-w-[440px] mb-8 lg:mb-[100px] lg:mr-[50px] px-4 lg:px-0">
+                            <ProductUiCardLight className="relative z-10 w-full opacity-0" style={{ opacity: 0 }}>
                                 <div style={{ marginBottom: 'var(--spacing-md)' }}>
                                     <div className="ds-body-md" style={{ color: 'var(--color-muted)' }}>Estimasi Potong Gaji (Okt)</div>
                                     <div style={{ fontFamily: 'var(--font-mono)', fontSize: '28px', fontWeight: 600 }}>Rp 750.000</div>
@@ -163,15 +163,7 @@ export default function Welcome({ auth, adminPhone }) {
                                 </div>
                             </ProductUiCardLight>
                             
-                            <ProductUiCardLight style={{ 
-                                position: 'absolute', 
-                                top: 'calc(100% - 20px)', 
-                                right: '-50px', 
-                                zIndex: 2, 
-                                width: '320px',
-                                opacity: 0,
-                                boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)'
-                            }}>
+                            <ProductUiCardLight className="relative lg:absolute lg:top-[calc(100%-20px)] lg:-right-[50px] z-20 w-[95%] lg:w-[320px] mx-auto lg:mx-0 -mt-6 lg:mt-0 shadow-2xl opacity-0" style={{ opacity: 0 }}>
                                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--spacing-sm)' }}>
                                     <div className="ds-body-sm" style={{ color: 'var(--color-muted)' }}>Proyeksi SHU Akhir Tahun</div>
                                     <span className="ds-badge-pill">ESTIMASI</span>
