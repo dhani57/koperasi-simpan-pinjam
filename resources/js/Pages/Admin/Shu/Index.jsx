@@ -1,11 +1,14 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Head, useForm, router } from '@inertiajs/react';
 import AdminLayout from '@/Layouts/AdminLayout';
 
 export default function Index({ auth, year, shuData }) {
     const { post, processing } = useForm();
+    const [currentPage, setCurrentPage] = useState(1);
+    const itemsPerPage = 10;
 
     const handleYearChange = (e) => {
+        setCurrentPage(1); // Reset page on year change
         router.get(route('admin.shu.index'), { year: e.target.value }, { preserveState: true });
     };
 
@@ -21,6 +24,11 @@ export default function Index({ auth, year, shuData }) {
     const isKetua = auth.user.role === 'ketua';
     const isBendahara = auth.user.role === 'bendahara';
     const isPengawas = auth.user.role === 'pengawas';
+
+    const totalItems = shuData.member_proportions.length;
+    const totalPages = Math.ceil(totalItems / itemsPerPage);
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const paginatedData = shuData.member_proportions.slice(startIndex, startIndex + itemsPerPage);
 
     return (
         <AdminLayout auth={auth} title={`Laporan SHU & Tutup Buku (${year})`}>
@@ -83,9 +91,9 @@ export default function Index({ auth, year, shuData }) {
                             </tr>
                         </thead>
                         <tbody>
-                            {shuData.member_proportions.map((item, index) => (
+                            {paginatedData.map((item, index) => (
                                 <tr key={item.user.id} style={{ borderBottom: '1px solid var(--color-hairline)' }}>
-                                    <td style={{ padding: '12px', fontSize: '14px', color: 'var(--color-muted)' }}>{index + 1}</td>
+                                    <td style={{ padding: '12px', fontSize: '14px', color: 'var(--color-muted)' }}>{startIndex + index + 1}</td>
                                     <td style={{ padding: '12px', fontSize: '14px', fontWeight: 500 }}>{item.user.name}</td>
                                     <td className="number-display" style={{ padding: '12px', textAlign: 'right' }}>{formatRp(item.score)}</td>
                                     <td className="number-display" style={{ padding: '12px', textAlign: 'right', fontWeight: 'bold' }}>{item.proportion_percentage.toFixed(2)}%</td>
@@ -100,6 +108,33 @@ export default function Index({ auth, year, shuData }) {
                             )}
                         </tbody>
                     </table>
+
+                    {/* Pagination Controls */}
+                    {totalPages > 1 && (
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '16px', flexWrap: 'wrap', gap: '16px' }}>
+                            <div style={{ fontSize: '13px', color: 'var(--color-muted)' }}>
+                                Menampilkan {startIndex + 1} hingga {Math.min(startIndex + itemsPerPage, totalItems)} dari total {totalItems} anggota
+                            </div>
+                            <div style={{ display: 'flex', gap: '8px' }}>
+                                <button 
+                                    onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                                    disabled={currentPage === 1}
+                                    className="ds-button"
+                                    style={{ padding: '6px 12px', fontSize: '13px', borderRadius: '4px', border: '1px solid var(--color-hairline)', backgroundColor: currentPage === 1 ? 'var(--color-canvas)' : 'white', cursor: currentPage === 1 ? 'not-allowed' : 'pointer', color: currentPage === 1 ? 'var(--color-muted)' : 'var(--color-ink)' }}
+                                >
+                                    Sebelumnya
+                                </button>
+                                <button 
+                                    onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                                    disabled={currentPage === totalPages}
+                                    className="ds-button"
+                                    style={{ padding: '6px 12px', fontSize: '13px', borderRadius: '4px', border: '1px solid var(--color-hairline)', backgroundColor: currentPage === totalPages ? 'var(--color-canvas)' : 'white', cursor: currentPage === totalPages ? 'not-allowed' : 'pointer', color: currentPage === totalPages ? 'var(--color-muted)' : 'var(--color-ink)' }}
+                                >
+                                    Selanjutnya
+                                </button>
+                            </div>
+                        </div>
+                    )}
                 </div>
 
                 {/* Actions */}
