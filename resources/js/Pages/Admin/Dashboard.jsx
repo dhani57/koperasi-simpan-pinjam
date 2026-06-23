@@ -300,7 +300,7 @@ export default function Dashboard({ auth, stats, roleData }) {
                                         <LineChart data={roleData.asset_trend}>
                                             <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f0f0f0" />
                                             <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{fill: '#888', fontSize: 12}} />
-                                            <YAxis axisLine={false} tickLine={false} tick={{fill: '#888', fontSize: 12}} tickFormatter={(val) => `Rp${(val/1000000).toFixed(0)}M`} />
+                                            <YAxis axisLine={false} tickLine={false} tick={{fill: '#888', fontSize: 12}} tickFormatter={(val) => `Rp${(val/1000000).toFixed(0)}jt`} />
                                             <Tooltip formatter={(value) => `Rp${new Intl.NumberFormat('id-ID').format(value)}`} />
                                             <Line type="monotone" dataKey="Aset" stroke="var(--color-primary)" strokeWidth={3} />
                                         </LineChart>
@@ -315,7 +315,7 @@ export default function Dashboard({ auth, stats, roleData }) {
                                         <BarChart data={roleData.savings_vs_loans}>
                                             <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f0f0f0" />
                                             <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{fill: '#888', fontSize: 12}} />
-                                            <YAxis axisLine={false} tickLine={false} tick={{fill: '#888', fontSize: 12}} tickFormatter={(val) => `Rp${(val/1000000).toFixed(0)}M`} />
+                                            <YAxis axisLine={false} tickLine={false} tick={{fill: '#888', fontSize: 12}} tickFormatter={(val) => `Rp${(val/1000000).toFixed(0)}jt`} />
                                             <Tooltip formatter={(value) => `Rp${new Intl.NumberFormat('id-ID').format(value)}`} />
                                             <Legend />
                                             <Bar dataKey="Simpanan" fill="var(--color-semantic-up)" radius={[4, 4, 0, 0]} />
@@ -356,12 +356,24 @@ export default function Dashboard({ auth, stats, roleData }) {
 
                         <div className="col-span-1 lg:col-span-4" style={{ backgroundColor: 'var(--color-canvas)', borderRadius: 'var(--rounded-xl)', padding: '24px', boxShadow: '0 2px 6px rgba(0,0,0,0.02)', marginTop: 'var(--spacing-md)' }}>
                             <h3 style={{ fontSize: '16px', fontWeight: 600, color: 'var(--color-ink)', marginBottom: '16px' }}>Top Anggota (Simpanan)</h3>
-                            {roleData.top_members?.map((member, idx) => (
-                                <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '12px', alignItems: 'center' }}>
-                                    <span style={{ fontSize: '14px', fontWeight: 500 }}>{member.name.split(' ')[0]}</span>
-                                    <span style={{ fontSize: '13px', fontFamily: 'var(--font-mono)', color: 'var(--color-muted)' }}>Rp{numberFormat(member.total_saving_balance)}</span>
-                                </div>
-                            ))}
+                            <div className="overflow-x-auto w-full">
+                                <table style={{ width: '100%', textAlign: 'left', borderCollapse: 'collapse', minWidth: '100%' }}>
+                                    <thead>
+                                        <tr style={{ borderBottom: '1px solid var(--color-hairline)' }}>
+                                            <th style={{ padding: '12px 8px', fontSize: '13px', color: 'var(--color-muted)', fontWeight: 500 }}>Nama Anggota</th>
+                                            <th style={{ padding: '12px 8px', fontSize: '13px', color: 'var(--color-muted)', fontWeight: 500, textAlign: 'right' }}>Total Simpanan</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {roleData.top_members?.map((member, idx) => (
+                                            <tr key={idx} style={{ borderBottom: '1px solid var(--color-hairline)' }}>
+                                                <td style={{ padding: '12px 8px', fontSize: '14px', fontWeight: 500 }}>{member.name}</td>
+                                                <td style={{ padding: '12px 8px', fontSize: '14px', fontFamily: 'var(--font-mono)', textAlign: 'right' }}>Rp{numberFormat(member.total_saving_balance)}</td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
                     </>
                 )}
