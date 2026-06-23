@@ -46,10 +46,10 @@ export default function Index({ auth, loans }) {
                                                 borderRadius: '4px', 
                                                 fontSize: '12px', 
                                                 fontWeight: 600,
-                                                backgroundColor: loan.status === 'aktif' ? '#dcfce7' : (loan.status === 'diajukan' ? '#fef3c7' : (loan.status === 'disetujui' ? '#e0e7ff' : '#f1f5f9')),
-                                                color: loan.status === 'aktif' ? '#166534' : (loan.status === 'diajukan' ? '#92400e' : (loan.status === 'disetujui' ? '#3730a3' : '#475569'))
+                                                backgroundColor: loan.status === 'aktif' ? '#dcfce7' : (['diajukan', 'diverifikasi', 'menunggu_ketua', 'menunggu_bendahara'].includes(loan.status) ? '#fef3c7' : (loan.status === 'disetujui' ? '#e0e7ff' : '#f1f5f9')),
+                                                color: loan.status === 'aktif' ? '#166534' : (['diajukan', 'diverifikasi', 'menunggu_ketua', 'menunggu_bendahara'].includes(loan.status) ? '#92400e' : (loan.status === 'disetujui' ? '#3730a3' : '#475569'))
                                             }}>
-                                                {loan.status.toUpperCase()}
+                                                {loan.status.replace('_', ' ').toUpperCase()}
                                             </span>
                                         </td>
                                         <td style={{ padding: '16px', textAlign: 'right' }}>
@@ -69,24 +69,26 @@ export default function Index({ auth, loans }) {
                                                 )}
 
                                                 {/* Bendahara / Ketua Actions */}
-                                                {(isBendahara || isKetua) && (loan.status === 'diajukan' || loan.status === 'diverifikasi') && (
-                                                    <form method="post" action={route('admin.loans.approve', loan.id)} style={{ display: 'inline' }}>
-                                                        <input type="hidden" name="_token" value={document.head.querySelector('meta[name="csrf-token"]')?.content} />
-                                                        <button type="submit" className="ds-button-primary" style={{ padding: '6px 12px', fontSize: '12px' }}>Setujui</button>
-                                                    </form>
+                                                {(
+                                                    (isBendahara && ['diajukan', 'diverifikasi', 'menunggu_bendahara'].includes(loan.status)) ||
+                                                    (isKetua && ['diajukan', 'diverifikasi', 'menunggu_ketua'].includes(loan.status))
+                                                ) && (
+                                                    <>
+                                                        <form method="post" action={route('admin.loans.approve', loan.id)} style={{ display: 'inline' }}>
+                                                            <input type="hidden" name="_token" value={document.head.querySelector('meta[name="csrf-token"]')?.content} />
+                                                            <button type="submit" className="ds-button-primary" style={{ padding: '6px 12px', fontSize: '12px' }}>Setujui</button>
+                                                        </form>
+                                                        <form method="post" action={route('admin.loans.reject', loan.id)} style={{ display: 'inline' }}>
+                                                            <input type="hidden" name="_token" value={document.head.querySelector('meta[name="csrf-token"]')?.content} />
+                                                            <button type="submit" className="ds-button-secondary" style={{ padding: '6px 12px', fontSize: '12px', color: 'var(--color-semantic-down)' }}>Tolak</button>
+                                                        </form>
+                                                    </>
                                                 )}
 
                                                 {isBendahara && loan.status === 'disetujui' && (
                                                     <form method="post" action={route('admin.loans.disburse', loan.id)} style={{ display: 'inline' }}>
                                                         <input type="hidden" name="_token" value={document.head.querySelector('meta[name="csrf-token"]')?.content} />
                                                         <button type="submit" className="ds-button-primary" style={{ padding: '6px 12px', fontSize: '12px', backgroundColor: '#10b981', color: 'white' }}>Cairkan Dana</button>
-                                                    </form>
-                                                )}
-
-                                                {(isBendahara || isKetua) && (loan.status === 'diajukan' || loan.status === 'diverifikasi') && (
-                                                    <form method="post" action={route('admin.loans.reject', loan.id)} style={{ display: 'inline' }}>
-                                                        <input type="hidden" name="_token" value={document.head.querySelector('meta[name="csrf-token"]')?.content} />
-                                                        <button type="submit" className="ds-button-secondary" style={{ padding: '6px 12px', fontSize: '12px', color: 'var(--color-semantic-down)' }}>Tolak</button>
                                                     </form>
                                                 )}
                                             </div>

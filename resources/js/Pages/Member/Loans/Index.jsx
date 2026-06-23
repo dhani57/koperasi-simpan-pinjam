@@ -71,7 +71,7 @@ export default function Index({ auth, loans }) {
                                                 fontWeight: 700,
                                                 textTransform: 'uppercase'
                                             }}>
-                                                {loan.status}
+                                                {loan.status.replace('_', ' ')}
                                             </span>
                                         </td>
                                     </tr>
