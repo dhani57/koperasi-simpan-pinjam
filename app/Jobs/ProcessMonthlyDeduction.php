@@ -43,7 +43,7 @@ class ProcessMonthlyDeduction implements ShouldQueue
         if (!$isMonthActive) {
             $this->period->update([
                 'is_active' => false,
-                'status' => 'selesai_divalidasi'
+                'status' => 'selesai'
             ]);
             Log::info("Month {$this->period->month} is inactive. Skipping deductions.");
             return;

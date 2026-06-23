@@ -24,14 +24,14 @@ class MonthlyDeductionJobTest extends TestCase
 
     public function test_inactive_month_skips_deductions()
     {
-        $period = DeductionPeriod::create(['month' => 6, 'year' => 2026, 'status' => 'draf']);
+        $period = DeductionPeriod::create(['month' => 6, 'year' => 2026, 'status' => 'proses']);
         
         $job = new ProcessMonthlyDeduction($period);
         $job->handle(new \App\Services\DeductionService());
 
         $period->refresh();
         $this->assertEquals(false, $period->is_active);
-        $this->assertEquals('selesai_divalidasi', $period->status);
+        $this->assertEquals('selesai', $period->status);
         
         $this->assertEquals(0, DeductionDetail::where('deduction_period_id', $period->id)->count());
     }
@@ -51,7 +51,7 @@ class MonthlyDeductionJobTest extends TestCase
             'status' => 'aktif'
         ]);
 
-        $period = DeductionPeriod::create(['month' => 5, 'year' => 2026, 'status' => 'draf']);
+        $period = DeductionPeriod::create(['month' => 5, 'year' => 2026, 'status' => 'proses']);
         
         $job = new ProcessMonthlyDeduction($period);
         $job->handle(new \App\Services\DeductionService());

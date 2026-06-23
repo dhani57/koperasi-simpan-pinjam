@@ -71,8 +71,9 @@ Route::middleware(['auth', 'verified', 'admin'])->prefix('admin')->name('admin.'
     Route::post('loans/{loan}/disburse', [LoanController::class, 'disburse'])->name('loans.disburse')->middleware('role:bendahara');
     
     // Potongan Bulanan Routes
-    Route::resource('deductions', DeductionController::class)->only(['index']);
+    Route::resource('deductions', DeductionController::class)->only(['index', 'show']);
     Route::post('deductions', [DeductionController::class, 'store'])->name('deductions.store')->middleware('role:bendahara');
+    Route::patch('deductions/{deduction}/selesai', [DeductionController::class, 'markAsSelesai'])->name('deductions.selesai')->middleware('role:bendahara');
     Route::get('deductions/{deduction}/export', [DeductionController::class, 'export'])->name('deductions.export')->middleware('role:bendahara');
     
     // Log Mutasi Routes

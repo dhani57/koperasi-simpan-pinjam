@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Head, useForm } from '@inertiajs/react';
+import { Head, useForm, Link, router } from '@inertiajs/react';
 import AdminLayout from '@/Layouts/AdminLayout';
 
 export default function Index({ auth, periods }) {
@@ -82,22 +82,35 @@ export default function Index({ auth, periods }) {
                                                 borderRadius: '4px', 
                                                 fontSize: '12px', 
                                                 fontWeight: 600,
-                                                backgroundColor: period.status === 'selesai_divalidasi' ? '#dcfce7' : '#fef3c7',
-                                                color: period.status === 'selesai_divalidasi' ? '#166534' : '#92400e'
+                                                backgroundColor: period.status === 'selesai' ? '#dcfce7' : '#fef3c7',
+                                                color: period.status === 'selesai' ? '#166534' : '#92400e'
                                             }}>
-                                                {period.status.replace(/_/g, ' ').toUpperCase()}
+                                                {period.status.toUpperCase()}
                                             </span>
                                         </td>
                                         <td style={{ padding: '12px', textAlign: 'right' }}>
-                                            <a 
-                                                href={route('admin.deductions.export', period.id)}
-                                                className="ds-button-secondary"
-                                                style={{ display: 'inline-block', padding: '6px 12px', fontSize: '12px', textDecoration: 'none' }}
-                                                target="_blank"
-                                                rel="noreferrer"
-                                            >
-                                                Ekspor CSV
-                                            </a>
+                                            <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end' }}>
+                                                {period.status === 'proses' && auth.user.role === 'bendahara' && (
+                                                    <button 
+                                                        onClick={() => {
+                                                            if(confirm('Anda yakin tagihan ini sudah selesai dipotong oleh HRD? Status tidak dapat dikembalikan lagi.')) {
+                                                                router.patch(route('admin.deductions.selesai', period.id));
+                                                            }
+                                                        }}
+                                                        className="ds-button-secondary"
+                                                        style={{ padding: '6px 12px', fontSize: '12px' }}
+                                                    >
+                                                        Tandai Selesai
+                                                    </button>
+                                                )}
+                                                <Link 
+                                                    href={route('admin.deductions.show', period.id)}
+                                                    className="ds-button-primary"
+                                                    style={{ padding: '6px 12px', fontSize: '12px', textDecoration: 'none' }}
+                                                >
+                                                    Detail
+                                                </Link>
+                                            </div>
                                         </td>
                                     </tr>
                                 ))}

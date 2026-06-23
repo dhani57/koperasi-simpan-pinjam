@@ -44,7 +44,7 @@ class DeductionController extends Controller
             $period = DeductionPeriod::create([
                 'month' => $month,
                 'year' => $year,
-                'status' => 'draf',
+                'status' => 'proses',
                 'is_active' => true,
             ]);
 
@@ -55,6 +55,35 @@ class DeductionController extends Controller
         } catch (\Exception $e) {
             return redirect()->back()->with('error', 'Gagal generate tagihan: ' . $e->getMessage());
         }
+    }
+
+    public function show(DeductionPeriod $deduction)
+    {
+        if (!in_array(auth()->user()->role, ['bendahara', 'pengawas'])) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        $details = DeductionDetail::with('user')->where('deduction_period_id', $deduction->id)->get();
+        
+        return inertia('Admin/Deductions/Show', [
+            'period' => $deduction,
+            'details' => $details
+        ]);
+    }
+
+    public function markAsSelesai(DeductionPeriod $deduction)
+    {
+        if (auth()->user()->role !== 'bendahara') {
+            abort(403, 'Unauthorized action.');
+        }
+
+        if ($deduction->status === 'selesai') {
+            return redirect()->back()->with('error', 'Tagihan ini sudah ditandai selesai.');
+        }
+
+        $deduction->update(['status' => 'selesai']);
+
+        return redirect()->back()->with('success', 'Status tagihan bulanan berhasil ditandai selesai.');
     }
 
     public function export(DeductionPeriod $deduction)
@@ -79,12 +108,15 @@ class DeductionController extends Controller
             fputcsv($file, ['NIK', 'Nama Anggota', 'Potongan Simpanan', 'Potongan Pinjaman', 'Total Potongan']);
 
             foreach ($details as $row) {
+                $loanTotal = $row->loan_principal_amount + $row->loan_fee_amount;
+                $total = $row->routine_saving_amount + $loanTotal;
+                
                 fputcsv($file, [
                     $row->user->identity_number,
                     $row->user->name,
-                    $row->saving_deduction_amount,
-                    $row->loan_deduction_amount,
-                    $row->total_deduction_amount
+                    $row->routine_saving_amount,
+                    $loanTotal,
+                    $total
                 ]);
             }
             fclose($file);
