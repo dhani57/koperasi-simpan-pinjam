@@ -26,6 +26,7 @@ class ShuService
         foreach ($members as $member) {
             $mutations = Mutation::where('user_id', $member->id)
                 ->whereYear('created_at', $year)
+                ->whereIn('type', ['angsuran_jasa', 'angsuran_pokok', 'pencairan_pinjaman'])
                 ->get();
             
             $score = 0;

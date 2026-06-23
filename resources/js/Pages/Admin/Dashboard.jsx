@@ -217,7 +217,7 @@ export default function Dashboard({ auth, stats, roleData }) {
                                         <LineChart data={roleData.cash_flow}>
                                             <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f0f0f0" />
                                             <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{fill: '#888', fontSize: 12}} />
-                                            <YAxis axisLine={false} tickLine={false} tick={{fill: '#888', fontSize: 12}} tickFormatter={(val) => `Rp${(val/1000000).toFixed(0)}M`} />
+                                            <YAxis axisLine={false} tickLine={false} tick={{fill: '#888', fontSize: 12}} tickFormatter={(val) => `Rp${(val/1000000).toFixed(0)}jt`} />
                                             <Tooltip formatter={(value) => `Rp${new Intl.NumberFormat('id-ID').format(value)}`} />
                                             <Legend />
                                             <Line type="monotone" dataKey="Masuk" stroke="var(--color-semantic-up)" strokeWidth={3} />
@@ -452,7 +452,7 @@ export default function Dashboard({ auth, stats, roleData }) {
 
 function numberFormat(number) {
     if (number >= 1000000) {
-        return (number / 1000000).toFixed(2) + 'M';
+        return (number / 1000000).toFixed(2) + 'jt';
     }
     return new Intl.NumberFormat('id-ID').format(number);
 }

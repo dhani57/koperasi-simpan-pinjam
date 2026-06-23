@@ -109,7 +109,7 @@ class DatabaseSeeder extends Seeder
                 'amount' => $initialSaving,
                 'balance_after' => $initialSaving,
                 'description' => 'Migrasi Saldo Simpanan Sebelumnya',
-                'created_at' => now()->subMonths(6)
+                'created_at' => now()->subMonths(2)
             ]);
 
             $member->update(['total_saving_balance' => $initialSaving]);
