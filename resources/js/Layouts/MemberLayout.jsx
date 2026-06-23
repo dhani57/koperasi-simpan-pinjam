@@ -74,6 +74,11 @@ export default function MemberLayout({ auth, children }) {
                                     </button>
                                 </Dropdown.Trigger>
                                 <Dropdown.Content align="right" width="48">
+                                    {auth.user.is_anggota && auth.user.role !== 'anggota' && (
+                                        <Dropdown.Link href={route('admin.dashboard')}>
+                                            Beralih ke Admin
+                                        </Dropdown.Link>
+                                    )}
                                     <Dropdown.Link href={route('profile.edit')}>Profil</Dropdown.Link>
                                     <Dropdown.Link href={route('logout')} method="post" as="button">
                                         Keluar
@@ -133,6 +138,11 @@ export default function MemberLayout({ auth, children }) {
                                 </div>
                             </div>
                             <div className="mt-3 space-y-1">
+                                {auth.user.is_anggota && auth.user.role !== 'anggota' && (
+                                    <ResponsiveNavLink href={route('admin.dashboard')}>
+                                        Beralih ke Admin
+                                    </ResponsiveNavLink>
+                                )}
                                 <ResponsiveNavLink href={route('profile.edit')}>
                                     Profil
                                 </ResponsiveNavLink>
