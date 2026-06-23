@@ -84,18 +84,18 @@ export default function Show({ auth, loan, limitInfo }) {
                                 (isKetua && ['diajukan', 'diverifikasi', 'menunggu_ketua'].includes(loan.status))
                             ) ? (
                                 <div style={{ display: 'flex', gap: '12px' }}>
-                                    <form method="post" action={route('admin.loans.approve', loan.id)} style={{ flex: 1 }}>
+                                    <form method="post" action={route('admin.loans.approve', loan.id)} style={{ flex: 1 }} onSubmit={(e) => { if(!confirm('Anda yakin ingin menyetujui pengajuan ini?')) e.preventDefault(); }}>
                                         <input type="hidden" name="_token" value={document.head.querySelector('meta[name="csrf-token"]')?.content} />
                                         <button type="submit" className="ds-button-primary" style={{ width: '100%', padding: '12px' }}>Setujui Pengajuan</button>
                                     </form>
-                                    <form method="post" action={route('admin.loans.reject', loan.id)} style={{ flex: 1 }}>
+                                    <form method="post" action={route('admin.loans.reject', loan.id)} style={{ flex: 1 }} onSubmit={(e) => { if(!confirm('Anda yakin ingin menolak pengajuan ini?')) e.preventDefault(); }}>
                                         <input type="hidden" name="_token" value={document.head.querySelector('meta[name="csrf-token"]')?.content} />
                                         <button type="submit" className="ds-button-primary" style={{ width: '100%', padding: '12px', backgroundColor: '#ef4444', color: 'white', border: 'none' }}>Tolak</button>
                                     </form>
                                 </div>
                             ) : isBendahara && loan.status === 'disetujui' ? (
                                 <div style={{ display: 'flex', gap: '12px' }}>
-                                    <form method="post" action={route('admin.loans.disburse', loan.id)} style={{ flex: 1 }}>
+                                    <form method="post" action={route('admin.loans.disburse', loan.id)} style={{ flex: 1 }} onSubmit={(e) => { if(!confirm('Anda yakin ingin mencairkan dana ini? Pastikan Anda telah mentransfer dana ke rekening anggota di luar sistem.')) e.preventDefault(); }}>
                                         <input type="hidden" name="_token" value={document.head.querySelector('meta[name="csrf-token"]')?.content} />
                                         <button type="submit" className="ds-button-primary" style={{ width: '100%', padding: '12px', backgroundColor: '#10b981', color: 'white' }}>Dana Terkirim</button>
                                     </form>
