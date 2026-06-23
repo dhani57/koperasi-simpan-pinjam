@@ -65,6 +65,7 @@ export default function Show({ auth, period, details }) {
                 <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
                     <thead>
                         <tr style={{ borderBottom: '1px solid var(--color-hairline)' }}>
+                            <th style={{ padding: '12px', color: 'var(--color-muted)', fontWeight: 600, fontSize: '13px', width: '40px' }}>No.</th>
                             <th style={{ padding: '12px', color: 'var(--color-muted)', fontWeight: 600, fontSize: '13px' }}>Nama Anggota</th>
                             <th style={{ padding: '12px', color: 'var(--color-muted)', fontWeight: 600, fontSize: '13px' }}>NIP/NIM</th>
                             <th style={{ padding: '12px', color: 'var(--color-muted)', fontWeight: 600, fontSize: '13px', textAlign: 'right' }}>Simpanan Rutin</th>
@@ -73,12 +74,13 @@ export default function Show({ auth, period, details }) {
                         </tr>
                     </thead>
                     <tbody>
-                        {details.map((detail) => {
+                        {details.map((detail, index) => {
                             const detailLoanTotal = Number(detail.loan_principal_amount) + Number(detail.loan_fee_amount);
                             const detailTotal = Number(detail.routine_saving_amount) + detailLoanTotal;
                             
                             return (
                                 <tr key={detail.id} style={{ borderBottom: '1px solid var(--color-hairline)' }}>
+                                    <td style={{ padding: '12px', fontSize: '14px', color: 'var(--color-muted)' }}>{index + 1}</td>
                                     <td style={{ padding: '12px', fontSize: '14px', fontWeight: 500 }}>{detail.user?.name}</td>
                                     <td style={{ padding: '12px', fontSize: '14px', color: 'var(--color-muted)' }}>{detail.user?.identity_number}</td>
                                     <td className="number-display" style={{ padding: '12px', textAlign: 'right' }}>Rp {formatRp(detail.routine_saving_amount)}</td>

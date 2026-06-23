@@ -160,37 +160,43 @@ class DeductionController extends Controller
 
         $details = DeductionDetail::with('user')->where('deduction_period_id', $deduction->id)->get();
 
-        $csvFileName = 'Potongan_Koperasi_' . str_pad($deduction->month, 2, '0', STR_PAD_LEFT) . '_' . $deduction->year . '.csv';
+        $fileName = 'Potongan_Koperasi_' . str_pad($deduction->month, 2, '0', STR_PAD_LEFT) . '_' . $deduction->year . '.xls';
         $headers = [
-            "Content-type"        => "text/csv",
-            "Content-Disposition" => "attachment; filename=$csvFileName",
+            "Content-type"        => "application/vnd.ms-excel",
+            "Content-Disposition" => "attachment; filename=$fileName",
             "Pragma"              => "no-cache",
             "Cache-Control"       => "must-revalidate, post-check=0, pre-check=0",
             "Expires"             => "0"
         ];
 
         $callback = function() use($details) {
-            $file = fopen('php://output', 'w');
+            echo "<html><head><meta http-equiv='Content-Type' content='text/html; charset=utf-8'></head><body>";
+            echo "<table border='1' style='border-collapse: collapse;'>";
+            echo "<thead><tr style='background-color: #0f4c81; color: #ffffff;'>";
+            echo "<th style='padding: 8px;'>No.</th>";
+            echo "<th style='padding: 8px;'>NIP/NIM</th>";
+            echo "<th style='padding: 8px;'>Nama Anggota</th>";
+            echo "<th style='padding: 8px;'>Potongan Simpanan</th>";
+            echo "<th style='padding: 8px;'>Potongan Pinjaman</th>";
+            echo "<th style='padding: 8px;'>Total Potongan</th>";
+            echo "</tr></thead><tbody>";
             
-            // Tambahkan BOM agar Excel mendeteksi UTF-8 dengan benar
-            fputs($file, "\xEF\xBB\xBF");
-
-            // Gunakan pemisah titik koma (;) yang merupakan standar regional Indonesia di Excel
-            fputcsv($file, ['NIP/NIM', 'Nama Anggota', 'Potongan Simpanan', 'Potongan Pinjaman', 'Total Potongan'], ';');
-
+            $no = 1;
             foreach ($details as $row) {
                 $loanTotal = $row->loan_principal_amount + $row->loan_fee_amount;
                 $total = $row->routine_saving_amount + $loanTotal;
                 
-                fputcsv($file, [
-                    $row->user->identity_number,
-                    $row->user->name,
-                    'Rp ' . number_format($row->routine_saving_amount, 0, ',', '.'),
-                    'Rp ' . number_format($loanTotal, 0, ',', '.'),
-                    'Rp ' . number_format($total, 0, ',', '.')
-                ], ';');
+                echo "<tr>";
+                echo "<td style='padding: 8px; text-align: center;'>{$no}</td>";
+                echo "<td style='padding: 8px; text-align: center; mso-number-format: \"\\@\";'>" . $row->user->identity_number . "</td>";
+                echo "<td style='padding: 8px;'>" . $row->user->name . "</td>";
+                echo "<td style='padding: 8px; text-align: right;'>Rp " . number_format($row->routine_saving_amount, 0, ',', '.') . "</td>";
+                echo "<td style='padding: 8px; text-align: right;'>Rp " . number_format($loanTotal, 0, ',', '.') . "</td>";
+                echo "<td style='padding: 8px; text-align: right;'>Rp " . number_format($total, 0, ',', '.') . "</td>";
+                echo "</tr>";
+                $no++;
             }
-            fclose($file);
+            echo "</tbody></table></body></html>";
         };
 
         return response()->stream($callback, 200, $headers);
