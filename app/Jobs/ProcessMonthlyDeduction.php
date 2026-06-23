@@ -102,6 +102,7 @@ class ProcessMonthlyDeduction implements ShouldQueue
                 }
             });
 
+            $this->period->update(['status' => 'draf']);
             DB::commit();
             Log::info("Successfully generated deduction details for period {$this->period->month}/{$this->period->year}");
 

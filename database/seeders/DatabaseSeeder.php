@@ -161,8 +161,7 @@ class DatabaseSeeder extends Seeder
 
         // 6. Deduction Periods and Details
         $months = [
-            ['month' => now()->subMonth()->month, 'year' => now()->subMonth()->year, 'status' => 'selesai_divalidasi'],
-            ['month' => now()->month, 'year' => now()->year, 'status' => 'draf'],
+            ['month' => 5, 'year' => 2026, 'status' => 'selesai'],
         ];
 
         foreach ($months as $m) {
@@ -182,7 +181,7 @@ class DatabaseSeeder extends Seeder
                     'routine_saving_amount' => $loan->user->monthly_saving_nominal,
                     'loan_principal_amount' => $loan->monthly_principal_installment,
                     'loan_fee_amount' => $loan->current_year_monthly_fee,
-                    'status' => $m['status'] === 'selesai_divalidasi' ? 'berhasil' : 'menunggu',
+                    'status' => $m['status'] === 'selesai' ? 'berhasil' : 'menunggu',
                 ]);
             }
             
@@ -195,7 +194,7 @@ class DatabaseSeeder extends Seeder
                     'routine_saving_amount' => $memberNoLoan->monthly_saving_nominal,
                     'loan_principal_amount' => 0,
                     'loan_fee_amount' => 0,
-                    'status' => $m['status'] === 'selesai_divalidasi' ? 'berhasil' : 'menunggu',
+                    'status' => $m['status'] === 'selesai' ? 'berhasil' : 'menunggu',
                 ]);
             }
         }
