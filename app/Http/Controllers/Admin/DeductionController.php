@@ -171,7 +171,12 @@ class DeductionController extends Controller
 
         $callback = function() use($details) {
             $file = fopen('php://output', 'w');
-            fputcsv($file, ['NIP/NIM', 'Nama Anggota', 'Potongan Simpanan', 'Potongan Pinjaman', 'Total Potongan']);
+            
+            // Tambahkan BOM agar Excel mendeteksi UTF-8 dengan benar
+            fputs($file, "\xEF\xBB\xBF");
+
+            // Gunakan pemisah titik koma (;) yang merupakan standar regional Indonesia di Excel
+            fputcsv($file, ['NIP/NIM', 'Nama Anggota', 'Potongan Simpanan', 'Potongan Pinjaman', 'Total Potongan'], ';');
 
             foreach ($details as $row) {
                 $loanTotal = $row->loan_principal_amount + $row->loan_fee_amount;
@@ -180,10 +185,10 @@ class DeductionController extends Controller
                 fputcsv($file, [
                     $row->user->identity_number,
                     $row->user->name,
-                    $row->routine_saving_amount,
-                    $loanTotal,
-                    $total
-                ]);
+                    'Rp ' . number_format($row->routine_saving_amount, 0, ',', '.'),
+                    'Rp ' . number_format($loanTotal, 0, ',', '.'),
+                    'Rp ' . number_format($total, 0, ',', '.')
+                ], ';');
             }
             fclose($file);
         };
