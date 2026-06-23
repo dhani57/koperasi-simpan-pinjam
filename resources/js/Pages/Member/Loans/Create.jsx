@@ -6,20 +6,30 @@ export default function Create({ auth, hasActiveLoan, defaultFee, availableLimit
     const { data, setData, post, processing, errors } = useForm({
         principal_amount: '',
         tenor_years: 1,
+        tenor_months: '',
+        purpose: '',
+        is_custom_tenor: false,
     });
 
     const [simulation, setSimulation] = useState(null);
 
     useEffect(() => {
-        if (data.principal_amount && data.tenor_years) {
-            // We use a simplified approximation here for frontend display,
-            // the exact details per year are handled by LoanService in backend.
+        if (data.principal_amount && (data.tenor_years || data.tenor_months)) {
             const principal = parseFloat(data.principal_amount);
-            const tenorYears = parseInt(data.tenor_years);
-            if (principal > 0 && tenorYears > 0) {
-                // Approximate first year
-                const activeMonths = 10; // Will be verified by backend
-                const totalTenorMonths = tenorYears * activeMonths;
+            const activeMonths = 10; // Approx
+
+            let totalTenorMonths = 0;
+            let computedTenorYears = 0;
+
+            if (data.is_custom_tenor && data.tenor_months) {
+                totalTenorMonths = parseInt(data.tenor_months);
+                computedTenorYears = Math.ceil(totalTenorMonths / activeMonths);
+            } else if (!data.is_custom_tenor && data.tenor_years) {
+                computedTenorYears = parseInt(data.tenor_years);
+                totalTenorMonths = computedTenorYears * activeMonths;
+            }
+
+            if (principal > 0 && totalTenorMonths > 0) {
                 const pokokSebulan = principal / totalTenorMonths;
                 const jasaSebulan = principal * (defaultFee / 100);
                 const monthly = Math.ceil(pokokSebulan + jasaSebulan);
@@ -27,7 +37,8 @@ export default function Create({ auth, hasActiveLoan, defaultFee, availableLimit
                 setSimulation({
                     monthly,
                     jasaSebulan,
-                    pokokSebulan
+                    pokokSebulan,
+                    computedTenorYears
                 });
             } else {
                 setSimulation(null);
@@ -35,10 +46,20 @@ export default function Create({ auth, hasActiveLoan, defaultFee, availableLimit
         } else {
             setSimulation(null);
         }
-    }, [data.principal_amount, data.tenor_years, defaultFee]);
+    }, [data.principal_amount, data.tenor_years, data.tenor_months, data.is_custom_tenor, defaultFee]);
 
     const submit = (e) => {
         e.preventDefault();
+        
+        // Before submit, clean up mutually exclusive fields
+        const submitData = { ...data };
+        if (submitData.is_custom_tenor) {
+            submitData.tenor_years = '';
+        } else {
+            submitData.tenor_months = '';
+        }
+        
+        setData(submitData);
         post(route('member.loans.store'));
     };
 
@@ -100,27 +121,88 @@ export default function Create({ auth, hasActiveLoan, defaultFee, availableLimit
                             </div>
 
                             <div>
-                                <label style={{ display: 'block', fontWeight: 600, fontSize: '13px', marginBottom: '12px' }}>Pilihan Tenor (Tahun)</label>
-                                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '12px' }}>
+                                <label style={{ display: 'block', fontWeight: 600, fontSize: '13px', marginBottom: '12px' }}>Pilihan Tenor</label>
+                                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '12px' }}>
                                     {[1, 2, 3].map(years => (
                                         <div 
                                             key={years}
-                                            onClick={() => setData('tenor_years', years)}
+                                            onClick={() => { setData('is_custom_tenor', false); setData('tenor_years', years); }}
                                             style={{ 
-                                                border: data.tenor_years === years ? '2px solid var(--color-primary)' : '1px solid var(--color-hairline)',
+                                                border: (!data.is_custom_tenor && data.tenor_years === years) ? '2px solid var(--color-primary)' : '1px solid var(--color-hairline)',
                                                 borderRadius: 'var(--rounded-md)',
-                                                padding: '16px',
+                                                padding: '16px 8px',
                                                 textAlign: 'center',
                                                 cursor: 'pointer',
-                                                backgroundColor: data.tenor_years === years ? 'var(--color-surface-soft)' : 'white'
+                                                backgroundColor: (!data.is_custom_tenor && data.tenor_years === years) ? 'var(--color-surface-soft)' : 'white'
                                             }}
                                         >
-                                            <div style={{ fontWeight: 600, color: data.tenor_years === years ? 'var(--color-primary)' : 'var(--color-ink)', marginBottom: '4px' }}>{years} Tahun</div>
+                                            <div style={{ fontWeight: 600, color: (!data.is_custom_tenor && data.tenor_years === years) ? 'var(--color-primary)' : 'var(--color-ink)', marginBottom: '4px' }}>{years} Tahun</div>
                                             <div style={{ fontSize: '11px', color: 'var(--color-muted)' }}>Jasa {defaultFee}% / bln</div>
                                         </div>
                                     ))}
+                                    <div 
+                                        onClick={() => setData('is_custom_tenor', true)}
+                                        style={{ 
+                                            border: data.is_custom_tenor ? '2px solid var(--color-primary)' : '1px solid var(--color-hairline)',
+                                            borderRadius: 'var(--rounded-md)',
+                                            padding: '16px 8px',
+                                            textAlign: 'center',
+                                            cursor: 'pointer',
+                                            backgroundColor: data.is_custom_tenor ? 'var(--color-surface-soft)' : 'white'
+                                        }}
+                                    >
+                                        <div style={{ fontWeight: 600, color: data.is_custom_tenor ? 'var(--color-primary)' : 'var(--color-ink)', marginBottom: '4px' }}>Custom</div>
+                                        <div style={{ fontSize: '11px', color: 'var(--color-muted)' }}>Bulanan</div>
+                                    </div>
                                 </div>
                                 {errors.tenor_years && <div style={{ color: 'var(--color-semantic-down)', fontSize: '12px', marginTop: '4px' }}>{errors.tenor_years}</div>}
+
+                                {data.is_custom_tenor && (
+                                    <div style={{ marginTop: '16px' }}>
+                                        <label style={{ display: 'block', fontWeight: 600, fontSize: '13px', marginBottom: '8px' }}>Tenor Custom (Bulan)</label>
+                                        <div style={{ position: 'relative' }}>
+                                            <input
+                                                type="number"
+                                                value={data.tenor_months}
+                                                onChange={e => setData('tenor_months', e.target.value)}
+                                                required={data.is_custom_tenor}
+                                                min="1"
+                                                max="60"
+                                                style={{ 
+                                                    width: '100%', 
+                                                    fontFamily: 'var(--font-mono)', 
+                                                    fontSize: '16px', 
+                                                    padding: '12px 16px', 
+                                                    borderRadius: 'var(--rounded-md)', 
+                                                    border: '1px solid var(--color-hairline)',
+                                                    outline: 'none'
+                                                }}
+                                                placeholder="Contoh: 6"
+                                            />
+                                        </div>
+                                        {errors.tenor_months && <div style={{ color: 'var(--color-semantic-down)', fontSize: '12px', marginTop: '4px' }}>{errors.tenor_months}</div>}
+                                    </div>
+                                )}
+                            </div>
+
+                            <div style={{ marginTop: 'var(--spacing-xl)' }}>
+                                <label style={{ display: 'block', fontWeight: 600, fontSize: '13px', marginBottom: '8px' }}>Keterangan / Keperluan Pinjaman (Opsional)</label>
+                                <textarea
+                                    value={data.purpose}
+                                    onChange={e => setData('purpose', e.target.value)}
+                                    style={{ 
+                                        width: '100%', 
+                                        fontSize: '14px', 
+                                        padding: '12px', 
+                                        borderRadius: 'var(--rounded-md)', 
+                                        border: '1px solid var(--color-hairline)',
+                                        outline: 'none',
+                                        minHeight: '80px',
+                                        resize: 'vertical'
+                                    }}
+                                    placeholder="Contoh: Biaya pendidikan anak, renovasi rumah..."
+                                />
+                                {errors.purpose && <div style={{ color: 'var(--color-semantic-down)', fontSize: '12px', marginTop: '4px' }}>{errors.purpose}</div>}
                             </div>
                         </div>
 
@@ -129,7 +211,7 @@ export default function Create({ auth, hasActiveLoan, defaultFee, availableLimit
                             <div style={{ backgroundColor: 'var(--color-surface-dark)', color: 'white', borderRadius: 'var(--rounded-lg)', padding: 'var(--spacing-xl)', marginBottom: 'var(--spacing-lg)' }}>
                                 <h3 style={{ fontSize: '16px', fontWeight: 600, marginBottom: '16px' }}>Simulasi Transparansi</h3>
                                 <p style={{ fontSize: '13px', color: 'rgba(255,255,255,0.7)', marginBottom: '24px', lineHeight: '1.5' }}>
-                                    Jika Anda meminjam <strong style={{ color: 'white' }}>Rp {formatRp(data.principal_amount)}</strong> selama <strong style={{ color: 'white' }}>{data.tenor_years} Tahun</strong>, berikut adalah estimasi total potongan gaji Anda di <strong>Tahun Pertama</strong> (10 Bulan):
+                                    Jika Anda meminjam <strong style={{ color: 'white' }}>Rp {formatRp(data.principal_amount)}</strong> selama <strong style={{ color: 'white' }}>{data.is_custom_tenor ? data.tenor_months + ' Bulan' : data.tenor_years + ' Tahun'}</strong>, berikut adalah estimasi total potongan gaji Anda di <strong>Tahun Pertama</strong> (maksimal {simulation.computedTenorYears === 1 && data.is_custom_tenor ? Math.min(10, data.tenor_months) : 10} Bulan):
                                 </p>
 
                                 <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>

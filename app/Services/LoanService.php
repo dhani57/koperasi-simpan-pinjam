@@ -27,16 +27,20 @@ class LoanService
      * Actually, if a user inputs 3 years, the tenor_months should be 3 * active_months.
      * Let's accept $tenorYears.
      */
-    public function calculateSimulation(float $principal, int $tenorYears, float $feePercentage): array
+    public function calculateSimulation(float $principal, ?int $tenorYears, ?int $customTenorMonths, float $feePercentage): array
     {
         $activeMonthsPerYear = $this->getActiveMonthsPerYear();
-        $totalTenorMonths = $tenorYears * $activeMonthsPerYear;
         
+        $totalTenorMonths = $customTenorMonths ?? ($tenorYears * $activeMonthsPerYear);
+        $computedTenorYears = $tenorYears ?? ceil($totalTenorMonths / $activeMonthsPerYear);
+
         $monthlyPrincipal = $principal / $totalTenorMonths;
         $simulation = [];
         $remainingPrincipal = $principal;
 
-        for ($year = 1; $year <= $tenorYears; $year++) {
+        for ($year = 1; $year <= $computedTenorYears; $year++) {
+            $monthsInThisYear = min($activeMonthsPerYear, $totalTenorMonths - ($year - 1) * $activeMonthsPerYear);
+            
             $monthlyFee = $remainingPrincipal * ($feePercentage / 100);
             $monthlyTotal = $monthlyPrincipal + $monthlyFee;
             
@@ -46,16 +50,16 @@ class LoanService
                 'monthly_principal' => $monthlyPrincipal,
                 'monthly_fee' => $monthlyFee,
                 'monthly_total' => $monthlyTotal,
-                'active_months' => $activeMonthsPerYear,
-                'year_total_payment' => $monthlyTotal * $activeMonthsPerYear
+                'active_months' => $monthsInThisYear,
+                'year_total_payment' => $monthlyTotal * $monthsInThisYear
             ];
 
-            $remainingPrincipal -= ($monthlyPrincipal * $activeMonthsPerYear);
+            $remainingPrincipal -= ($monthlyPrincipal * $monthsInThisYear);
         }
 
         return [
             'principal' => $principal,
-            'tenor_years' => $tenorYears,
+            'tenor_years' => $computedTenorYears,
             'total_tenor_months' => $totalTenorMonths,
             'yearly_breakdown' => $simulation
         ];
@@ -81,19 +85,20 @@ class LoanService
     /**
      * Create a new loan with its first year service record
      */
-    public function createLoan(User $user, float $principal, int $tenorYears): Loan
+    public function createLoan(User $user, float $principal, ?int $tenorYears, ?int $customTenorMonths = null, ?string $purpose = null): Loan
     {
         $feePercentage = Setting::where('key', 'default_cooperative_fee_percentage')->value('value') ?? 1.5;
-        $simulation = $this->calculateSimulation($principal, $tenorYears, (float)$feePercentage);
+        $simulation = $this->calculateSimulation($principal, $tenorYears, $customTenorMonths, (float)$feePercentage);
         
         $firstYear = $simulation['yearly_breakdown'][0];
         
         $loan = Loan::create([
             'user_id' => $user->id,
             'principal_amount' => $principal,
+            'purpose' => $purpose,
             'cooperative_fee_percentage' => $feePercentage,
             'tenor_months' => $simulation['total_tenor_months'],
-            'tenor_years' => $tenorYears,
+            'tenor_years' => $simulation['tenor_years'],
             'monthly_principal_installment' => $firstYear['monthly_principal'],
             'current_remaining_principal' => $principal,
             'current_year_monthly_fee' => $firstYear['monthly_fee'],

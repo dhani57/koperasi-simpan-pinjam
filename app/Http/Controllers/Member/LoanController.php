@@ -59,11 +59,19 @@ class LoanController extends Controller
         
         $request->validate([
             'principal_amount' => 'required|numeric|min:100000',
-            'tenor_years' => 'required|integer|min:1|max:5',
+            'tenor_years' => 'nullable|integer|min:1|max:5',
+            'tenor_months' => 'nullable|integer|min:1|max:60',
+            'purpose' => 'nullable|string|max:1000',
         ]);
+
+        if (!$request->tenor_years && !$request->tenor_months) {
+            return back()->withErrors(['tenor_years' => 'Tenor wajib diisi (tahun atau bulan).']);
+        }
 
         $principal = $request->principal_amount;
         $tenorYears = $request->tenor_years;
+        $tenorMonths = $request->tenor_months;
+        $purpose = $request->purpose;
         $feePercentage = \App\Models\Setting::where('key', 'default_cooperative_fee_percentage')->value('value') ?? 1.5;
         
         // Cek lagi apakah ada pinjaman aktif
@@ -76,7 +84,7 @@ class LoanController extends Controller
         }
 
         // Simulasi untuk mendapatkan cicilan tahun pertama
-        $simulation = $this->loanService->calculateSimulation($principal, $tenorYears, (float)$feePercentage);
+        $simulation = $this->loanService->calculateSimulation($principal, $tenorYears, $tenorMonths, (float)$feePercentage);
         $firstYearMonthly = $simulation['yearly_breakdown'][0]['monthly_total'];
 
         // Validasi Limit
@@ -84,7 +92,7 @@ class LoanController extends Controller
             return back()->withErrors(['principal_amount' => 'Cicilan bulan pertama (Rp ' . number_format($firstYearMonthly, 0, ',', '.') . ') melebihi sisa plafon gaji Anda.']);
         }
         
-        $this->loanService->createLoan($user, $principal, $tenorYears);
+        $this->loanService->createLoan($user, $principal, $tenorYears, $tenorMonths, $purpose);
 
         return redirect()->route('member.loans.index')->with('success', 'Pengajuan pinjaman berhasil dibuat dan menunggu verifikasi.');
     }

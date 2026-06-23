@@ -37,7 +37,14 @@ export default function Index({ auth, loans }) {
                                 {loans.data.map(loan => (
                                     <tr key={loan.id} style={{ borderBottom: '1px solid var(--color-hairline)' }}>
                                         <td style={{ padding: '16px', fontSize: '14px' }}>{formatDate(loan.created_at)}</td>
-                                        <td style={{ padding: '16px', fontSize: '14px', fontWeight: 500 }}>{loan.user?.name}</td>
+                                        <td style={{ padding: '16px', fontSize: '14px', fontWeight: 500 }}>
+                                            {loan.user?.name}
+                                            {loan.purpose && (
+                                                <div style={{ fontSize: '12px', color: 'var(--color-muted)', fontWeight: 400, marginTop: '4px', maxWidth: '200px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }} title={loan.purpose}>
+                                                    Ket: {loan.purpose}
+                                                </div>
+                                            )}
+                                        </td>
                                         <td style={{ padding: '16px', fontSize: '14px', fontFamily: 'var(--font-mono)' }}>Rp {formatRp(loan.principal_amount)}</td>
                                         <td style={{ padding: '16px', fontSize: '14px' }}>{loan.tenor_months} bln</td>
                                         <td style={{ padding: '16px', fontSize: '14px' }}>

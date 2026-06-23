@@ -54,6 +54,11 @@ export default function Index({ auth, loans }) {
                                         </td>
                                         <td style={{ padding: '16px 24px', fontSize: '15px', fontFamily: 'var(--font-mono)', fontWeight: 500 }}>
                                             Rp {new Intl.NumberFormat('id-ID').format(loan.principal_amount)}
+                                            {loan.purpose && (
+                                                <div style={{ fontSize: '12px', color: 'var(--color-muted)', fontWeight: 400, marginTop: '4px', fontFamily: 'var(--font-sans)', maxWidth: '200px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }} title={loan.purpose}>
+                                                    Ket: {loan.purpose}
+                                                </div>
+                                            )}
                                         </td>
                                         <td style={{ padding: '16px 24px', fontSize: '14px' }}>
                                             {loan.tenor_months} bln
