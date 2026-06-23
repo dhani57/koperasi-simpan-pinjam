@@ -24,8 +24,9 @@ export default function Index({ auth, users }) {
             )}
 
             <div style={{ backgroundColor: 'var(--color-canvas)', borderRadius: 'var(--rounded-lg)', border: '1px solid var(--color-hairline)', overflow: 'hidden' }}>
-                <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
-                    <thead style={{ backgroundColor: 'var(--color-surface-soft)', borderBottom: '1px solid var(--color-hairline)' }}>
+                <div className="overflow-x-auto">
+                    <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', minWidth: '800px' }}>
+                        <thead style={{ backgroundColor: 'var(--color-surface-soft)', borderBottom: '1px solid var(--color-hairline)' }}>
                         <tr>
                             <th className="ds-body-sm" style={{ padding: '16px', color: 'var(--color-muted)', fontWeight: 600 }}>NIP/NIM</th>
                             <th className="ds-body-sm" style={{ padding: '16px', color: 'var(--color-muted)', fontWeight: 600 }}>Nama & Email</th>
@@ -70,6 +71,7 @@ export default function Index({ auth, users }) {
                         )}
                     </tbody>
                 </table>
+                </div>
             </div>
 
             {/* Pagination placeholder */}
