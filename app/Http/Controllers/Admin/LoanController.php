@@ -11,6 +11,10 @@ class LoanController extends Controller
 {
     public function index()
     {
+        if (auth()->user()->role === 'pengurus') {
+            abort(403, 'Unauthorized action.');
+        }
+
         $loans = Loan::with(['user', 'verifiedBy'])->latest()->paginate(10);
         return inertia('Admin/Loans/Index', ['loans' => $loans]);
     }

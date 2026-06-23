@@ -10,7 +10,7 @@ class MutationController extends Controller
 {
     public function index()
     {
-        if (!in_array(auth()->user()->role, ['pengawas', 'pengurus', 'bendahara', 'ketua'])) {
+        if (!in_array(auth()->user()->role, ['pengawas', 'bendahara', 'ketua'])) {
             abort(403, 'Unauthorized action.');
         }
 
