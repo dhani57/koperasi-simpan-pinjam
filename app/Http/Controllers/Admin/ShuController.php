@@ -10,12 +10,22 @@ class ShuController extends Controller
     public function index(\App\Services\ShuService $shuService)
     {
         $year = request('year', now()->year);
+        $search = request('search');
+        
         $shuData = $shuService->calculateActivityProportions($year);
+
+        if ($search) {
+            $shuData['member_proportions'] = array_filter($shuData['member_proportions'], function ($item) use ($search) {
+                return stripos($item['user']->name, $search) !== false;
+            });
+            $shuData['member_proportions'] = array_values($shuData['member_proportions']);
+        }
 
         // Just display a page to trigger SHU
         return inertia('Admin/Shu/Index', [
             'year' => $year,
-            'shuData' => $shuData
+            'shuData' => $shuData,
+            'filters' => ['search' => $search]
         ]);
     }
 

@@ -14,7 +14,22 @@ class MutationController extends Controller
             abort(403, 'Unauthorized action.');
         }
 
-        $mutations = Mutation::with('user')->latest()->paginate(15);
-        return inertia('Admin/Mutations/Index', ['mutations' => $mutations]);
+        $search = request('search');
+
+        $mutations = Mutation::with('user')
+            ->when($search, function ($query, $search) {
+                $query->whereHas('user', function ($q) use ($search) {
+                    $q->whereRaw('lower(name) like lower(?)', ["%{$search}%"]);
+                })->orWhereRaw('lower(description) like lower(?)', ["%{$search}%"])
+                  ->orWhereRaw('lower(type) like lower(?)', ["%{$search}%"]);
+            })
+            ->latest()
+            ->paginate(15)
+            ->appends(request()->query());
+
+        return inertia('Admin/Mutations/Index', [
+            'mutations' => $mutations,
+            'filters' => ['search' => $search]
+        ]);
     }
 }

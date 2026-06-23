@@ -1,8 +1,28 @@
-import React from 'react';
-import { Head, Link } from '@inertiajs/react';
+import React, { useState, useEffect, useRef } from 'react';
+import { Head, Link, router } from '@inertiajs/react';
 import AdminLayout from '@/Layouts/AdminLayout';
 
-export default function Index({ auth, mutations }) {
+export default function Index({ auth, mutations, filters }) {
+    const [search, setSearch] = useState(filters?.search || '');
+    const initialRender = useRef(true);
+
+    useEffect(() => {
+        if (initialRender.current) {
+            initialRender.current = false;
+            return;
+        }
+
+        const debounceTimer = setTimeout(() => {
+            router.get(
+                route('admin.mutations.index'),
+                { search },
+                { preserveState: true, preserveScroll: true, replace: true }
+            );
+        }, 300);
+
+        return () => clearTimeout(debounceTimer);
+    }, [search]);
+
     const formatRp = (num) => new Intl.NumberFormat('id-ID').format(num);
     const formatDateTime = (dateString) => {
         const date = new Date(dateString);
@@ -17,11 +37,24 @@ export default function Index({ auth, mutations }) {
             <Head title="Log Mutasi" />
 
             <div style={{ backgroundColor: 'white', borderRadius: 'var(--rounded-xl)', padding: '32px', border: '1px solid var(--color-hairline)' }}>
-                <div style={{ marginBottom: '24px' }}>
-                    <h2 className="ds-title-md">Histori Mutasi Sistem</h2>
-                    <p style={{ color: 'var(--color-muted)', fontSize: '14px', marginTop: '4px' }}>
-                        Pelacakan seluruh riwayat transaksi dan perubahan saldo anggota untuk kebutuhan audit.
-                    </p>
+                <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
+                    <div>
+                        <h2 className="ds-title-md">Histori Mutasi Sistem</h2>
+                        <p style={{ color: 'var(--color-muted)', fontSize: '14px', marginTop: '4px' }}>
+                            Pelacakan seluruh riwayat transaksi dan perubahan saldo anggota untuk kebutuhan audit.
+                        </p>
+                    </div>
+                    
+                    <div className="w-full md:w-auto">
+                        <input
+                            type="text"
+                            placeholder="Cari transaksi..."
+                            className="ds-text-input text-sm w-full"
+                            style={{ minHeight: '40px', width: '250px' }}
+                            value={search}
+                            onChange={(e) => setSearch(e.target.value)}
+                        />
+                    </div>
                 </div>
 
                 <div style={{ overflowX: 'auto', borderRadius: 'var(--rounded-lg)', border: '1px solid var(--color-hairline)' }}>

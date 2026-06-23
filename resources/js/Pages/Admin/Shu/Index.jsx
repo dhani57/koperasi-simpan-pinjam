@@ -1,15 +1,36 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Head, useForm, router } from '@inertiajs/react';
 import AdminLayout from '@/Layouts/AdminLayout';
 
-export default function Index({ auth, year, shuData }) {
+export default function Index({ auth, year, shuData, filters }) {
     const { post, processing } = useForm();
     const [currentPage, setCurrentPage] = useState(1);
     const itemsPerPage = 10;
 
+    const [search, setSearch] = useState(filters?.search || '');
+    const [yearFilter, setYearFilter] = useState(year);
+    const initialRender = useRef(true);
+
+    useEffect(() => {
+        if (initialRender.current) {
+            initialRender.current = false;
+            return;
+        }
+
+        const debounceTimer = setTimeout(() => {
+            router.get(
+                route('admin.shu.index'),
+                { year: yearFilter, search },
+                { preserveState: true, preserveScroll: true, replace: true }
+            );
+        }, 300);
+
+        return () => clearTimeout(debounceTimer);
+    }, [search, yearFilter]);
+
     const handleYearChange = (e) => {
-        setCurrentPage(1); // Reset page on year change
-        router.get(route('admin.shu.index'), { year: e.target.value }, { preserveState: true });
+        setCurrentPage(1);
+        setYearFilter(e.target.value);
     };
 
     const submit = (e) => {
@@ -45,19 +66,29 @@ export default function Index({ auth, year, shuData }) {
                                 Tinjau perhitungan pembagian SHU berdasarkan aktivitas transaksi anggota.
                             </p>
                         </div>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                            <label htmlFor="year" style={{ fontSize: '14px', fontWeight: 600 }}>Pilih Tahun:</label>
-                            <select 
-                                id="year" 
-                                value={year} 
-                                onChange={handleYearChange}
-                                className="ds-input"
-                                style={{ width: '120px' }}
-                            >
-                                <option value="2026">2026</option>
-                                <option value="2025">2025</option>
-                                <option value="2024">2024</option>
-                            </select>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
+                            <input
+                                type="text"
+                                placeholder="Cari anggota..."
+                                className="ds-text-input text-sm"
+                                style={{ minHeight: '40px', width: '200px' }}
+                                value={search}
+                                onChange={(e) => setSearch(e.target.value)}
+                            />
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                <label htmlFor="year" style={{ fontSize: '14px', fontWeight: 600 }}>Tahun:</label>
+                                <select 
+                                    id="year" 
+                                    value={yearFilter} 
+                                    onChange={handleYearChange}
+                                    className="ds-input"
+                                    style={{ width: '100px', minHeight: '40px' }}
+                                >
+                                    <option value="2026">2026</option>
+                                    <option value="2025">2025</option>
+                                    <option value="2024">2024</option>
+                                </select>
+                            </div>
                         </div>
                     </div>
                 </div>
