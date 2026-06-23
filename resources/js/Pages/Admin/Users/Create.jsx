@@ -30,12 +30,12 @@ export default function Create({ auth }) {
                     
                     <div className="grid grid-cols-2 gap-6">
                         <div>
-                            <InputLabel htmlFor="identity_number" value="NIP/NIM" className="ds-label" />
+                            <InputLabel htmlFor="identity_number" value={<span>NIP/NIM <span className="text-red-500">*</span></span>} className="ds-label" />
                             <input id="identity_number" type="text" className="ds-text-input" value={data.identity_number} onChange={e => setData('identity_number', e.target.value)} required />
                             {errors.identity_number && <div className="ds-error-text">{errors.identity_number}</div>}
                         </div>
                         <div>
-                            <InputLabel htmlFor="name" value="Nama Lengkap" className="ds-label" />
+                            <InputLabel htmlFor="name" value={<span>Nama Lengkap <span className="text-red-500">*</span></span>} className="ds-label" />
                             <input id="name" type="text" className="ds-text-input" value={data.name} onChange={e => setData('name', e.target.value)} required />
                             {errors.name && <div className="ds-error-text">{errors.name}</div>}
                         </div>
@@ -43,12 +43,12 @@ export default function Create({ auth }) {
 
                     <div className="grid grid-cols-2 gap-6">
                         <div>
-                            <InputLabel htmlFor="email" value="Email" className="ds-label" />
+                            <InputLabel htmlFor="email" value={<span>Email <span className="text-red-500">*</span></span>} className="ds-label" />
                             <input id="email" type="email" className="ds-text-input" value={data.email} onChange={e => setData('email', e.target.value)} required />
                             {errors.email && <div className="ds-error-text">{errors.email}</div>}
                         </div>
                         <div>
-                            <InputLabel htmlFor="role" value="Peran" className="ds-label" />
+                            <InputLabel htmlFor="role" value={<span>Peran <span className="text-red-500">*</span></span>} className="ds-label" />
                             <select id="role" className="ds-text-input" value={data.role} onChange={e => setData('role', e.target.value)} required>
                                 <option value="anggota">Anggota</option>
                                 <option value="bendahara">Bendahara</option>
@@ -62,12 +62,12 @@ export default function Create({ auth }) {
 
                     <div className="grid grid-cols-2 gap-6">
                         <div>
-                            <InputLabel htmlFor="monthly_saving_nominal" value="Potongan Simpanan Wajib (Rp)" className="ds-label" />
+                            <InputLabel htmlFor="monthly_saving_nominal" value={<span>Potongan Simpanan Wajib (Rp) <span className="text-red-500">*</span></span>} className="ds-label" />
                             <input id="monthly_saving_nominal" type="number" min="0" className="ds-text-input" value={data.monthly_saving_nominal} onChange={e => setData('monthly_saving_nominal', e.target.value)} required />
                             {errors.monthly_saving_nominal && <div className="ds-error-text">{errors.monthly_saving_nominal}</div>}
                         </div>
                         <div>
-                            <InputLabel htmlFor="max_salary_deduction_limit" value="Limit Maksimal Gaji (Rp)" className="ds-label" />
+                            <InputLabel htmlFor="max_salary_deduction_limit" value={<span>Limit Maksimal Gaji (Rp) <span className="text-red-500">*</span></span>} className="ds-label" />
                             <input id="max_salary_deduction_limit" type="number" min="0" className="ds-text-input" value={data.max_salary_deduction_limit} onChange={e => setData('max_salary_deduction_limit', e.target.value)} required />
                             {errors.max_salary_deduction_limit && <div className="ds-error-text">{errors.max_salary_deduction_limit}</div>}
                         </div>
@@ -83,12 +83,12 @@ export default function Create({ auth }) {
 
                     <div className="grid grid-cols-2 gap-6 pt-4 border-t border-slate-200">
                         <div>
-                            <InputLabel htmlFor="password" value="Password" className="ds-label" />
+                            <InputLabel htmlFor="password" value={<span>Password <span className="text-red-500">*</span></span>} className="ds-label" />
                             <input id="password" type="password" className="ds-text-input" value={data.password} onChange={e => setData('password', e.target.value)} required />
                             {errors.password && <div className="ds-error-text">{errors.password}</div>}
                         </div>
                         <div>
-                            <InputLabel htmlFor="password_confirmation" value="Konfirmasi Password" className="ds-label" />
+                            <InputLabel htmlFor="password_confirmation" value={<span>Konfirmasi Password <span className="text-red-500">*</span></span>} className="ds-label" />
                             <input id="password_confirmation" type="password" className="ds-text-input" value={data.password_confirmation} onChange={e => setData('password_confirmation', e.target.value)} required />
                         </div>
                     </div>
