@@ -15,7 +15,11 @@ class LoanController extends Controller
             abort(403, 'Unauthorized action.');
         }
 
-        $loans = Loan::with(['user', 'verifiedBy'])->latest()->paginate(10);
+        $loans = Loan::with(['user', 'verifiedBy'])
+            ->orderBy('created_at', 'desc')
+            ->orderBy('id', 'desc')
+            ->paginate(10);
+            
         return inertia('Admin/Loans/Index', ['loans' => $loans]);
     }
 

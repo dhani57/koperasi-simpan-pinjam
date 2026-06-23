@@ -85,6 +85,14 @@ export default function Index({ auth, loans }) {
                                                     </>
                                                 )}
 
+                                                {/* Text indication for the one who already approved */}
+                                                {isBendahara && loan.status === 'menunggu_ketua' && (
+                                                    <span style={{ fontSize: '12px', color: 'var(--color-muted)', fontStyle: 'italic', padding: '6px 0' }}>Menunggu Ketua...</span>
+                                                )}
+                                                {isKetua && loan.status === 'menunggu_bendahara' && (
+                                                    <span style={{ fontSize: '12px', color: 'var(--color-muted)', fontStyle: 'italic', padding: '6px 0' }}>Menunggu Bendahara...</span>
+                                                )}
+
                                                 {isBendahara && loan.status === 'disetujui' && (
                                                     <form method="post" action={route('admin.loans.disburse', loan.id)} style={{ display: 'inline' }}>
                                                         <input type="hidden" name="_token" value={document.head.querySelector('meta[name="csrf-token"]')?.content} />
@@ -97,6 +105,44 @@ export default function Index({ auth, loans }) {
                                 ))}
                             </tbody>
                         </table>
+
+                        {/* Pagination */}
+                        {loans.links && loans.links.length > 3 && (
+                            <div style={{ display: 'flex', justifyContent: 'center', padding: '24px 0', gap: '4px' }}>
+                                {loans.links.map((link, idx) => (
+                                    link.url ? (
+                                        <a 
+                                            key={idx} 
+                                            href={link.url}
+                                            style={{
+                                                padding: '8px 12px',
+                                                border: '1px solid',
+                                                borderColor: link.active ? 'var(--color-primary)' : 'var(--color-hairline)',
+                                                backgroundColor: link.active ? 'var(--color-primary)' : 'white',
+                                                color: link.active ? 'white' : 'var(--color-text)',
+                                                borderRadius: '6px',
+                                                fontSize: '14px',
+                                                textDecoration: 'none'
+                                            }}
+                                            dangerouslySetInnerHTML={{ __html: link.label }}
+                                        />
+                                    ) : (
+                                        <span 
+                                            key={idx} 
+                                            style={{
+                                                padding: '8px 12px',
+                                                border: '1px solid var(--color-hairline)',
+                                                color: 'var(--color-muted)',
+                                                backgroundColor: 'var(--color-surface-soft)',
+                                                borderRadius: '6px',
+                                                fontSize: '14px'
+                                            }}
+                                            dangerouslySetInnerHTML={{ __html: link.label }}
+                                        />
+                                    )
+                                ))}
+                            </div>
+                        )}
                     </div>
                 )}
             </div>
