@@ -30,7 +30,7 @@ export default function Index({ auth, loans }) {
                                     <th style={{ padding: '12px 16px', color: 'var(--color-muted)', fontWeight: 600, fontSize: '13px' }}>Plafon</th>
                                     <th style={{ padding: '12px 16px', color: 'var(--color-muted)', fontWeight: 600, fontSize: '13px' }}>Tenor</th>
                                     <th style={{ padding: '12px 16px', color: 'var(--color-muted)', fontWeight: 600, fontSize: '13px' }}>Status</th>
-                                    <th style={{ padding: '12px 16px', color: 'var(--color-muted)', fontWeight: 600, fontSize: '13px', textAlign: 'right' }}>Aksi</th>
+                                    <th style={{ padding: '12px 16px', color: 'var(--color-muted)', fontWeight: 600, fontSize: '13px', textAlign: 'center' }}>Aksi</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -59,8 +59,15 @@ export default function Index({ auth, loans }) {
                                                 {loan.status.replace('_', ' ').toUpperCase()}
                                             </span>
                                         </td>
-                                        <td style={{ padding: '16px', textAlign: 'right' }}>
-                                            <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end' }}>
+                                        <td style={{ padding: '16px', textAlign: 'center' }}>
+                                            <div style={{ display: 'flex', gap: '8px', justifyContent: 'center', alignItems: 'center' }}>
+                                                {/* Detail Button for Bendahara and Ketua */}
+                                                {(isBendahara || isKetua) && (
+                                                    <a href={route('admin.loans.show', loan.id)} className="ds-button-secondary" style={{ padding: '6px 12px', fontSize: '12px', textDecoration: 'none', color: 'var(--color-primary)', border: '1px solid var(--color-primary)' }}>
+                                                        Detail
+                                                    </a>
+                                                )}
+
                                                 {/* Admin Actions */}
                                                 {isPengurus && loan.status === 'diajukan' && (
                                                     <>

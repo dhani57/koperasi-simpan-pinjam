@@ -23,6 +23,48 @@ class LoanController extends Controller
         return inertia('Admin/Loans/Index', ['loans' => $loans]);
     }
 
+    public function show(Loan $loan)
+    {
+        if (auth()->user()->role === 'pengurus') {
+            abort(403, 'Unauthorized action.');
+        }
+
+        $loan->load('user');
+        
+        // Cek limit potongan
+        $activeLoans = Loan::where('user_id', $loan->user_id)->whereIn('status', ['disetujui', 'aktif'])->get();
+        $totalLoanInstallments = 0;
+        foreach ($activeLoans as $activeLoan) {
+            $totalLoanInstallments += ($activeLoan->monthly_principal_installment + $activeLoan->current_year_monthly_fee);
+        }
+        
+        $userLimit = $loan->user->max_salary_deduction_limit;
+        $monthlySaving = $loan->user->monthly_saving_nominal;
+        
+        $currentMonthlyInstallment = $loan->monthly_principal_installment + $loan->current_year_monthly_fee;
+        
+        // Jika status diajukan/diverifikasi/menunggu_x, hitung juga cicilannya karena belum masuk status disetujui/aktif
+        $isPending = in_array($loan->status, ['diajukan', 'diverifikasi', 'menunggu_bendahara', 'menunggu_ketua']);
+        if ($isPending) {
+            $totalLoanInstallments += $currentMonthlyInstallment;
+        }
+
+        $usedLimit = $monthlySaving + $totalLoanInstallments;
+        $usedPercentage = $userLimit > 0 ? round(($usedLimit / $userLimit) * 100, 1) : 0;
+
+        return inertia('Admin/Loans/Show', [
+            'loan' => $loan,
+            'limitInfo' => [
+                'maxLimit' => $userLimit,
+                'monthlySaving' => $monthlySaving,
+                'totalInstallments' => $totalLoanInstallments,
+                'usedLimit' => $usedLimit,
+                'usedPercentage' => $usedPercentage,
+                'currentLoanInstallment' => $currentMonthlyInstallment
+            ]
+        ]);
+    }
+
     public function verify(Request $request, Loan $loan)
     {
         Gate::authorize('verify', $loan);

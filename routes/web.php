@@ -64,7 +64,7 @@ Route::middleware(['auth', 'verified', 'admin'])->prefix('admin')->name('admin.'
     });
     
     // Pinjaman Routes
-    Route::resource('loans', LoanController::class)->only(['index']);
+    Route::resource('loans', LoanController::class)->only(['index', 'show']);
     Route::post('loans/{loan}/verify', [LoanController::class, 'verify'])->name('loans.verify')->middleware('role:pengurus');
     Route::post('loans/{loan}/reject', [LoanController::class, 'reject'])->name('loans.reject')->middleware('role:bendahara,ketua,pengurus');
     Route::post('loans/{loan}/approve', [LoanController::class, 'approve'])->name('loans.approve')->middleware('role:bendahara,ketua');
