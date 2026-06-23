@@ -95,6 +95,13 @@ class DeductionController extends Controller
                 ->where('status', 'menunggu')
                 ->get();
 
+            $monthNames = [
+                1 => 'Januari', 2 => 'Februari', 3 => 'Maret', 4 => 'April',
+                5 => 'Mei', 6 => 'Juni', 7 => 'Juli', 8 => 'Agustus',
+                9 => 'September', 10 => 'Oktober', 11 => 'November', 12 => 'Desember'
+            ];
+            $monthName = $monthNames[(int)$deduction->month];
+
             foreach ($details as $detail) {
                 // Mark detail as success
                 $detail->update(['status' => 'berhasil']);
@@ -111,7 +118,7 @@ class DeductionController extends Controller
                         'type' => 'simpanan_rutin',
                         'amount' => $detail->routine_saving_amount,
                         'balance_after' => $user->total_saving_balance,
-                        'description' => "Potongan simpanan rutin bulan " . str_pad($deduction->month, 2, '0', STR_PAD_LEFT) . " tahun " . $deduction->year,
+                        'description' => "Potongan simpanan rutin bulan {$monthName} tahun {$deduction->year}",
                     ]);
                 }
 
@@ -131,7 +138,7 @@ class DeductionController extends Controller
                             'type' => 'angsuran_pokok',
                             'amount' => $detail->loan_principal_amount,
                             'balance_after' => $user->total_saving_balance, // balance doesn't change for loan payment, but we record the current saving balance
-                            'description' => "Pembayaran cicilan pokok pinjaman bulan " . str_pad($deduction->month, 2, '0', STR_PAD_LEFT) . " tahun " . $deduction->year,
+                            'description' => "Pembayaran cicilan pokok pinjaman bulan {$monthName} tahun {$deduction->year}",
                         ]);
 
                         // Mutation for fee
@@ -141,7 +148,7 @@ class DeductionController extends Controller
                                 'type' => 'angsuran_jasa',
                                 'amount' => $detail->loan_fee_amount,
                                 'balance_after' => $user->total_saving_balance,
-                                'description' => "Pembayaran jasa pinjaman bulan " . str_pad($deduction->month, 2, '0', STR_PAD_LEFT) . " tahun " . $deduction->year,
+                                'description' => "Pembayaran jasa pinjaman bulan {$monthName} tahun {$deduction->year}",
                             ]);
                         }
                     }
