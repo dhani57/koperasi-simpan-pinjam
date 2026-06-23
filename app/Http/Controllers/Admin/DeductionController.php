@@ -81,9 +81,68 @@ class DeductionController extends Controller
             return redirect()->back()->with('error', 'Tagihan ini sudah ditandai selesai.');
         }
 
-        $deduction->update(['status' => 'selesai']);
+        \Illuminate\Support\Facades\DB::transaction(function () use ($deduction) {
+            $deduction->update(['status' => 'selesai']);
 
-        return redirect()->back()->with('success', 'Status tagihan bulanan berhasil ditandai selesai.');
+            $details = DeductionDetail::where('deduction_period_id', $deduction->id)
+                ->where('status', 'menunggu')
+                ->get();
+
+            foreach ($details as $detail) {
+                // Mark detail as success
+                $detail->update(['status' => 'berhasil']);
+                
+                $user = User::find($detail->user_id);
+
+                // Handle Routine Saving
+                if ($detail->routine_saving_amount > 0) {
+                    $user->total_saving_balance += $detail->routine_saving_amount;
+                    $user->save();
+
+                    \App\Models\Mutation::create([
+                        'user_id' => $user->id,
+                        'type' => 'simpanan_rutin',
+                        'amount' => $detail->routine_saving_amount,
+                        'balance_after' => $user->total_saving_balance,
+                        'description' => "Potongan simpanan rutin bulan " . str_pad($deduction->month, 2, '0', STR_PAD_LEFT) . " tahun " . $deduction->year,
+                    ]);
+                }
+
+                // Handle Loan Payment
+                if ($detail->loan_id) {
+                    $loan = Loan::find($detail->loan_id);
+                    if ($loan) {
+                        $loan->current_remaining_principal -= $detail->loan_principal_amount;
+                        if ($loan->current_remaining_principal <= 0) {
+                            $loan->status = 'lunas';
+                        }
+                        $loan->save();
+
+                        // Mutation for principal
+                        \App\Models\Mutation::create([
+                            'user_id' => $user->id,
+                            'type' => 'angsuran_pokok',
+                            'amount' => $detail->loan_principal_amount,
+                            'balance_after' => $user->total_saving_balance, // balance doesn't change for loan payment, but we record the current saving balance
+                            'description' => "Pembayaran cicilan pokok pinjaman bulan " . str_pad($deduction->month, 2, '0', STR_PAD_LEFT) . " tahun " . $deduction->year,
+                        ]);
+
+                        // Mutation for fee
+                        if ($detail->loan_fee_amount > 0) {
+                            \App\Models\Mutation::create([
+                                'user_id' => $user->id,
+                                'type' => 'angsuran_jasa',
+                                'amount' => $detail->loan_fee_amount,
+                                'balance_after' => $user->total_saving_balance,
+                                'description' => "Pembayaran jasa pinjaman bulan " . str_pad($deduction->month, 2, '0', STR_PAD_LEFT) . " tahun " . $deduction->year,
+                            ]);
+                        }
+                    }
+                }
+            }
+        });
+
+        return redirect()->back()->with('success', 'Status tagihan bulanan berhasil ditandai selesai dan transaksi telah dicatat.');
     }
 
     public function export(DeductionPeriod $deduction)

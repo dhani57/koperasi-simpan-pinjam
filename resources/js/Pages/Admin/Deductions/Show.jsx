@@ -66,7 +66,7 @@ export default function Show({ auth, period, details }) {
                     <thead>
                         <tr style={{ borderBottom: '1px solid var(--color-hairline)' }}>
                             <th style={{ padding: '12px', color: 'var(--color-muted)', fontWeight: 600, fontSize: '13px' }}>Nama Anggota</th>
-                            <th style={{ padding: '12px', color: 'var(--color-muted)', fontWeight: 600, fontSize: '13px' }}>NIK</th>
+                            <th style={{ padding: '12px', color: 'var(--color-muted)', fontWeight: 600, fontSize: '13px' }}>NIP/NIM</th>
                             <th style={{ padding: '12px', color: 'var(--color-muted)', fontWeight: 600, fontSize: '13px', textAlign: 'right' }}>Simpanan Rutin</th>
                             <th style={{ padding: '12px', color: 'var(--color-muted)', fontWeight: 600, fontSize: '13px', textAlign: 'right' }}>Pokok + Jasa Pinjaman</th>
                             <th style={{ padding: '12px', color: 'var(--color-muted)', fontWeight: 600, fontSize: '13px', textAlign: 'right' }}>Total</th>

@@ -69,7 +69,7 @@ export default function Index({ auth, periods }) {
                                 <tr style={{ borderBottom: '1px solid var(--color-hairline)' }}>
                                     <th style={{ padding: '12px', color: 'var(--color-muted)', fontWeight: 600, fontSize: '13px' }}>Periode</th>
                                     <th style={{ padding: '12px', color: 'var(--color-muted)', fontWeight: 600, fontSize: '13px' }}>Status</th>
-                                    <th style={{ padding: '12px', color: 'var(--color-muted)', fontWeight: 600, fontSize: '13px', textAlign: 'right' }}>Aksi</th>
+                                    <th style={{ padding: '12px', color: 'var(--color-muted)', fontWeight: 600, fontSize: '13px', textAlign: 'center', width: '200px' }}>Aksi</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -88,8 +88,8 @@ export default function Index({ auth, periods }) {
                                                 {period.status.toUpperCase()}
                                             </span>
                                         </td>
-                                        <td style={{ padding: '12px', textAlign: 'right' }}>
-                                            <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end' }}>
+                                        <td style={{ padding: '12px', textAlign: 'center' }}>
+                                            <div style={{ display: 'flex', gap: '8px', justifyContent: 'center' }}>
                                                 {period.status === 'proses' && auth.user.role === 'bendahara' && (
                                                     <button 
                                                         onClick={() => {
@@ -97,8 +97,7 @@ export default function Index({ auth, periods }) {
                                                                 router.patch(route('admin.deductions.selesai', period.id));
                                                             }
                                                         }}
-                                                        className="ds-button-secondary"
-                                                        style={{ padding: '6px 12px', fontSize: '12px' }}
+                                                        style={{ padding: '6px 12px', fontSize: '12px', backgroundColor: 'var(--color-semantic-up)', color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 500 }}
                                                     >
                                                         Tandai Selesai
                                                     </button>
