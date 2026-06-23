@@ -15,12 +15,30 @@ class LoanController extends Controller
             abort(403, 'Unauthorized action.');
         }
 
+        $search = request('search');
+        $status = request('status');
+
         $loans = Loan::with(['user', 'verifiedBy'])
+            ->when($search, function ($query, $search) {
+                $query->whereHas('user', function ($q) use ($search) {
+                    $q->where('name', 'like', "%{$search}%");
+                });
+            })
+            ->when($status, function ($query, $status) {
+                $query->where('status', $status);
+            })
             ->orderBy('created_at', 'desc')
             ->orderBy('id', 'desc')
-            ->paginate(10);
+            ->paginate(10)
+            ->appends(request()->query());
             
-        return inertia('Admin/Loans/Index', ['loans' => $loans]);
+        return inertia('Admin/Loans/Index', [
+            'loans' => $loans,
+            'filters' => [
+                'search' => $search,
+                'status' => $status,
+            ]
+        ]);
     }
 
     public function show(Loan $loan)

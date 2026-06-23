@@ -1,7 +1,8 @@
-import { Head } from '@inertiajs/react';
+import { Head, router } from '@inertiajs/react';
+import React, { useState } from 'react';
 import AdminLayout from '@/Layouts/AdminLayout';
 
-export default function Index({ auth, loans }) {
+export default function Index({ auth, loans, filters }) {
     const isBendahara = auth.user.role === 'bendahara';
     const isKetua = auth.user.role === 'ketua';
     const isPengurus = auth.user.role === 'pengurus';
@@ -9,12 +10,57 @@ export default function Index({ auth, loans }) {
     const formatRp = (num) => new Intl.NumberFormat('id-ID').format(num);
     const formatDate = (dateString) => new Intl.DateTimeFormat('id-ID', { year: 'numeric', month: 'short', day: 'numeric' }).format(new Date(dateString));
 
+    const [search, setSearch] = useState(filters?.search || '');
+    const [status, setStatus] = useState(filters?.status || '');
+
+    const handleFilter = (e) => {
+        e.preventDefault();
+        router.get(
+            route('admin.loans.index'),
+            { search, status },
+            { preserveState: true, preserveScroll: true }
+        );
+    };
+
     return (
         <AdminLayout auth={auth} title={isPengurus ? "Verifikasi Pinjaman" : "Persetujuan Pinjaman"}>
             <Head title={isPengurus ? "Verifikasi Pinjaman" : "Persetujuan Pinjaman"} />
 
-            <div style={{ backgroundColor: 'white', borderRadius: 'var(--rounded-xl)', padding: '32px', border: '1px solid var(--color-hairline)' }}>
-                <h2 className="ds-title-md" style={{ marginBottom: '24px' }}>Daftar Pengajuan Pinjaman</h2>
+            <div className="bg-white rounded-xl p-4 md:p-8 border border-slate-200">
+                <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
+                    <h2 className="ds-title-md m-0">Daftar Pengajuan Pinjaman</h2>
+                    
+                    <form onSubmit={handleFilter} className="w-full md:w-auto flex flex-col sm:flex-row gap-3">
+                        <input
+                            type="text"
+                            placeholder="Cari anggota..."
+                            className="ds-text-input text-sm"
+                            style={{ minHeight: '40px' }}
+                            value={search}
+                            onChange={(e) => setSearch(e.target.value)}
+                        />
+                        <select
+                            className="ds-text-input text-sm bg-white"
+                            style={{ minHeight: '40px' }}
+                            value={status}
+                            onChange={(e) => setStatus(e.target.value)}
+                        >
+                            <option value="">Semua Status</option>
+                            <option value="diajukan">Diajukan</option>
+                            <option value="diverifikasi">Diverifikasi</option>
+                            <option value="menunggu_ketua">Menunggu Ketua</option>
+                            <option value="menunggu_bendahara">Menunggu Bendahara</option>
+                            <option value="disetujui">Disetujui</option>
+                            <option value="menunggu_pencairan">Menunggu Pencairan</option>
+                            <option value="aktif">Aktif (Berjalan)</option>
+                            <option value="lunas">Lunas</option>
+                            <option value="ditolak">Ditolak</option>
+                        </select>
+                        <button type="submit" className="ds-button-primary" style={{ padding: '8px 16px', height: '40px' }}>
+                            Terapkan
+                        </button>
+                    </form>
+                </div>
 
                 {loans.data.length === 0 ? (
                     <div style={{ textAlign: 'center', padding: '40px', backgroundColor: 'var(--color-surface-soft)', borderRadius: 'var(--rounded-lg)' }}>
