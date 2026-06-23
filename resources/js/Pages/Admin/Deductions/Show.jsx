@@ -18,17 +18,28 @@ export default function Show({ auth, period, details }) {
                 <Link href={route('admin.deductions.index')} className="ds-button-secondary" style={{ textDecoration: 'none' }}>
                     &larr; Kembali
                 </Link>
-                {auth.user.role === 'bendahara' && (
-                    <a 
-                        href={route('admin.deductions.export', period.id)}
-                        className="ds-button-primary"
-                        style={{ padding: '8px 16px', fontSize: '14px', textDecoration: 'none' }}
-                        target="_blank"
-                        rel="noreferrer"
-                    >
-                        Ekspor CSV
-                    </a>
-                )}
+                <div style={{ display: 'flex', gap: '12px' }}>
+                    {auth.user.role === 'bendahara' && period.status === 'draf' && (
+                        <form method="post" action={route('admin.deductions.selesai', period.id)} style={{ margin: 0 }}>
+                            <input type="hidden" name="_token" value={document.head.querySelector('meta[name="csrf-token"]')?.content} />
+                            <input type="hidden" name="_method" value="patch" />
+                            <button type="submit" className="ds-button-primary" style={{ padding: '8px 16px', fontSize: '14px', backgroundColor: '#10b981', color: 'white', border: 'none' }}>
+                                Sudah Dikirim
+                            </button>
+                        </form>
+                    )}
+                    {auth.user.role === 'bendahara' && (
+                        <a 
+                            href={route('admin.deductions.export', period.id)}
+                            className="ds-button-primary"
+                            style={{ padding: '8px 16px', fontSize: '14px', textDecoration: 'none' }}
+                            target="_blank"
+                            rel="noreferrer"
+                        >
+                            Ekspor CSV
+                        </a>
+                    )}
+                </div>
             </div>
 
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '24px', marginBottom: '32px' }}>
