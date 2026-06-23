@@ -34,7 +34,7 @@ class LoanServiceTest extends TestCase
         $tenorYears = 3;
         $feePercentage = 1.0; // using 1% just like PRD 6.2 example
         
-        $simulation = $service->calculateSimulation($principal, $tenorYears, $feePercentage);
+        $simulation = $service->calculateSimulation($principal, $tenorYears, null, $feePercentage);
         
         $this->assertEquals(30, $simulation['total_tenor_months']);
         
