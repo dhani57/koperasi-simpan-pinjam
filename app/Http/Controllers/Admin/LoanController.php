@@ -56,15 +56,31 @@ class LoanController extends Controller
     {
         Gate::authorize('approve', $loan);
 
-        if ($loan->status !== 'diajukan' && $loan->status !== 'diverifikasi') {
+        $validStatuses = ['diajukan', 'diverifikasi', 'menunggu_bendahara', 'menunggu_ketua'];
+        if (!in_array($loan->status, $validStatuses)) {
             return redirect()->back()->with('error', 'Pinjaman tidak valid untuk disetujui.');
         }
 
-        $loan->update([
-            'status' => 'disetujui',
-        ]);
+        $user = auth()->user();
+        if ($user->role === 'bendahara') {
+            $loan->bendahara_approved_at = now();
+            $loan->bendahara_approved_by = $user->id;
+        } elseif ($user->role === 'ketua') {
+            $loan->ketua_approved_at = now();
+            $loan->ketua_approved_by = $user->id;
+        }
 
-        return redirect()->back()->with('success', 'Pinjaman berhasil disetujui.');
+        if ($loan->bendahara_approved_at && $loan->ketua_approved_at) {
+            $loan->status = 'disetujui';
+        } elseif ($loan->bendahara_approved_at) {
+            $loan->status = 'menunggu_ketua';
+        } elseif ($loan->ketua_approved_at) {
+            $loan->status = 'menunggu_bendahara';
+        }
+
+        $loan->save();
+
+        return redirect()->back()->with('success', 'Persetujuan pinjaman berhasil dicatat.');
     }
 
     public function disburse(\App\Http\Requests\Admin\DisburseLoanRequest $request, Loan $loan)

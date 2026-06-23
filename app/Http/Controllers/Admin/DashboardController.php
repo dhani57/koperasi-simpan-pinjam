@@ -50,14 +50,14 @@ class DashboardController extends Controller
         } elseif ($role === 'bendahara') {
             $stats['total_savings'] = $totalSavings;
             $stats['total_active_loans'] = $totalActiveLoans;
-            $stats['pending_approval'] = \App\Models\Loan::where('status', 'diajukan')->count(); 
+            $stats['pending_approval'] = \App\Models\Loan::whereIn('status', ['diajukan', 'diverifikasi', 'menunggu_bendahara'])->count(); 
             $stats['disbursement_this_month'] = \App\Models\Loan::where('status', 'disetujui')
                 ->whereMonth('updated_at', now()->month)
                 ->sum('principal_amount');
             $stats['deduction_progress'] = 85; 
 
             // Approval Queue
-            $data['approval_queue'] = \App\Models\Loan::with('user')->where('status', 'diajukan')->take(5)->get();
+            $data['approval_queue'] = \App\Models\Loan::with('user')->whereIn('status', ['diajukan', 'diverifikasi', 'menunggu_bendahara'])->take(5)->get();
             
             // Cash Flow
             $data['cash_flow'] = collect($months)->map(fn($m) => ['name' => $m, 'Masuk' => rand(10000000, 50000000), 'Keluar' => rand(5000000, 30000000)]);
@@ -77,7 +77,7 @@ class DashboardController extends Controller
             $stats['total_assets'] = $totalSavings + $totalActiveLoans;
             $stats['total_active_loans'] = $totalActiveLoans;
             $stats['total_shu_expected'] = 2150000;
-            $stats['pending_executive_approval'] = \App\Models\Loan::where('status', 'disetujui')->count(); 
+            $stats['pending_executive_approval'] = \App\Models\Loan::whereIn('status', ['diajukan', 'diverifikasi', 'menunggu_ketua'])->count(); 
 
             // Tren Dana
             $data['asset_trend'] = collect($months)->map(fn($m) => ['name' => $m, 'Aset' => rand(100000000, 500000000)]);
@@ -89,7 +89,7 @@ class DashboardController extends Controller
             $data['top_members'] = \App\Models\User::where('role', 'anggota')->orderBy('total_saving_balance', 'desc')->take(5)->get();
             
             // Approval Tingkat Eksekutif
-            $data['executive_approvals'] = \App\Models\Loan::with('user')->whereIn('status', ['disetujui', 'diajukan'])->take(5)->get();
+            $data['executive_approvals'] = \App\Models\Loan::with('user')->whereIn('status', ['diajukan', 'diverifikasi', 'menunggu_ketua'])->take(5)->get();
             
             $data['health_score'] = 92; // Gauge
             
