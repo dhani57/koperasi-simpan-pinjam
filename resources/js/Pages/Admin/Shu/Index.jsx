@@ -1,102 +1,147 @@
 import React from 'react';
-import { Head, useForm } from '@inertiajs/react';
+import { Head, useForm, router } from '@inertiajs/react';
 import AdminLayout from '@/Layouts/AdminLayout';
 
-export default function Index({ auth }) {
+export default function Index({ auth, year, shuData }) {
     const { post, processing } = useForm();
+
+    const handleYearChange = (e) => {
+        router.get(route('admin.shu.index'), { year: e.target.value }, { preserveState: true });
+    };
 
     const submit = (e) => {
         e.preventDefault();
-        if (confirm('Anda yakin ingin memicu proses Tutup Buku & Perhitungan SHU tahun ini?\n\nPERINGATAN: Tindakan ini akan menghitung keuntungan, membagikannya ke saldo SHU anggota, dan me-reset persentase. Hanya lakukan ini jika siklus keuangan tahunan telah selesai.')) {
+        if (confirm('Anda yakin ingin mengirim draf perhitungan SHU tahun ini?\n\nPERINGATAN: Tindakan ini akan meneruskan draf ke Ketua untuk persetujuan final.')) {
             post(route('admin.shu.store'));
         }
     };
 
+    const formatRp = (num) => new Intl.NumberFormat('id-ID').format(num);
+
+    const isKetua = auth.user.role === 'ketua';
+    const isBendahara = auth.user.role === 'bendahara';
+    const isPengawas = auth.user.role === 'pengawas';
+
     return (
-        <AdminLayout auth={auth} title="Laporan SHU & Tutup Buku">
+        <AdminLayout auth={auth} title={`Laporan SHU & Tutup Buku (${year})`}>
             <Head title="Laporan SHU" />
 
-            <div style={{ backgroundColor: 'white', borderRadius: 'var(--rounded-xl)', padding: '32px', border: '1px solid var(--color-hairline)', maxWidth: '640px', margin: '0 auto', textAlign: 'center' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
                 
-                <div style={{ 
-                    width: '64px', 
-                    height: '64px', 
-                    backgroundColor: 'rgba(16, 185, 129, 0.1)', 
-                    color: '#10b981', 
-                    borderRadius: '50%', 
-                    display: 'flex', 
-                    alignItems: 'center', 
-                    justifyContent: 'center',
-                    margin: '0 auto 24px'
-                }}>
-                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"></path><path d="M22 12A10 10 0 0 0 12 2v10z"></path></svg>
+                {/* Year Selection Card */}
+                <div style={{ backgroundColor: 'white', borderRadius: 'var(--rounded-xl)', padding: '24px', border: '1px solid var(--color-hairline)' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '16px' }}>
+                        <div>
+                            <h2 className="ds-title-md">Laporan Sisa Hasil Usaha (SHU)</h2>
+                            <p style={{ color: 'var(--color-muted)', fontSize: '14px', marginTop: '4px' }}>
+                                Tinjau perhitungan pembagian SHU berdasarkan aktivitas transaksi anggota.
+                            </p>
+                        </div>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                            <label htmlFor="year" style={{ fontSize: '14px', fontWeight: 600 }}>Pilih Tahun:</label>
+                            <select 
+                                id="year" 
+                                value={year} 
+                                onChange={handleYearChange}
+                                className="ds-input"
+                                style={{ width: '120px' }}
+                            >
+                                <option value="2026">2026</option>
+                                <option value="2025">2025</option>
+                                <option value="2024">2024</option>
+                            </select>
+                        </div>
+                    </div>
                 </div>
 
-                <h2 className="ds-display-base" style={{ marginBottom: '16px' }}>
-                    {auth.user.role === 'ketua' ? 'Persetujuan Distribusi SHU' : 'Tutup Buku Tahunan'}
-                </h2>
-                <p style={{ color: 'var(--color-muted)', fontSize: '14px', lineHeight: '1.6', marginBottom: '32px' }}>
-                    {auth.user.role === 'ketua' 
-                        ? 'Tinjau draf perhitungan Sisa Hasil Usaha (SHU) sebelum didistribusikan ke masing-masing anggota. Persetujuan Anda diperlukan untuk mengesahkan proses ini.'
-                        : auth.user.role === 'pengawas'
-                        ? 'Pantau proses tutup buku tahunan koperasi. Anda memiliki akses baca untuk meninjau laporan SHU tanpa hak mengubah status persetujuan.'
-                        : 'Proses tutup buku akan mengkalkulasi Sisa Hasil Usaha (SHU) berdasarkan total pendapatan jasa pinjaman dan akan didistribusikan ke masing-masing anggota secara proporsional sesuai dengan kontribusi mereka.'
-                    }
-                </p>
-
-                <div style={{ backgroundColor: 'var(--color-surface-soft)', padding: '16px', borderRadius: 'var(--rounded-md)', textAlign: 'left', marginBottom: '32px' }}>
-                    <h4 style={{ fontWeight: 600, fontSize: '13px', marginBottom: '8px' }}>Apa yang akan terjadi?</h4>
-                    <ul style={{ paddingLeft: '20px', margin: 0, fontSize: '13px', color: 'var(--color-muted)', display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                        {auth.user.role === 'ketua' ? (
-                            <>
-                                <li>Status draf perhitungan SHU akan diubah menjadi disetujui.</li>
-                                <li>Dana akan langsung dialokasikan ke saldo masing-masing anggota.</li>
-                                <li>Laporan tahun berjalan resmi ditutup.</li>
-                            </>
-                        ) : auth.user.role === 'pengawas' ? (
-                            <>
-                                <li>Anda dapat melihat riwayat tutup buku.</li>
-                                <li>Seluruh proses perhitungan adalah transparan dan tercatat dalam sistem.</li>
-                            </>
-                        ) : (
-                            <>
-                                <li>Sistem akan menghitung total keuntungan dari bunga pinjaman tahun berjalan.</li>
-                                <li>Draf laporan akan dibuat dan menunggu persetujuan Ketua.</li>
-                                <li>Setelah disetujui, dana akan dialokasikan ke Saldo SHU anggota.</li>
-                            </>
-                        )}
-                    </ul>
+                {/* Summary Card */}
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '24px' }}>
+                    <div style={{ backgroundColor: 'white', borderRadius: 'var(--rounded-xl)', padding: '24px', border: '1px solid var(--color-hairline)' }}>
+                        <div style={{ fontSize: '13px', color: 'var(--color-muted)', fontWeight: 600, marginBottom: '8px' }}>Total Skor Aktivitas (Mutasi)</div>
+                        <div className="number-display" style={{ fontSize: '24px', fontWeight: 'bold', color: 'var(--color-primary)' }}>
+                            {formatRp(shuData.total_score)}
+                        </div>
+                    </div>
+                    <div style={{ backgroundColor: 'white', borderRadius: 'var(--rounded-xl)', padding: '24px', border: '1px solid var(--color-hairline)' }}>
+                        <div style={{ fontSize: '13px', color: 'var(--color-muted)', fontWeight: 600, marginBottom: '8px' }}>Basis Formula</div>
+                        <div style={{ fontSize: '18px', fontWeight: 600, textTransform: 'capitalize' }}>
+                            {shuData.formula_base.replace(/_/g, ' ')}
+                        </div>
+                    </div>
                 </div>
 
-                {auth.user.role !== 'pengawas' && (
-                    auth.user.role === 'ketua' ? (
-                        <form onSubmit={(e) => {
-                            e.preventDefault();
-                            if (confirm('Anda yakin ingin menyetujui distribusi SHU ini? Tindakan ini tidak dapat dibatalkan.')) {
-                                post(route('admin.shu.approve'));
+                {/* Details Table */}
+                <div style={{ backgroundColor: 'white', borderRadius: 'var(--rounded-xl)', padding: '24px', border: '1px solid var(--color-hairline)', overflowX: 'auto' }}>
+                    <h3 className="ds-title-md" style={{ marginBottom: '16px' }}>Rincian Pembagian per Anggota</h3>
+                    <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
+                        <thead>
+                            <tr style={{ borderBottom: '1px solid var(--color-hairline)' }}>
+                                <th style={{ padding: '12px', color: 'var(--color-muted)', fontWeight: 600, fontSize: '13px', width: '40px' }}>No.</th>
+                                <th style={{ padding: '12px', color: 'var(--color-muted)', fontWeight: 600, fontSize: '13px' }}>Nama Anggota</th>
+                                <th style={{ padding: '12px', color: 'var(--color-muted)', fontWeight: 600, fontSize: '13px', textAlign: 'right' }}>Skor Aktivitas</th>
+                                <th style={{ padding: '12px', color: 'var(--color-muted)', fontWeight: 600, fontSize: '13px', textAlign: 'right' }}>Persentase Bagian</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {shuData.member_proportions.map((item, index) => (
+                                <tr key={item.user.id} style={{ borderBottom: '1px solid var(--color-hairline)' }}>
+                                    <td style={{ padding: '12px', fontSize: '14px', color: 'var(--color-muted)' }}>{index + 1}</td>
+                                    <td style={{ padding: '12px', fontSize: '14px', fontWeight: 500 }}>{item.user.name}</td>
+                                    <td className="number-display" style={{ padding: '12px', textAlign: 'right' }}>{formatRp(item.score)}</td>
+                                    <td className="number-display" style={{ padding: '12px', textAlign: 'right', fontWeight: 'bold' }}>{item.proportion_percentage.toFixed(2)}%</td>
+                                </tr>
+                            ))}
+                            {shuData.member_proportions.length === 0 && (
+                                <tr>
+                                    <td colSpan="4" style={{ padding: '24px', textAlign: 'center', color: 'var(--color-muted)' }}>
+                                        Belum ada data aktivitas anggota di tahun ini.
+                                    </td>
+                                </tr>
+                            )}
+                        </tbody>
+                    </table>
+                </div>
+
+                {/* Actions */}
+                {!isPengawas && (
+                    <div style={{ backgroundColor: 'white', borderRadius: 'var(--rounded-xl)', padding: '24px', border: '1px solid var(--color-hairline)', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                        <h3 className="ds-title-md">{isKetua ? 'Persetujuan Final' : 'Kirim Draf SHU'}</h3>
+                        <p style={{ color: 'var(--color-muted)', fontSize: '14px' }}>
+                            {isKetua 
+                                ? 'Tinjau draf perhitungan Sisa Hasil Usaha (SHU) di atas sebelum didistribusikan ke masing-masing anggota. Persetujuan Anda diperlukan untuk mengesahkan proses ini.'
+                                : 'Pastikan rincian pembagian di atas sudah sesuai sebelum mengirimkannya ke Ketua untuk persetujuan akhir.'
                             }
-                        }}>
-                            <button 
-                                type="submit" 
-                                disabled={processing}
-                                className="ds-button-primary"
-                                style={{ width: '100%', padding: '16px', fontSize: '16px', backgroundColor: '#10b981' }}
-                            >
-                                {processing ? 'Memproses...' : 'Setujui Distribusi SHU'}
-                            </button>
-                        </form>
-                    ) : (
-                        <form onSubmit={submit}>
-                            <button 
-                                type="submit" 
-                                disabled={processing}
-                                className="ds-button-primary"
-                                style={{ width: '100%', padding: '16px', fontSize: '16px', backgroundColor: 'var(--color-semantic-down)' }}
-                            >
-                                {processing ? 'Memproses...' : 'Buat Draf Perhitungan SHU'}
-                            </button>
-                        </form>
-                    )
+                        </p>
+                        
+                        {isKetua ? (
+                            <form onSubmit={(e) => {
+                                e.preventDefault();
+                                if (confirm('Anda yakin ingin menyetujui distribusi SHU ini? Tindakan ini tidak dapat dibatalkan.')) {
+                                    post(route('admin.shu.approve'));
+                                }
+                            }}>
+                                <button 
+                                    type="submit" 
+                                    disabled={processing || shuData.member_proportions.length === 0}
+                                    className="ds-button-primary"
+                                    style={{ padding: '12px 24px', fontSize: '14px', backgroundColor: '#10b981', border: 'none', cursor: (processing || shuData.member_proportions.length === 0) ? 'not-allowed' : 'pointer' }}
+                                >
+                                    {processing ? 'Memproses...' : 'Setujui & Distribusikan SHU'}
+                                </button>
+                            </form>
+                        ) : (
+                            <form onSubmit={submit}>
+                                <button 
+                                    type="submit" 
+                                    disabled={processing || shuData.member_proportions.length === 0}
+                                    className="ds-button-primary"
+                                    style={{ padding: '12px 24px', fontSize: '14px', backgroundColor: 'var(--color-primary)', border: 'none', cursor: (processing || shuData.member_proportions.length === 0) ? 'not-allowed' : 'pointer' }}
+                                >
+                                    {processing ? 'Memproses...' : 'Kirim Draf SHU ke Ketua'}
+                                </button>
+                            </form>
+                        )}
+                    </div>
                 )}
             </div>
         </AdminLayout>
