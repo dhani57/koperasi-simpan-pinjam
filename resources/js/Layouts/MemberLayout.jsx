@@ -76,7 +76,7 @@ export default function MemberLayout({ auth, children }) {
                                 <Dropdown.Content align="right" width="48">
                                     {auth.user.is_anggota && auth.user.role !== 'anggota' && (
                                         <Dropdown.Link href={route('admin.dashboard')}>
-                                            Beralih ke Admin
+                                            Beralih ke {auth.user.role.charAt(0).toUpperCase() + auth.user.role.slice(1)}
                                         </Dropdown.Link>
                                     )}
                                     <Dropdown.Link href={route('profile.edit')}>Profil</Dropdown.Link>
@@ -140,7 +140,7 @@ export default function MemberLayout({ auth, children }) {
                             <div className="mt-3 space-y-1">
                                 {auth.user.is_anggota && auth.user.role !== 'anggota' && (
                                     <ResponsiveNavLink href={route('admin.dashboard')}>
-                                        Beralih ke Admin
+                                        Beralih ke {auth.user.role.charAt(0).toUpperCase() + auth.user.role.slice(1)}
                                     </ResponsiveNavLink>
                                 )}
                                 <ResponsiveNavLink href={route('profile.edit')}>

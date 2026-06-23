@@ -75,12 +75,16 @@ export default function Index({ auth, users, filters }) {
                                     <div className="text-sm text-slate-500">{user.email}</div>
                                 </td>
                                 <td style={{ padding: '16px' }}>
-                                    <span className="ds-badge-pill" style={{ 
-                                        backgroundColor: user.role === 'pengurus' ? '#DBEAFE' : 'var(--color-surface-strong)',
-                                        color: user.role === 'pengurus' ? '#1E40AF' : 'var(--color-muted)'
-                                    }}>
-                                        {user.role.toUpperCase()}
-                                    </span>
+                                    <div className="flex gap-2">
+                                        {(user.roles_array || [user.role]).map((r, idx) => (
+                                            <span key={idx} className="ds-badge-pill" style={{ 
+                                                backgroundColor: r === 'pengurus' ? '#DBEAFE' : 'var(--color-surface-strong)',
+                                                color: r === 'pengurus' ? '#1E40AF' : 'var(--color-muted)'
+                                            }}>
+                                                {r.toUpperCase()}
+                                            </span>
+                                        ))}
+                                    </div>
                                 </td>
                                 <td style={{ padding: '16px', fontFamily: 'var(--font-mono)' }}>Rp {numberFormat(user.max_salary_deduction_limit)}</td>
                                 {auth.user.role !== 'pengawas' && (
