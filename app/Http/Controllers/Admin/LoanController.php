@@ -199,11 +199,3 @@ class LoanController extends Controller
         return redirect()->back()->with('success', 'Pencairan pinjaman berhasil diverifikasi. Pinjaman kini aktif.');
     }
 }
-            'amount' => $loan->principal_amount,
-            'balance_after' => 0, // In a real scenario, this is derived from member's balance logic if applicable
-            'description' => 'Pencairan pinjaman #' . $loan->id,
-        ]);
-
-        return redirect()->back()->with('success', 'Pencairan pinjaman berhasil diverifikasi. Pinjaman kini aktif.');
-    }
-}
