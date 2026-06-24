@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string('email')->unique();
             $table->string('phone')->nullable()->comment('Nomor Telepon/WhatsApp');
             $table->enum('role', ['anggota', 'bendahara', 'pengurus', 'ketua', 'pengawas'])->default('anggota');
+            $table->boolean('is_anggota')->default(false)->comment('Menandakan apakah pengguna memiliki hak sebagai anggota koperasi');
             $table->decimal('monthly_saving_nominal', 15, 2)->default(0)->comment('Nominal potongan wajib bulanan');
             $table->decimal('max_salary_deduction_limit', 15, 2)->default(0)->comment('Limit maksimal gaji yang boleh dipotong');
             $table->decimal('total_saving_balance', 15, 2)->default(0)->comment('Total saldo simpanan saat ini');
