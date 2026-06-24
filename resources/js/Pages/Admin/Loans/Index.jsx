@@ -1,6 +1,7 @@
 import { Head, router } from '@inertiajs/react';
 import React, { useState, useEffect, useRef } from 'react';
 import AdminLayout from '@/Layouts/AdminLayout';
+import Pagination from '@/Components/Pagination';
 
 export default function Index({ auth, loans, filters }) {
     const isBendahara = auth.user.role === 'bendahara';
@@ -171,42 +172,7 @@ export default function Index({ auth, loans, filters }) {
                         </table>
 
                         {/* Pagination */}
-                        {loans.links && loans.links.length > 3 && (
-                            <div style={{ display: 'flex', justifyContent: 'center', padding: '24px 0', gap: '4px' }}>
-                                {loans.links.map((link, idx) => (
-                                    link.url ? (
-                                        <a 
-                                            key={idx} 
-                                            href={link.url}
-                                            style={{
-                                                padding: '8px 12px',
-                                                border: '1px solid',
-                                                borderColor: link.active ? 'var(--color-primary)' : 'var(--color-hairline)',
-                                                backgroundColor: link.active ? 'var(--color-primary)' : 'white',
-                                                color: link.active ? 'white' : 'var(--color-text)',
-                                                borderRadius: '6px',
-                                                fontSize: '14px',
-                                                textDecoration: 'none'
-                                            }}
-                                            dangerouslySetInnerHTML={{ __html: link.label }}
-                                        />
-                                    ) : (
-                                        <span 
-                                            key={idx} 
-                                            style={{
-                                                padding: '8px 12px',
-                                                border: '1px solid var(--color-hairline)',
-                                                color: 'var(--color-muted)',
-                                                backgroundColor: 'var(--color-surface-soft)',
-                                                borderRadius: '6px',
-                                                fontSize: '14px'
-                                            }}
-                                            dangerouslySetInnerHTML={{ __html: link.label }}
-                                        />
-                                    )
-                                ))}
-                            </div>
-                        )}
+                        <Pagination links={loans.links} />
                     </div>
                 )}
             </div>

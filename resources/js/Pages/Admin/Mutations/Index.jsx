@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Head, Link, router } from '@inertiajs/react';
 import AdminLayout from '@/Layouts/AdminLayout';
+import Pagination from '@/Components/Pagination';
 
 export default function Index({ auth, mutations, filters }) {
     const [search, setSearch] = useState(filters?.search || '');
@@ -106,38 +107,7 @@ export default function Index({ auth, mutations, filters }) {
                 </div>
 
                 {/* Pagination */}
-                <div style={{ marginTop: '24px', display: 'flex', justifyContent: 'center', gap: '8px' }}>
-                    {mutations.links.map((link, index) => (
-                        link.url ? (
-                            <Link 
-                                key={index} 
-                                href={link.url} 
-                                dangerouslySetInnerHTML={{ __html: link.label }} 
-                                style={{
-                                    padding: '6px 12px',
-                                    borderRadius: '6px',
-                                    fontSize: '14px',
-                                    backgroundColor: link.active ? 'var(--color-primary)' : 'var(--color-surface-soft)',
-                                    color: link.active ? 'white' : 'var(--color-ink)',
-                                    textDecoration: 'none'
-                                }}
-                            />
-                        ) : (
-                            <span 
-                                key={index} 
-                                dangerouslySetInnerHTML={{ __html: link.label }} 
-                                style={{
-                                    padding: '6px 12px',
-                                    borderRadius: '6px',
-                                    fontSize: '14px',
-                                    backgroundColor: 'var(--color-canvas)',
-                                    color: 'var(--color-muted)',
-                                    opacity: 0.5
-                                }}
-                            />
-                        )
-                    ))}
-                </div>
+                <Pagination links={mutations.links} />
             </div>
         </AdminLayout>
     );

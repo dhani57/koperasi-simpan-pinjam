@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Head, Link, useForm, router } from '@inertiajs/react';
 import AdminLayout from '@/Layouts/AdminLayout';
 import ButtonPrimary from '@/Components/DesignSystem/ButtonPrimary';
+import Pagination from '@/Components/Pagination';
 
 export default function Index({ auth, users, filters }) {
     const { delete: destroy } = useForm();
@@ -107,16 +108,8 @@ export default function Index({ auth, users, filters }) {
                 </div>
             </div>
 
-            {/* Pagination placeholder */}
-            <div style={{ marginTop: '16px', display: 'flex', justifyContent: 'center', gap: '8px' }}>
-                {users.links.map((link, index) => (
-                    link.url ? (
-                        <Link key={index} href={link.url} dangerouslySetInnerHTML={{ __html: link.label }} className={`px-3 py-1 rounded-md text-sm ${link.active ? 'bg-blue-600 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}`} />
-                    ) : (
-                        <span key={index} dangerouslySetInnerHTML={{ __html: link.label }} className="px-3 py-1 rounded-md text-sm bg-slate-50 text-slate-400" />
-                    )
-                ))}
-            </div>
+                {/* Pagination */}
+                <Pagination links={users.links} />
         </AdminLayout>
     );
 }
