@@ -46,6 +46,11 @@ class User extends Authenticatable
         return $this->hasMany(UserActivityLog::class);
     }
 
+    public function loans()
+    {
+        return $this->hasMany(Loan::class);
+    }
+
     /**
      * Get the attributes that should be cast.
      *
