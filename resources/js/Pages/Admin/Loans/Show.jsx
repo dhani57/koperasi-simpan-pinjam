@@ -13,15 +13,17 @@ export default function Show({ auth, loan, limitInfo }) {
         <AdminLayout auth={auth} title="Detail Pengajuan Pinjaman">
             <Head title="Detail Pinjaman" />
 
-            <div style={{ maxWidth: '800px', margin: '0 auto' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
-                    <h2 className="ds-title-md">Detail Pinjaman</h2>
-                    <Link href={route('admin.loans.index')} className="ds-button-secondary" style={{ textDecoration: 'none' }}>
-                        Kembali
-                    </Link>
+            <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+                <div className="flex items-center justify-between mb-6">
+                    <div className="flex items-center gap-3">
+                        <Link href={route('admin.loans.index')} className="p-2 rounded-full hover:bg-gray-100 text-gray-500 transition-colors" title="Kembali">
+                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>
+                        </Link>
+                        <h2 className="text-xl sm:text-2xl font-bold text-gray-900">Detail Pinjaman</h2>
+                    </div>
                 </div>
 
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px' }}>
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                     {/* Left Column: Loan Details */}
                     <div style={{ backgroundColor: 'white', borderRadius: 'var(--rounded-xl)', padding: '32px', border: '1px solid var(--color-hairline)' }}>
                         <h3 style={{ fontSize: '16px', fontWeight: 600, marginBottom: '24px', paddingBottom: '16px', borderBottom: '1px solid var(--color-hairline)' }}>Informasi Pinjaman</h3>
@@ -83,7 +85,7 @@ export default function Show({ auth, loan, limitInfo }) {
                                 (isBendahara && ['diajukan', 'diverifikasi', 'menunggu_bendahara'].includes(loan.status)) ||
                                 (isKetua && ['diajukan', 'diverifikasi', 'menunggu_ketua'].includes(loan.status))
                             ) ? (
-                                <div style={{ display: 'flex', gap: '12px' }}>
+                                <div className="flex flex-col sm:flex-row gap-3">
                                     <form method="post" action={route('admin.loans.approve', loan.id)} style={{ flex: 1 }} onSubmit={(e) => { if(!confirm('Anda yakin ingin menyetujui pengajuan ini?')) e.preventDefault(); }}>
                                         <input type="hidden" name="_token" value={document.head.querySelector('meta[name="csrf-token"]')?.content} />
                                         <button type="submit" className="ds-button-primary" style={{ width: '100%', padding: '12px' }}>Setujui Pengajuan</button>
@@ -94,7 +96,7 @@ export default function Show({ auth, loan, limitInfo }) {
                                     </form>
                                 </div>
                             ) : isBendahara && loan.status === 'disetujui' ? (
-                                <div style={{ display: 'flex', gap: '12px' }}>
+                                <div className="flex flex-col sm:flex-row gap-3">
                                     <form method="post" action={route('admin.loans.disburse', loan.id)} style={{ flex: 1 }} onSubmit={(e) => { if(!confirm('Anda yakin ingin mencairkan dana ini? Pastikan Anda telah mentransfer dana ke rekening anggota di luar sistem.')) e.preventDefault(); }}>
                                         <input type="hidden" name="_token" value={document.head.querySelector('meta[name="csrf-token"]')?.content} />
                                         <button type="submit" className="ds-button-primary" style={{ width: '100%', padding: '12px', backgroundColor: '#10b981', color: 'white' }}>Dana Terkirim</button>

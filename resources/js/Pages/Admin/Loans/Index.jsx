@@ -78,7 +78,7 @@ export default function Index({ auth, loans, filters }) {
                                 <tr style={{ borderBottom: '1px solid var(--color-hairline)' }}>
                                     <th style={{ padding: '12px 16px', color: 'var(--color-muted)', fontWeight: 600, fontSize: '13px' }}>Tanggal</th>
                                     <th style={{ padding: '12px 16px', color: 'var(--color-muted)', fontWeight: 600, fontSize: '13px' }}>Anggota</th>
-                                    <th style={{ padding: '12px 16px', color: 'var(--color-muted)', fontWeight: 600, fontSize: '13px' }}>Plafon</th>
+                                    <th style={{ padding: '12px 16px', color: 'var(--color-muted)', fontWeight: 600, fontSize: '13px' }}>Pinjaman</th>
                                     <th style={{ padding: '12px 16px', color: 'var(--color-muted)', fontWeight: 600, fontSize: '13px' }}>Tenor</th>
                                     <th style={{ padding: '12px 16px', color: 'var(--color-muted)', fontWeight: 600, fontSize: '13px' }}>Status</th>
                                     <th style={{ padding: '12px 16px', color: 'var(--color-muted)', fontWeight: 600, fontSize: '13px', textAlign: 'center' }}>Aksi</th>
