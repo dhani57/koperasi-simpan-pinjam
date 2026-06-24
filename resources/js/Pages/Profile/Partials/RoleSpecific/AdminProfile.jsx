@@ -56,16 +56,32 @@ export default function AdminProfile({ user, roleData }) {
                 </header>
 
                 <div className="mt-5 md:mt-0 md:col-span-2 space-y-6">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         {roleData.active_parameters && roleData.active_parameters.length > 0 ? (
-                            roleData.active_parameters.map(setting => (
-                                <div key={setting.id} className="p-5 bg-white shadow sm:rounded-xl border border-gray-200">
-                                    <p className="text-sm font-medium text-gray-500 truncate">{setting.name}</p>
-                                    <p className="mt-2 text-xl text-gray-900 font-mono font-bold">{setting.value}</p>
-                                </div>
-                            ))
+                            roleData.active_parameters.map(setting => {
+                                const formatValue = (val, type) => {
+                                    if (type === 'integer') return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(val);
+                                    if (type === 'float') return `${val}%`;
+                                    if (type === 'json') {
+                                        try { return JSON.parse(val).join(', '); } catch { return val; }
+                                    }
+                                    if (type === 'string' && val === 'total_mutation_amount') return 'Total Mutasi';
+                                    return val;
+                                };
+
+                                return (
+                                    <div key={setting.id} className="p-5 bg-white shadow sm:rounded-xl border border-gray-200 flex flex-col justify-between">
+                                        <p className="text-sm font-medium text-gray-500 line-clamp-2" title={setting.description || setting.key}>
+                                            {setting.description || setting.key}
+                                        </p>
+                                        <p className="mt-3 text-xl text-gray-900 font-mono font-bold">
+                                            {formatValue(setting.value, setting.type)}
+                                        </p>
+                                    </div>
+                                );
+                            })
                         ) : (
-                            <div className="p-5 bg-white shadow sm:rounded-xl border border-gray-200 col-span-1 md:col-span-2 text-center text-gray-500 text-sm">
+                            <div className="p-5 bg-white shadow sm:rounded-xl border border-gray-200 col-span-1 sm:col-span-2 text-center text-gray-500 text-sm">
                                 Belum ada parameter yang dikonfigurasi.
                             </div>
                         )}
