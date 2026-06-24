@@ -1,5 +1,6 @@
 import { Head } from '@inertiajs/react';
 import MemberLayout from '@/Layouts/MemberLayout';
+import Pagination from '@/Components/Pagination';
 
 export default function Index({ auth, mutations }) {
     const formatRp = (num) => new Intl.NumberFormat('id-ID').format(num);
@@ -8,16 +9,16 @@ export default function Index({ auth, mutations }) {
         <MemberLayout auth={auth} title="Riwayat Mutasi">
             <Head title="Riwayat Mutasi" />
 
-            <div style={{ maxWidth: '800px', margin: '0 auto', padding: 'var(--spacing-xl) 0' }}>
+            <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
                 <div style={{ textAlign: 'center', marginBottom: 'var(--spacing-xl)' }}>
-                    <h2 className="ds-display-mega" style={{ fontSize: '32px', letterSpacing: '-0.5px', marginBottom: '12px' }}>Riwayat Mutasi & E-Slip</h2>
+                    <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-gray-900 mb-3">Riwayat Mutasi & E-Slip</h2>
                     <p style={{ color: 'var(--color-muted)', fontSize: '14px', lineHeight: '1.6' }}>
                         Pantau rekam jejak kontribusi dan potongan gaji Anda setiap bulan secara transparan.
                     </p>
                 </div>
 
                 {/* Filter and Summary Card */}
-                <div style={{ backgroundColor: 'white', borderRadius: 'var(--rounded-lg)', padding: 'var(--spacing-lg)', border: '1px solid var(--color-hairline)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--spacing-lg)' }}>
+                <div className="bg-white rounded-xl p-6 border border-gray-200 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6 mb-8 shadow-sm">
                     <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
                         <span style={{ fontSize: '13px', color: 'var(--color-muted)' }}>Periode:</span>
                         <select style={{ 
@@ -36,12 +37,12 @@ export default function Index({ auth, mutations }) {
                             <option>Mei 2026</option>
                         </select>
                     </div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '32px' }}>
-                        <div style={{ textAlign: 'right' }}>
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-8 w-full sm:w-auto">
+                        <div className="text-left sm:text-right w-full sm:w-auto">
                             <div style={{ fontSize: '12px', color: 'var(--color-muted)' }}>Total Potongan Bulan Ini</div>
                             <div style={{ fontFamily: 'var(--font-mono)', fontSize: '18px', fontWeight: 600 }}>Rp {formatRp(auth.user.monthly_saving_nominal)}</div>
                         </div>
-                        <a href={route('member.mutations.print')} target="_blank" rel="noopener noreferrer" style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '12px 20px', backgroundColor: 'var(--color-primary)', border: 'none', borderRadius: '100px', fontSize: '14px', fontWeight: 600, color: 'white', cursor: 'pointer', textDecoration: 'none' }}>
+                        <a href={route('member.mutations.print')} target="_blank" rel="noopener noreferrer" className="w-full sm:w-auto justify-center" style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '12px 20px', backgroundColor: 'var(--color-primary)', border: 'none', borderRadius: '100px', fontSize: '14px', fontWeight: 600, color: 'white', cursor: 'pointer', textDecoration: 'none' }}>
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="12" y1="18" x2="12" y2="12"></line><line x1="9" y1="15" x2="12" y2="18"></line><line x1="15" y1="15" x2="12" y2="18"></line></svg>
                             Unduh E-Slip PDF
                         </a>
@@ -50,8 +51,8 @@ export default function Index({ auth, mutations }) {
 
                 {/* Mutations List */}
                 <div style={{ backgroundColor: 'white', borderRadius: 'var(--rounded-lg)', border: '1px solid var(--color-hairline)', overflow: 'hidden' }}>
-                    {mutations && mutations.length > 0 ? (
-                        mutations.map((mut, idx) => {
+                    {mutations.data && mutations.data.length > 0 ? (
+                        mutations.data.map((mut, idx) => {
                             const isPositive = mut.amount > 0 || mut.type === 'pencairan_pinjaman';
                             const iconColor = isPositive ? 'var(--color-semantic-up)' : 'var(--color-semantic-down)';
                             const bgColor = isPositive ? '#dcfce7' : '#fee2e2'; // green-100 or red-100
@@ -59,7 +60,7 @@ export default function Index({ auth, mutations }) {
                             const prefix = isPositive ? '+' : '-';
 
                             return (
-                                <div key={idx} style={{ padding: 'var(--spacing-xl)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: idx < mutations.length - 1 ? '1px solid var(--color-hairline)' : 'none' }}>
+                                <div key={mut.id || idx} style={{ padding: 'var(--spacing-xl)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: idx < mutations.data.length - 1 ? '1px solid var(--color-hairline)' : 'none' }}>
                                     <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
                                         <div style={{ width: '40px', height: '40px', borderRadius: '50%', backgroundColor: bgColor, color: iconColor, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                                             {isPositive ? (
@@ -92,6 +93,7 @@ export default function Index({ auth, mutations }) {
                         </div>
                     )}
                 </div>
+                <Pagination links={mutations.links} />
             </div>
         </MemberLayout>
     );
