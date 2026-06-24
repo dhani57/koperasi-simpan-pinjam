@@ -24,54 +24,32 @@ export default function Index({ auth, totalShu, porsiSimpanan, porsiPinjaman, pe
                     
                     {/* Header */}
                     <div style={{ textAlign: 'center', color: 'white', marginBottom: 'var(--spacing-xl)' }}>
-                        <div style={{ 
-                            width: '48px', 
-                            height: '48px', 
-                            borderRadius: '50%', 
-                            backgroundColor: 'rgba(255,255,255,0.1)', 
-                            display: 'inline-flex', 
-                            alignItems: 'center', 
-                            justifyContent: 'center',
-                            marginBottom: 'var(--spacing-md)'
-                        }}>
+                        <div className="w-12 h-12 rounded-full bg-white/10 inline-flex items-center justify-center mb-4">
                             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--color-accent-yellow)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
                         </div>
-                        <h1 className="ds-display-mega" style={{ fontSize: '36px', marginBottom: '12px' }}>Rapor SHU Anda {tahunBuku}</h1>
-                        <p style={{ color: 'rgba(255,255,255,0.7)', fontSize: '15px', lineHeight: '1.6', maxWidth: '500px', margin: '0 auto' }}>
+                        <h1 className="text-3xl sm:text-4xl font-bold mb-3">Rapor SHU Anda {tahunBuku}</h1>
+                        <p className="text-white/70 text-sm sm:text-base leading-relaxed max-w-lg mx-auto">
                             Terima kasih atas partisipasi aktif Anda. Ini adalah porsi keuntungan koperasi yang dikembalikan kepada Anda tahun ini.
                         </p>
                     </div>
 
                     {/* Big SHU Card */}
-                    <div style={{ 
-                        backgroundColor: 'var(--color-surface-dark-elevated)', 
-                        borderRadius: 'var(--rounded-xl)', 
-                        padding: '48px', 
-                        textAlign: 'center', 
-                        boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
-                        marginBottom: 'var(--spacing-section)'
-                    }}>
-                        <div style={{ fontSize: '12px', color: 'rgba(255,255,255,0.6)', letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '16px' }}>
+                    <div className="bg-[#1e293b] rounded-2xl p-6 sm:p-12 text-center shadow-2xl mb-12 border border-slate-700">
+                        <div className="text-xs sm:text-sm text-white/60 tracking-wider uppercase mb-4 font-medium">
                             Total Sisa Hasil Usaha (SHU)
                         </div>
-                        <div style={{ 
-                            fontFamily: 'var(--font-mono)', 
-                            fontSize: '64px', 
-                            fontWeight: 700, 
-                            color: 'var(--color-accent-yellow)',
-                            letterSpacing: '2px'
-                        }}>
+                        <div className="font-mono text-4xl sm:text-6xl font-bold text-[#eab308] tracking-widest break-words">
                             Rp {formatRp(totalShu)}
                         </div>
                     </div>
 
                     {/* Breakdown Section */}
                     <div style={{ textAlign: 'center', marginBottom: 'var(--spacing-xl)' }}>
-                        <h2 className="ds-title-md" style={{ fontSize: '24px' }}>Bagaimana Angka Ini Dihitung?</h2>
+                        <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-2">Bagaimana Angka Ini Dihitung?</h2>
                         <p style={{ color: 'var(--color-muted)', fontSize: '14px' }}>SHU dibagikan secara adil berdasarkan persentase kontribusi Anda terhadap total aset koperasi.</p>
                     </div>
 
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--spacing-lg)', marginBottom: 'var(--spacing-lg)' }}>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
                         {/* Porsi Simpanan */}
                         <div style={{ backgroundColor: 'white', borderRadius: 'var(--rounded-lg)', padding: 'var(--spacing-xl)', border: '1px solid var(--color-hairline)', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.05)' }}>
                             <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '24px' }}>
