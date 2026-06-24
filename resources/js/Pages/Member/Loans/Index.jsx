@@ -6,11 +6,11 @@ export default function Index({ auth, loans }) {
         <MemberLayout auth={auth} title="Pinjaman Saya">
             <Head title="Pinjaman Saya" />
 
-            <div style={{ maxWidth: '1000px', margin: '0 auto', padding: 'var(--spacing-xl) var(--spacing-md)' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--spacing-lg)' }}>
+            <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
                     <div>
-                        <h2 className="ds-display-mega" style={{ fontSize: '32px', letterSpacing: '-0.5px' }}>Pinjaman Saya</h2>
-                        <p className="ds-body-sm" style={{ color: 'var(--color-muted)', marginTop: '8px' }}>Daftar pengajuan dan pinjaman aktif Anda.</p>
+                        <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-gray-900">Pinjaman Saya</h2>
+                        <p className="text-sm text-gray-500 mt-2">Daftar pengajuan dan pinjaman aktif Anda.</p>
                     </div>
                     <Link 
                         href={route('member.loans.create')} 
@@ -34,8 +34,8 @@ export default function Index({ auth, loans }) {
                     </Link>
                 </div>
 
-                <div style={{ backgroundColor: 'white', borderRadius: 'var(--rounded-lg)', border: '1px solid var(--color-hairline)', overflow: 'hidden' }}>
-                    <table style={{ width: '100%', textAlign: 'left', borderCollapse: 'collapse' }}>
+                <div className="bg-white rounded-xl border border-gray-200 overflow-x-auto shadow-sm">
+                    <table className="w-full text-left border-collapse whitespace-nowrap min-w-[600px]">
                         <thead style={{ backgroundColor: 'var(--color-surface-soft)', borderBottom: '1px solid var(--color-hairline)' }}>
                             <tr>
                                 <th style={{ padding: '16px 24px', fontSize: '13px', color: 'var(--color-muted)', fontWeight: 600 }}>Tanggal</th>
