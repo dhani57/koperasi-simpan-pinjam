@@ -18,7 +18,7 @@ class LoanServiceTest extends TestCase
         parent::setUp();
         
         Setting::create(['key' => 'inactive_months', 'value' => json_encode([6, 12]), 'type' => 'json']);
-        Setting::create(['key' => 'default_cooperative_fee_percentage', 'value' => '1.5', 'type' => 'float']);
+        Setting::create(['key' => 'loan_interest_rate', 'value' => '1.5', 'type' => 'float']);
     }
 
     public function test_get_active_months_per_year_returns_correct_count()

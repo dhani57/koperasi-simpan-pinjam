@@ -27,10 +27,6 @@ class SettingSeeder extends Seeder
             ['value' => '1.5', 'type' => 'float', 'description' => 'Persentase jasa/bunga pinjaman per bulan (%)']
         );
 
-        \App\Models\Setting::updateOrCreate(
-            ['key' => 'default_cooperative_fee_percentage'],
-            ['value' => '1.5', 'type' => 'float', 'description' => 'Persentase jasa koperasi per bulan (%)']
-        );
 
         \App\Models\Setting::updateOrCreate(
             ['key' => 'inactive_months'],

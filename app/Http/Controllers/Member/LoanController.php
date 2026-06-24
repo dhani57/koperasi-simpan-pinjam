@@ -36,7 +36,7 @@ class LoanController extends Controller
             ->exists();
             
         // Ambil default fee (contoh: 1.5)
-        $defaultFee = \App\Models\Setting::where('key', 'default_cooperative_fee_percentage')->value('value') ?? 1.5;
+        $defaultFee = \App\Models\Setting::where('key', 'loan_interest_rate')->value('value') ?? 1.5;
 
         // Plafon tersedia
         $activeLoans = \App\Models\Loan::where('user_id', $user->id)->whereIn('status', ['disetujui', 'aktif'])->get();
@@ -72,7 +72,7 @@ class LoanController extends Controller
         $tenorYears = $request->tenor_years;
         $tenorMonths = $request->tenor_months;
         $purpose = $request->purpose;
-        $feePercentage = \App\Models\Setting::where('key', 'default_cooperative_fee_percentage')->value('value') ?? 1.5;
+        $feePercentage = \App\Models\Setting::where('key', 'loan_interest_rate')->value('value') ?? 1.5;
         
         // Cek lagi apakah ada pinjaman aktif
         $hasActiveLoan = \App\Models\Loan::where('user_id', $user->id)

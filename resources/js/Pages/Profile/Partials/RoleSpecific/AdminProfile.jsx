@@ -74,7 +74,7 @@ export default function AdminProfile({ user, roleData }) {
                                         <p className="text-sm font-medium text-gray-500 line-clamp-2" title={setting.description || setting.key}>
                                             {setting.description || setting.key}
                                         </p>
-                                        <p className="mt-3 text-xl text-gray-900 font-mono font-bold">
+                                        <p className="mt-3 text-sm text-gray-900 font-medium">
                                             {formatValue(setting.value, setting.type)}
                                         </p>
                                     </div>

@@ -87,7 +87,7 @@ class LoanService
      */
     public function createLoan(User $user, float $principal, ?int $tenorYears, ?int $customTenorMonths = null, ?string $purpose = null): Loan
     {
-        $feePercentage = Setting::where('key', 'default_cooperative_fee_percentage')->value('value') ?? 1.5;
+        $feePercentage = Setting::where('key', 'loan_interest_rate')->value('value') ?? 1.5;
         $simulation = $this->calculateSimulation($principal, $tenorYears, $customTenorMonths, (float)$feePercentage);
         
         $firstYear = $simulation['yearly_breakdown'][0];
