@@ -9,6 +9,8 @@ use App\Models\Mutation;
 use App\Models\Setting;
 use App\Models\User;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
 class DatabaseSeeder extends Seeder
@@ -23,6 +25,9 @@ class DatabaseSeeder extends Seeder
             SettingSeeder::class,
         ]);
 
+        $startDate = Carbon::create(2025, 1, 1);
+        $currentDate = Carbon::create(2026, 6, 15);
+
         // 2. Default Roles
         $adminUsers = [
             [
@@ -31,6 +36,7 @@ class DatabaseSeeder extends Seeder
                 'identity_number' => 'ADM-001',
                 'password' => bcrypt('password'),
                 'role' => 'pengurus',
+                'is_anggota' => false,
                 'monthly_saving_nominal' => 0,
                 'max_salary_deduction_limit' => 0,
                 'total_saving_balance' => 0,
@@ -41,6 +47,7 @@ class DatabaseSeeder extends Seeder
                 'identity_number' => 'ADM-002',
                 'password' => bcrypt('password'),
                 'role' => 'ketua',
+                'is_anggota' => false,
                 'monthly_saving_nominal' => 0,
                 'max_salary_deduction_limit' => 0,
                 'total_saving_balance' => 0,
@@ -51,6 +58,7 @@ class DatabaseSeeder extends Seeder
                 'identity_number' => 'ADM-003',
                 'password' => bcrypt('password'),
                 'role' => 'bendahara',
+                'is_anggota' => false,
                 'monthly_saving_nominal' => 0,
                 'max_salary_deduction_limit' => 0,
                 'total_saving_balance' => 0,
@@ -61,6 +69,7 @@ class DatabaseSeeder extends Seeder
                 'identity_number' => 'ADM-004',
                 'password' => bcrypt('password'),
                 'role' => 'pengawas',
+                'is_anggota' => false,
                 'monthly_saving_nominal' => 0,
                 'max_salary_deduction_limit' => 0,
                 'total_saving_balance' => 0,
@@ -71,7 +80,7 @@ class DatabaseSeeder extends Seeder
             User::firstOrCreate(['email' => $admin['email']], $admin);
         }
 
-        // 3. Regular Members (Anggota)
+        // 3. 200 Regular Members (Anggota)
         $members = [];
         // Demo member
         $members[] = User::firstOrCreate(['email' => 'anggota@koperasi.internal'], [
@@ -79,58 +88,59 @@ class DatabaseSeeder extends Seeder
             'identity_number' => 'ANG-001',
             'password' => bcrypt('password'),
             'role' => 'anggota',
+            'is_anggota' => true,
+            'joined_at' => $startDate,
             'monthly_saving_nominal' => 100000,
             'max_salary_deduction_limit' => 2000000,
             'total_saving_balance' => 0,
         ]);
 
-        // Generate 20 more members
-        for ($i = 2; $i <= 21; $i++) {
+        // Generate 199 more members
+        for ($i = 2; $i <= 200; $i++) {
             $members[] = User::create([
                 'name' => fake()->name(),
                 'email' => fake()->unique()->safeEmail(),
                 'identity_number' => 'ANG-' . str_pad($i, 3, '0', STR_PAD_LEFT),
                 'password' => bcrypt('password'),
                 'role' => 'anggota',
+                'is_anggota' => true,
+                'joined_at' => $startDate,
                 'monthly_saving_nominal' => fake()->randomElement([50000, 100000, 150000, 200000]),
                 'max_salary_deduction_limit' => fake()->randomElement([1500000, 2000000, 2500000, 3000000]),
                 'total_saving_balance' => 0,
             ]);
         }
 
-        // 4. Mutations & Saving Balances
-        foreach ($members as $member) {
-            // Give them some initial savings
-            $initialSaving = fake()->randomElement([1000000, 2000000, 5000000, 10000000]);
-            
-            Mutation::create([
-                'user_id' => $member->id,
-                'type' => 'simpanan',
-                'amount' => $initialSaving,
-                'balance_after' => $initialSaving,
-                'description' => 'Migrasi Saldo Simpanan Sebelumnya',
-                'created_at' => now()->subMonths(2)
+        // Generate deduction periods from Jan 2025 to May 2026
+        $periods = [];
+        $periodDate = $startDate->copy();
+        while ($periodDate->format('Y-m') <= '2026-05') {
+            $period = DeductionPeriod::create([
+                'month' => $periodDate->month,
+                'year' => $periodDate->year,
+                'status' => 'selesai',
+                'is_active' => true,
             ]);
-
-            $member->update(['total_saving_balance' => $initialSaving]);
+            $periods[$periodDate->format('Y-m')] = $period;
+            $periodDate->addMonth();
         }
 
-        // 5. Loans
-        $loanStatuses = ['diajukan', 'disetujui', 'aktif', 'lunas', 'ditolak', 'menunggu_bendahara', 'menunggu_ketua'];
-        $users = User::where('role', 'anggota')->get();
-        $activeLoans = [];
+        $pengurusId = User::where('role', 'pengurus')->first()->id;
 
-        foreach ($users as $user) {
-            // Memberikan 1-2 pinjaman history untuk tiap user
-            $numLoans = rand(1, 2);
-            for ($i = 0; $i < $numLoans; $i++) {
-                $status = $loanStatuses[array_rand($loanStatuses)];
-                $principal = rand(1, 15) * 1000000;
-                $tenorYears = rand(1, 3);
+        // 4. Activity Simulation (Loans & Mutations)
+        foreach ($members as $member) {
+            $balance = 0;
+            $periodDate = $startDate->copy();
+            
+            // Randomly decide if this member takes a loan in early 2025
+            $hasLoan = rand(1, 100) <= 70; // 70% chance
+            $loan = null;
+            if ($hasLoan) {
+                $loanMonth = rand(1, 6); // Jan to Jun 2025
+                $loanDisburseDate = Carbon::create(2025, $loanMonth, 15);
+                $principal = rand(2, 10) * 1000000;
+                $tenorYears = rand(1, 2);
                 $feePercentage = 1.5;
-
-                // Create loan record via service logic approximation
-                // so active months logic is respected
                 $activeMonthsPerYear = 10;
                 $totalTenorMonths = $tenorYears * $activeMonthsPerYear;
                 
@@ -138,63 +148,118 @@ class DatabaseSeeder extends Seeder
                 $monthlyFee = $principal * ($feePercentage / 100);
 
                 $loan = Loan::create([
-                    'user_id' => $user->id,
+                    'user_id' => $member->id,
                     'principal_amount' => $principal,
                     'cooperative_fee_percentage' => $feePercentage,
                     'tenor_months' => $totalTenorMonths,
                     'tenor_years' => $tenorYears,
                     'monthly_principal_installment' => $monthlyPrincipal,
-                    'current_remaining_principal' => $status === 'lunas' ? 0 : $principal,
-                    'current_year_monthly_fee' => $status === 'lunas' ? 0 : $monthlyFee,
-                    'status' => $status,
-                    'transfer_proof_path' => in_array($status, ['aktif', 'lunas']) ? 'transfer_proofs/dummy.png' : null,
-                    'disbursed_at' => in_array($status, ['aktif', 'lunas']) ? now()->subMonths(3) : null,
-                    'admin_verified_at' => in_array($status, ['disetujui', 'aktif', 'lunas', 'ditolak', 'menunggu_bendahara', 'menunggu_ketua']) ? now()->subMonths(4) : null,
-                    'admin_verified_by' => in_array($status, ['disetujui', 'aktif', 'lunas', 'ditolak', 'menunggu_bendahara', 'menunggu_ketua']) ? User::where('role', 'pengurus')->first()->id : null,
+                    'current_remaining_principal' => $principal,
+                    'current_year_monthly_fee' => $monthlyFee,
+                    'status' => 'aktif',
+                    'transfer_proof_path' => 'transfer_proofs/dummy.png',
+                    'disbursed_at' => $loanDisburseDate,
+                    'admin_verified_at' => $loanDisburseDate->copy()->subDays(2),
+                    'admin_verified_by' => $pengurusId,
+                    'created_at' => $loanDisburseDate->copy()->subDays(3),
+                    'updated_at' => $loanDisburseDate,
                 ]);
 
-                if ($status === 'aktif') {
-                    $activeLoans[] = $loan;
+                // Initial disbursement mutation
+                Mutation::create([
+                    'user_id' => $member->id,
+                    'type' => 'pencairan_pinjaman',
+                    'amount' => $principal,
+                    'balance_after' => 0,
+                    'description' => 'Pencairan pinjaman #' . $loan->id,
+                    'created_at' => $loanDisburseDate,
+                ]);
+            }
+
+            // Simulate monthly cycle from Jan 2025 to May 2026
+            while ($periodDate->format('Y-m') <= '2026-05') {
+                $p = $periods[$periodDate->format('Y-m')];
+                $isInactiveMonth = in_array($periodDate->month, [11, 12]);
+                
+                // Simpanan Wajib is every month
+                $savingAmount = $member->monthly_saving_nominal;
+                $balance += $savingAmount;
+
+                Mutation::create([
+                    'user_id' => $member->id,
+                    'type' => 'simpanan',
+                    'amount' => $savingAmount,
+                    'balance_after' => $balance,
+                    'description' => 'Simpanan wajib bulanan ' . $periodDate->format('F Y'),
+                    'created_at' => $periodDate->copy()->endOfMonth(),
+                ]);
+
+                $loanPrincipal = 0;
+                $loanFee = 0;
+
+                // Angsuran happens if loan is active, and it's an active month, and current month >= disburse month
+                if ($loan && $loan->status === 'aktif' && $periodDate->format('Y-m') >= $loan->disbursed_at->format('Y-m')) {
+                    if (!$isInactiveMonth) {
+                        $loanPrincipal = $loan->monthly_principal_installment;
+                        $loanFee = $loan->current_year_monthly_fee;
+
+                        $loan->current_remaining_principal -= $loanPrincipal;
+                        if ($loan->current_remaining_principal <= 1) { // Floating point safety
+                            $loan->current_remaining_principal = 0;
+                            $loan->status = 'lunas';
+                        }
+                        $loan->save();
+
+                        Mutation::create([
+                            'user_id' => $member->id,
+                            'type' => 'angsuran_pokok',
+                            'amount' => $loanPrincipal,
+                            'balance_after' => 0,
+                            'description' => 'Angsuran pokok pinjaman #' . $loan->id,
+                            'created_at' => $periodDate->copy()->endOfMonth(),
+                        ]);
+
+                        Mutation::create([
+                            'user_id' => $member->id,
+                            'type' => 'angsuran_jasa',
+                            'amount' => $loanFee,
+                            'balance_after' => 0,
+                            'description' => 'Angsuran jasa pinjaman #' . $loan->id,
+                            'created_at' => $periodDate->copy()->endOfMonth(),
+                        ]);
+                    }
                 }
-            }
-        }
 
-        // 6. Deduction Periods and Details
-        $months = [
-            ['month' => 5, 'year' => 2026, 'status' => 'selesai'],
-        ];
-
-        foreach ($months as $m) {
-            $period = DeductionPeriod::create([
-                'month' => $m['month'],
-                'year' => $m['year'],
-                'status' => $m['status'],
-                'is_active' => true,
-            ]);
-
-            // Add details for active loans in this period
-            foreach ($activeLoans as $loan) {
                 DeductionDetail::create([
-                    'deduction_period_id' => $period->id,
-                    'user_id' => $loan->user_id,
-                    'loan_id' => $loan->id,
-                    'routine_saving_amount' => $loan->user->monthly_saving_nominal,
-                    'loan_principal_amount' => $loan->monthly_principal_installment,
-                    'loan_fee_amount' => $loan->current_year_monthly_fee,
-                    'status' => $m['status'] === 'selesai' ? 'berhasil' : 'menunggu',
+                    'deduction_period_id' => $p->id,
+                    'user_id' => $member->id,
+                    'loan_id' => $loan && $loan->status === 'aktif' ? $loan->id : null,
+                    'routine_saving_amount' => $savingAmount,
+                    'loan_principal_amount' => $loanPrincipal,
+                    'loan_fee_amount' => $loanFee,
+                    'status' => 'berhasil',
                 ]);
+
+                $periodDate->addMonth();
             }
-            
-            // Add details for members without active loans (only saving)
-            foreach (array_slice($members, 15, 5) as $memberNoLoan) {
-                DeductionDetail::create([
-                    'deduction_period_id' => $period->id,
-                    'user_id' => $memberNoLoan->id,
-                    'loan_id' => null,
-                    'routine_saving_amount' => $memberNoLoan->monthly_saving_nominal,
-                    'loan_principal_amount' => 0,
-                    'loan_fee_amount' => 0,
-                    'status' => $m['status'] === 'selesai' ? 'berhasil' : 'menunggu',
+
+            $member->update(['total_saving_balance' => $balance]);
+
+            // Some members also make a new pending loan in June 2026
+            if (rand(1, 100) <= 15) { // 15% chance
+                $statuses = ['diajukan', 'diverifikasi', 'menunggu_bendahara', 'menunggu_ketua'];
+                $principal = rand(1, 5) * 1000000;
+                Loan::create([
+                    'user_id' => $member->id,
+                    'principal_amount' => $principal,
+                    'cooperative_fee_percentage' => 1.5,
+                    'tenor_months' => 10,
+                    'tenor_years' => 1,
+                    'monthly_principal_installment' => $principal / 10,
+                    'current_remaining_principal' => $principal,
+                    'current_year_monthly_fee' => $principal * 0.015,
+                    'status' => $statuses[array_rand($statuses)],
+                    'created_at' => Carbon::create(2026, 6, rand(1, 15)),
                 ]);
             }
         }
