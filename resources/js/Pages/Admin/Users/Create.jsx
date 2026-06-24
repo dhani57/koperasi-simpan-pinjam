@@ -65,7 +65,7 @@ export default function Create({ auth }) {
             <div style={{ backgroundColor: 'var(--color-canvas)', borderRadius: 'var(--rounded-lg)', padding: 'var(--spacing-xl)', border: '1px solid var(--color-hairline)', maxWidth: '800px' }}>
                 <form onSubmit={submit} style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-lg)' }}>
                     
-                    <div className="grid grid-cols-2 gap-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
                         <div>
                             <InputLabel htmlFor="identity_number" value={<span>NIP/NIM <span className="text-red-500">*</span></span>} className="ds-label" />
                             <input id="identity_number" type="text" className="ds-text-input" value={data.identity_number} onChange={e => setData('identity_number', e.target.value)} required />
@@ -78,7 +78,7 @@ export default function Create({ auth }) {
                         </div>
                     </div>
 
-                    <div className="grid grid-cols-2 gap-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
                         <div>
                             <InputLabel htmlFor="email" value={<span>Email <span className="text-red-500">*</span></span>} className="ds-label" />
                             <input id="email" type="email" className="ds-text-input" value={data.email} onChange={e => setData('email', e.target.value)} required />
@@ -86,7 +86,7 @@ export default function Create({ auth }) {
                         </div>
                         <div>
                             <InputLabel value={<span>Peran (Maksimal 2) <span className="text-red-500">*</span></span>} className="ds-label mb-3" />
-                            <div className="grid grid-cols-2 gap-3 p-3 border border-slate-200 rounded-lg bg-slate-50">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 p-3 border border-slate-200 rounded-lg bg-slate-50">
                                 {availableRoles.map(role => (
                                     <label key={role.value} className="flex items-center gap-2 text-sm text-slate-700 cursor-pointer">
                                         <input 
@@ -104,7 +104,7 @@ export default function Create({ auth }) {
                         </div>
                     </div>
 
-                    <div className="grid grid-cols-2 gap-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
                         <div>
                             <InputLabel htmlFor="monthly_saving_nominal" value={<span>Potongan Simpanan Wajib (Rp) <span className="text-red-500">*</span></span>} className="ds-label" />
                             <input id="monthly_saving_nominal" type="text" className="ds-text-input" value={formatNumber(data.monthly_saving_nominal)} onChange={e => handleNumberInput('monthly_saving_nominal', e.target.value)} required />
@@ -117,7 +117,7 @@ export default function Create({ auth }) {
                         </div>
                     </div>
 
-                    <div className="grid grid-cols-2 gap-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
                         <div>
                             <InputLabel htmlFor="total_saving_balance" value="Saldo Awal Simpanan (Opsional/Migrasi)" className="ds-label" />
                             <input id="total_saving_balance" type="text" className="ds-text-input" value={formatNumber(data.total_saving_balance) || ''} onChange={e => handleNumberInput('total_saving_balance', e.target.value)} placeholder="0" />
@@ -130,7 +130,7 @@ export default function Create({ auth }) {
                         </div>
                     </div>
 
-                    <div className="grid grid-cols-2 gap-6 pt-4 border-t border-slate-200">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 pt-4 border-t border-slate-200">
                         <div>
                             <InputLabel htmlFor="password" value={<span>Password <span className="text-red-500">*</span></span>} className="ds-label" />
                             <input id="password" type="password" className="ds-text-input" value={data.password} onChange={e => setData('password', e.target.value)} required />
