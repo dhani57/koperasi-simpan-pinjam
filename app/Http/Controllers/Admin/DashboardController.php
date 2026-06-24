@@ -15,7 +15,7 @@ class DashboardController extends Controller
         
         $totalMembers = \App\Models\User::where('role', 'anggota')->count();
         $totalSavings = \App\Models\User::sum('total_saving_balance');
-        $totalActiveLoans = \App\Models\Loan::whereIn('status', ['aktif', 'disetujui'])->sum('principal_amount');
+        $totalActiveLoans = \App\Models\Loan::whereIn('status', ['aktif', 'disetujui'])->sum('current_remaining_principal');
         
         if ($role === 'pengurus') {
             $stats['total_members'] = $totalMembers;

@@ -22,6 +22,16 @@ export default function Create({ auth }) {
         post(route('admin.users.store'));
     };
 
+    const formatNumber = (num) => {
+        if (!num) return '';
+        return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+    };
+
+    const handleNumberInput = (field, value) => {
+        const rawValue = value.replace(/\D/g, '');
+        setData(field, rawValue);
+    };
+
     const availableRoles = [
         { value: 'anggota', label: 'Anggota' },
         { value: 'bendahara', label: 'Bendahara' },
@@ -97,12 +107,12 @@ export default function Create({ auth }) {
                     <div className="grid grid-cols-2 gap-6">
                         <div>
                             <InputLabel htmlFor="monthly_saving_nominal" value={<span>Potongan Simpanan Wajib (Rp) <span className="text-red-500">*</span></span>} className="ds-label" />
-                            <input id="monthly_saving_nominal" type="number" min="0" className="ds-text-input" value={data.monthly_saving_nominal} onChange={e => setData('monthly_saving_nominal', e.target.value)} required />
+                            <input id="monthly_saving_nominal" type="text" className="ds-text-input" value={formatNumber(data.monthly_saving_nominal)} onChange={e => handleNumberInput('monthly_saving_nominal', e.target.value)} required />
                             {errors.monthly_saving_nominal && <div className="ds-error-text">{errors.monthly_saving_nominal}</div>}
                         </div>
                         <div>
                             <InputLabel htmlFor="max_salary_deduction_limit" value={<span>Limit Maksimal Gaji (Rp) <span className="text-red-500">*</span></span>} className="ds-label" />
-                            <input id="max_salary_deduction_limit" type="number" min="0" className="ds-text-input" value={data.max_salary_deduction_limit} onChange={e => setData('max_salary_deduction_limit', e.target.value)} required />
+                            <input id="max_salary_deduction_limit" type="text" className="ds-text-input" value={formatNumber(data.max_salary_deduction_limit)} onChange={e => handleNumberInput('max_salary_deduction_limit', e.target.value)} required />
                             {errors.max_salary_deduction_limit && <div className="ds-error-text">{errors.max_salary_deduction_limit}</div>}
                         </div>
                     </div>
@@ -110,7 +120,7 @@ export default function Create({ auth }) {
                     <div className="grid grid-cols-2 gap-6">
                         <div>
                             <InputLabel htmlFor="total_saving_balance" value="Saldo Awal Simpanan (Opsional/Migrasi)" className="ds-label" />
-                            <input id="total_saving_balance" type="number" min="0" className="ds-text-input" value={data.total_saving_balance || ''} onChange={e => setData('total_saving_balance', e.target.value)} placeholder="0" />
+                            <input id="total_saving_balance" type="text" className="ds-text-input" value={formatNumber(data.total_saving_balance) || ''} onChange={e => handleNumberInput('total_saving_balance', e.target.value)} placeholder="0" />
                             {errors.total_saving_balance && <div className="ds-error-text">{errors.total_saving_balance}</div>}
                         </div>
                         <div>
