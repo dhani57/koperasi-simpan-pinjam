@@ -70,11 +70,23 @@ class DeductionController extends Controller
             abort(403, 'Unauthorized action.');
         }
 
-        $details = DeductionDetail::with('user')->where('deduction_period_id', $deduction->id)->get();
+        // Calculate totals for the entire period
+        $totals = \App\Models\DeductionDetail::where('deduction_period_id', $deduction->id)
+            ->selectRaw('SUM(routine_saving_amount) as total_saving, SUM(loan_principal_amount) as total_loan_principal, SUM(loan_fee_amount) as total_loan_fee')
+            ->first();
+
+        $details = \App\Models\DeductionDetail::with('user')
+            ->where('deduction_period_id', $deduction->id)
+            ->paginate(10)
+            ->withQueryString();
         
         return inertia('Admin/Deductions/Show', [
             'period' => $deduction,
-            'details' => $details
+            'details' => $details,
+            'totals' => [
+                'total_saving' => $totals->total_saving ?? 0,
+                'total_loan' => ($totals->total_loan_principal ?? 0) + ($totals->total_loan_fee ?? 0),
+            ]
         ]);
     }
 

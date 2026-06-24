@@ -17,7 +17,7 @@ class ShuService
      */
     public function calculateActivityProportions(string $year): array
     {
-        $formulaBase = Setting::where('key', 'shu_formula_base')->value('value') ?? 'total_mutation_amount';
+        $formulaBase = Setting::where('key', 'shu_formula_base')->value('value') ?? 'total_jasa_pinjaman';
 
         $members = User::where('role', 'anggota')->get();
         $scores = [];
@@ -26,11 +26,11 @@ class ShuService
         foreach ($members as $member) {
             $mutations = Mutation::where('user_id', $member->id)
                 ->whereYear('created_at', $year)
-                ->whereIn('type', ['angsuran_jasa', 'angsuran_pokok', 'pencairan_pinjaman'])
+                ->where('type', 'angsuran_jasa')
                 ->get();
             
             $score = 0;
-            if ($formulaBase === 'total_mutation_amount') {
+            if ($formulaBase === 'total_jasa_pinjaman' || $formulaBase === 'total_mutation_amount') {
                 $score = $mutations->sum('amount');
             } elseif ($formulaBase === 'total_mutation_frequency') {
                 $score = $mutations->count();

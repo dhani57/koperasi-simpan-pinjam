@@ -35,7 +35,7 @@ class SettingSeeder extends Seeder
         
         \App\Models\Setting::updateOrCreate(
             ['key' => 'shu_formula_base'],
-            ['value' => 'total_mutation_amount', 'type' => 'string', 'description' => 'Basis formula SHU (menunggu keputusan final client)']
+            ['value' => 'total_jasa_pinjaman', 'type' => 'string', 'description' => 'Basis formula SHU (menunggu keputusan final client)']
         );
     }
 }

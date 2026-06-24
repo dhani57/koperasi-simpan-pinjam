@@ -88,7 +88,7 @@ export default function Index({ auth, year, shuData, filters }) {
                 {/* Summary Card */}
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '24px' }}>
                     <div style={{ backgroundColor: 'white', borderRadius: 'var(--rounded-xl)', padding: '24px', border: '1px solid var(--color-hairline)' }}>
-                        <div style={{ fontSize: '13px', color: 'var(--color-muted)', fontWeight: 600, marginBottom: '8px' }}>Total Skor Aktivitas (Mutasi)</div>
+                        <div style={{ fontSize: '13px', color: 'var(--color-muted)', fontWeight: 600, marginBottom: '8px' }}>Total Keuntungan Usaha (Jasa)</div>
                         <div className="number-display" style={{ fontSize: '24px', fontWeight: 'bold', color: 'var(--color-primary)' }}>
                             {formatRp(shuData.total_score)}
                         </div>
@@ -119,7 +119,7 @@ export default function Index({ auth, year, shuData, filters }) {
                             <tr style={{ borderBottom: '1px solid var(--color-hairline)' }}>
                                 <th style={{ padding: '12px', color: 'var(--color-muted)', fontWeight: 600, fontSize: '13px', width: '40px' }}>No.</th>
                                 <th style={{ padding: '12px', color: 'var(--color-muted)', fontWeight: 600, fontSize: '13px' }}>Nama Anggota</th>
-                                <th style={{ padding: '12px', color: 'var(--color-muted)', fontWeight: 600, fontSize: '13px', textAlign: 'right' }}>Skor Aktivitas</th>
+                                <th style={{ padding: '12px', color: 'var(--color-muted)', fontWeight: 600, fontSize: '13px', textAlign: 'right' }}>Total Jasa Dibayar</th>
                                 <th style={{ padding: '12px', color: 'var(--color-muted)', fontWeight: 600, fontSize: '13px', textAlign: 'right' }}>Persentase Bagian</th>
                             </tr>
                         </thead>

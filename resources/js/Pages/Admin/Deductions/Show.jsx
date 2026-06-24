@@ -1,14 +1,15 @@
 import React from 'react';
 import { Head, Link } from '@inertiajs/react';
 import AdminLayout from '@/Layouts/AdminLayout';
+import Pagination from '@/Components/Pagination';
 
-export default function Show({ auth, period, details }) {
+export default function Show({ auth, period, details, totals }) {
     const formatMonth = (dateString) => new Intl.DateTimeFormat('id-ID', { year: 'numeric', month: 'long' }).format(new Date(dateString));
     const formatRp = (num) => new Intl.NumberFormat('id-ID').format(num);
 
-    const totalSaving = details.reduce((sum, item) => sum + Number(item.routine_saving_amount), 0);
-    const totalLoan = details.reduce((sum, item) => sum + Number(item.loan_principal_amount) + Number(item.loan_fee_amount), 0);
-    const totalAll = totalSaving + totalLoan;
+    const totalSaving = totals?.total_saving || 0;
+    const totalLoan = totals?.total_loan || 0;
+    const totalAll = Number(totalSaving) + Number(totalLoan);
 
     return (
         <AdminLayout auth={auth} title={`Detail Potongan: ${formatMonth(`${period.year}-${String(period.month).padStart(2, '0')}-01`)}`}>
@@ -94,13 +95,13 @@ export default function Show({ auth, period, details }) {
                         </tr>
                     </thead>
                     <tbody>
-                        {details.map((detail, index) => {
+                        {details.data.map((detail, index) => {
                             const detailLoanTotal = Number(detail.loan_principal_amount) + Number(detail.loan_fee_amount);
                             const detailTotal = Number(detail.routine_saving_amount) + detailLoanTotal;
                             
                             return (
                                 <tr key={detail.id} style={{ borderBottom: '1px solid var(--color-hairline)' }}>
-                                    <td style={{ padding: '12px', fontSize: '14px', color: 'var(--color-muted)' }}>{index + 1}</td>
+                                    <td style={{ padding: '12px', fontSize: '14px', color: 'var(--color-muted)' }}>{(details.current_page - 1) * details.per_page + index + 1}</td>
                                     <td style={{ padding: '12px', fontSize: '14px', fontWeight: 500 }}>{detail.user?.name}</td>
                                     <td style={{ padding: '12px', fontSize: '14px', color: 'var(--color-muted)' }}>{detail.user?.identity_number}</td>
                                     <td className="number-display" style={{ padding: '12px', textAlign: 'right' }}>Rp {formatRp(detail.routine_saving_amount)}</td>
@@ -109,15 +110,16 @@ export default function Show({ auth, period, details }) {
                                 </tr>
                             );
                         })}
-                        {details.length === 0 && (
+                        {details.data.length === 0 && (
                             <tr>
-                                <td colSpan="5" style={{ padding: '24px', textAlign: 'center', color: 'var(--color-muted)' }}>
+                                <td colSpan="6" style={{ padding: '24px', textAlign: 'center', color: 'var(--color-muted)' }}>
                                     Belum ada data rincian.
                                 </td>
                             </tr>
                         )}
                     </tbody>
                 </table>
+                <Pagination links={details.links} />
             </div>
         </AdminLayout>
     );
