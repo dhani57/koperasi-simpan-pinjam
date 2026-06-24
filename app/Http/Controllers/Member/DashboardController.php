@@ -16,7 +16,9 @@ class DashboardController extends Controller
             ->whereIn('status', ['disetujui', 'aktif'])
             ->get();
             
-        $totalLoanInstallments = $activeLoans->sum('monthly_installment');
+        $totalLoanInstallments = $activeLoans->sum(function($loan) {
+            return $loan->monthly_principal_installment + $loan->current_year_monthly_fee;
+        });
         $availableLimit = $user->max_salary_deduction_limit - ($user->monthly_saving_nominal + $totalLoanInstallments);
         
         // Mutasi Terakhir
