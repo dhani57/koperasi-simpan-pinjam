@@ -69,9 +69,9 @@ export default function Create({ auth, hasActiveLoan, defaultFee, availableLimit
         <MemberLayout auth={auth} title="Pengajuan Pinjaman">
             <Head title="Pengajuan Pinjaman" />
 
-            <div style={{ maxWidth: '640px', margin: '0 auto', padding: 'var(--spacing-xl) 0' }}>
+            <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
                 <div style={{ textAlign: 'center', marginBottom: 'var(--spacing-xl)' }}>
-                    <h2 className="ds-display-mega" style={{ fontSize: '32px', letterSpacing: '-0.5px', marginBottom: '12px' }}>Pengajuan Pinjaman</h2>
+                    <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-gray-900 mb-3">Pengajuan Pinjaman</h2>
                     <p style={{ color: 'var(--color-muted)', fontSize: '14px', lineHeight: '1.6', maxWidth: '480px', margin: '0 auto' }}>
                         Pembayaran cicilan akan otomatis dipotong dari gaji bulanan Anda. Bebas repot, transparan di awal.
                     </p>
@@ -122,7 +122,7 @@ export default function Create({ auth, hasActiveLoan, defaultFee, availableLimit
 
                             <div>
                                 <label style={{ display: 'block', fontWeight: 600, fontSize: '13px', marginBottom: '12px' }}>Pilihan Tenor</label>
-                                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '12px' }}>
+                                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                                     {[1, 2, 3].map(years => (
                                         <div 
                                             key={years}
@@ -208,32 +208,30 @@ export default function Create({ auth, hasActiveLoan, defaultFee, availableLimit
 
                         {/* Simulasi Card */}
                         {simulation && (
-                            <div style={{ backgroundColor: 'var(--color-surface-dark)', color: 'white', borderRadius: 'var(--rounded-lg)', padding: 'var(--spacing-xl)', marginBottom: 'var(--spacing-lg)' }}>
-                                <h3 style={{ fontSize: '16px', fontWeight: 600, marginBottom: '16px' }}>Simulasi Transparansi</h3>
-                                <p style={{ fontSize: '13px', color: 'rgba(255,255,255,0.7)', marginBottom: '24px', lineHeight: '1.5' }}>
-                                    Jika Anda meminjam <strong style={{ color: 'white' }}>Rp {formatRp(data.principal_amount)}</strong> selama <strong style={{ color: 'white' }}>{data.is_custom_tenor ? data.tenor_months + ' Bulan' : data.tenor_years + ' Tahun'}</strong>, berikut adalah estimasi total potongan gaji Anda di <strong>Tahun Pertama</strong> (maksimal {simulation.computedTenorYears === 1 && data.is_custom_tenor ? Math.min(10, data.tenor_months) : 10} Bulan):
+                            <div className="bg-[#1e293b] text-white rounded-xl p-6 sm:p-8 mb-8 shadow-lg border border-slate-700">
+                                <h3 className="text-lg font-semibold mb-4 text-white">Simulasi Transparansi</h3>
+                                <p className="text-sm text-white/70 mb-6 leading-relaxed">
+                                    Jika Anda meminjam <strong className="text-white">Rp {formatRp(data.principal_amount)}</strong> selama <strong className="text-white">{data.is_custom_tenor ? data.tenor_months + ' Bulan' : data.tenor_years + ' Tahun'}</strong>, berikut adalah estimasi total potongan gaji Anda di <strong className="text-white">Tahun Pertama</strong> (maksimal {simulation.computedTenorYears === 1 && data.is_custom_tenor ? Math.min(10, data.tenor_months) : 10} Bulan):
                                 </p>
 
-                                <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-                                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '14px', color: 'rgba(255,255,255,0.8)' }}>
-                                        <span>Potongan Simpanan Wajib (Rutin)</span>
-                                        <span style={{ fontFamily: 'var(--font-mono)', fontWeight: 500, color: 'white' }}>Rp {formatRp(auth.user.monthly_saving_nominal)}</span>
+                                <div className="flex flex-col gap-4">
+                                    <div className="flex justify-between items-start gap-4 text-sm text-white/80">
+                                        <span className="flex-1 leading-snug">Potongan Simpanan Wajib (Rutin)</span>
+                                        <span className="font-mono font-medium text-white whitespace-nowrap text-right">Rp {formatRp(auth.user.monthly_saving_nominal)}</span>
                                     </div>
-                                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '14px', color: 'rgba(255,255,255,0.8)' }}>
-                                        <span>Cicilan Pokok Pinjaman Baru</span>
-                                        <span style={{ fontFamily: 'var(--font-mono)', fontWeight: 500, color: 'white' }}>Rp {formatRp(simulation.pokokSebulan)}</span>
+                                    <div className="flex justify-between items-start gap-4 text-sm text-white/80">
+                                        <span className="flex-1 leading-snug">Cicilan Pokok Pinjaman Baru</span>
+                                        <span className="font-mono font-medium text-white whitespace-nowrap text-right">Rp {formatRp(simulation.pokokSebulan)}</span>
                                     </div>
-                                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '14px', color: 'rgba(255,255,255,0.8)' }}>
-                                        <span>Jasa Pinjaman ({defaultFee}%)</span>
-                                        <span style={{ fontFamily: 'var(--font-mono)', fontWeight: 500, color: 'white' }}>Rp {formatRp(simulation.jasaSebulan)}</span>
+                                    <div className="flex justify-between items-start gap-4 text-sm text-white/80">
+                                        <span className="flex-1 leading-snug">Jasa Pinjaman ({defaultFee}%)</span>
+                                        <span className="font-mono font-medium text-white whitespace-nowrap text-right">Rp {formatRp(simulation.jasaSebulan)}</span>
                                     </div>
                                 </div>
 
-                                <div style={{ margin: '24px 0', borderTop: '1px solid rgba(255,255,255,0.1)' }}></div>
-
-                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                                    <span style={{ fontSize: '16px', fontWeight: 600 }}>Total Potongan Gaji Bulan Depan</span>
-                                    <span style={{ fontFamily: 'var(--font-mono)', fontSize: '24px', fontWeight: 600 }}>Rp {formatRp(simulation.monthly + Number(auth.user.monthly_saving_nominal))}</span>
+                                <div className="flex flex-col sm:flex-row sm:justify-between items-start sm:items-end gap-2 sm:gap-4 mt-6 pt-6 border-t border-white/10">
+                                    <span className="text-base font-semibold leading-tight text-white">Total Potongan Gaji<br className="hidden sm:block" /> Bulan Depan</span>
+                                    <span className="font-mono text-3xl sm:text-4xl font-bold text-[#eab308] whitespace-nowrap">Rp {formatRp(simulation.monthly + Number(auth.user.monthly_saving_nominal))}</span>
                                 </div>
 
                                 {(simulation.monthly > availableLimit) && (
