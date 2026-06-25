@@ -12,7 +12,7 @@ class ShuController extends Controller
         $year = request('year', now()->year);
         $search = request('search');
         
-        $shuData = $shuService->calculateActivityProportions($year);
+        $shuData = $shuService->calculateEstimatedShu($year);
 
         if ($search) {
             $shuData['member_proportions'] = array_filter($shuData['member_proportions'], function ($item) use ($search) {

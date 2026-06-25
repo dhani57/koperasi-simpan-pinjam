@@ -153,6 +153,7 @@ export default function Index({ auth, year, shuData, filters }) {
                                 <th style={{ padding: '12px', color: 'var(--color-muted)', fontWeight: 600, fontSize: '13px' }}>Nama Anggota</th>
                                 <th style={{ padding: '12px', color: 'var(--color-muted)', fontWeight: 600, fontSize: '13px', textAlign: 'right' }}>Total Jasa Dibayar</th>
                                 <th style={{ padding: '12px', color: 'var(--color-muted)', fontWeight: 600, fontSize: '13px', textAlign: 'right' }}>Persentase Bagian</th>
+                                <th style={{ padding: '12px', color: 'var(--color-ink)', fontWeight: 700, fontSize: '13px', textAlign: 'right' }}>Estimasi SHU (Rp)</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -162,11 +163,12 @@ export default function Index({ auth, year, shuData, filters }) {
                                     <td style={{ padding: '12px', fontSize: '14px', fontWeight: 500 }}>{item.user.name}</td>
                                     <td className="number-display" style={{ padding: '12px', textAlign: 'right' }}>{formatRp(item.score)}</td>
                                     <td className="number-display" style={{ padding: '12px', textAlign: 'right', fontWeight: 'bold' }}>{item.proportion_percentage.toFixed(2)}%</td>
+                                    <td className="number-display" style={{ padding: '12px', textAlign: 'right', fontWeight: '700', color: 'var(--color-semantic-up)' }}>Rp {formatRp(item.nominal_shu)}</td>
                                 </tr>
                             ))}
                             {shuData.member_proportions.length === 0 && (
                                 <tr>
-                                    <td colSpan="4" style={{ padding: '24px', textAlign: 'center', color: 'var(--color-muted)' }}>
+                                    <td colSpan="5" style={{ padding: '24px', textAlign: 'center', color: 'var(--color-muted)' }}>
                                         Belum ada data aktivitas anggota di tahun ini.
                                     </td>
                                 </tr>
