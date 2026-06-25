@@ -3,6 +3,7 @@ import { Head, Link, useForm, router } from '@inertiajs/react';
 import AdminLayout from '@/Layouts/AdminLayout';
 import ButtonPrimary from '@/Components/DesignSystem/ButtonPrimary';
 import Pagination from '@/Components/Pagination';
+import ConfirmModal from '@/Components/ConfirmModal';
 
 export default function Index({ auth, users, filters }) {
     const { delete: destroy } = useForm();
@@ -26,10 +27,41 @@ export default function Index({ auth, users, filters }) {
         return () => clearTimeout(debounceTimer);
     }, [search]);
 
-    const handleDelete = (id) => {
-        if (confirm('Yakin ingin menghapus anggota ini? Data finansial mungkin terpengaruh.')) {
-            destroy(route('admin.users.destroy', id));
+    const [confirmConfig, setConfirmConfig] = useState({
+        show: false,
+        title: '',
+        message: '',
+        type: 'danger',
+        confirmText: 'Hapus',
+        actionCallback: null,
+    });
+
+    const openConfirm = (title, message, type, confirmText, actionCallback) => {
+        setConfirmConfig({
+            show: true,
+            title,
+            message,
+            type,
+            confirmText,
+            actionCallback
+        });
+    };
+
+    const handleConfirm = () => {
+        if (confirmConfig.actionCallback) {
+            confirmConfig.actionCallback();
         }
+        setConfirmConfig({ ...confirmConfig, show: false });
+    };
+
+    const handleDelete = (id) => {
+        openConfirm(
+            'Hapus Anggota',
+            'Yakin ingin menghapus anggota ini? Data finansial mungkin terpengaruh.',
+            'danger',
+            'Hapus',
+            () => destroy(route('admin.users.destroy', id))
+        );
     };
 
     return (
@@ -108,8 +140,17 @@ export default function Index({ auth, users, filters }) {
                 </div>
             </div>
 
-                {/* Pagination */}
-                <Pagination links={users.links} />
+            <Pagination links={users.links} />
+
+            <ConfirmModal 
+                show={confirmConfig.show}
+                onClose={() => setConfirmConfig({ ...confirmConfig, show: false })}
+                onConfirm={handleConfirm}
+                title={confirmConfig.title}
+                message={confirmConfig.message}
+                type={confirmConfig.type}
+                confirmText={confirmConfig.confirmText}
+            />
         </AdminLayout>
     );
 }

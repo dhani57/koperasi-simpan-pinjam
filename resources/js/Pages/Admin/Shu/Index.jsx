@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Head, useForm, router } from '@inertiajs/react';
 import AdminLayout from '@/Layouts/AdminLayout';
+import ConfirmModal from '@/Components/ConfirmModal';
 
 export default function Index({ auth, year, shuData, filters }) {
     const { post, processing } = useForm();
@@ -33,11 +34,42 @@ export default function Index({ auth, year, shuData, filters }) {
         setYearFilter(e.target.value);
     };
 
+    const [confirmConfig, setConfirmConfig] = useState({
+        show: false,
+        title: '',
+        message: '',
+        type: 'primary',
+        confirmText: 'Setujui',
+        actionCallback: null,
+    });
+
+    const openConfirm = (title, message, type, confirmText, actionCallback) => {
+        setConfirmConfig({
+            show: true,
+            title,
+            message,
+            type,
+            confirmText,
+            actionCallback
+        });
+    };
+
+    const handleConfirm = () => {
+        if (confirmConfig.actionCallback) {
+            confirmConfig.actionCallback();
+        }
+        setConfirmConfig({ ...confirmConfig, show: false });
+    };
+
     const submit = (e) => {
         e.preventDefault();
-        if (confirm('Anda yakin ingin mengirim draf perhitungan SHU tahun ini?\n\nPERINGATAN: Tindakan ini akan meneruskan draf ke Ketua untuk persetujuan final.')) {
-            post(route('admin.shu.store'));
-        }
+        openConfirm(
+            'Kirim Draf SHU',
+            'Anda yakin ingin mengirim draf perhitungan SHU tahun ini?\n\nPERINGATAN: Tindakan ini akan meneruskan draf ke Ketua untuk persetujuan final.',
+            'primary',
+            'Kirim Draf',
+            () => post(route('admin.shu.store'))
+        );
     };
 
     const formatRp = (num) => new Intl.NumberFormat('id-ID').format(num);
@@ -184,9 +216,13 @@ export default function Index({ auth, year, shuData, filters }) {
                         {isKetua ? (
                             <form onSubmit={(e) => {
                                 e.preventDefault();
-                                if (confirm('Anda yakin ingin menyetujui distribusi SHU ini? Tindakan ini tidak dapat dibatalkan.')) {
-                                    post(route('admin.shu.approve'));
-                                }
+                                openConfirm(
+                                    'Persetujuan Distribusi SHU',
+                                    'Anda yakin ingin menyetujui distribusi SHU ini? Tindakan ini tidak dapat dibatalkan.',
+                                    'primary',
+                                    'Setujui & Distribusikan',
+                                    () => post(route('admin.shu.approve'))
+                                );
                             }}>
                                 <button 
                                     type="submit" 
@@ -212,6 +248,16 @@ export default function Index({ auth, year, shuData, filters }) {
                     </div>
                 )}
             </div>
+
+            <ConfirmModal 
+                show={confirmConfig.show}
+                onClose={() => setConfirmConfig({ ...confirmConfig, show: false })}
+                onConfirm={handleConfirm}
+                title={confirmConfig.title}
+                message={confirmConfig.message}
+                type={confirmConfig.type}
+                confirmText={confirmConfig.confirmText}
+            />
         </AdminLayout>
     );
 }

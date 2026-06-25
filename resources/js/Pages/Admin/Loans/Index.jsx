@@ -2,6 +2,7 @@ import { Head, router } from '@inertiajs/react';
 import React, { useState, useEffect, useRef } from 'react';
 import AdminLayout from '@/Layouts/AdminLayout';
 import Pagination from '@/Components/Pagination';
+import ConfirmModal from '@/Components/ConfirmModal';
 
 export default function Index({ auth, loans, filters }) {
     const isBendahara = auth.user.role === 'bendahara';
@@ -14,6 +15,33 @@ export default function Index({ auth, loans, filters }) {
     const [search, setSearch] = useState(filters?.search || '');
     const [status, setStatus] = useState(filters?.status || '');
     const initialRender = useRef(true);
+
+    const [confirmConfig, setConfirmConfig] = useState({
+        show: false,
+        title: '',
+        message: '',
+        type: 'primary',
+        confirmText: 'Setujui',
+        actionUrl: null,
+    });
+
+    const openConfirm = (title, message, type, confirmText, actionUrl) => {
+        setConfirmConfig({
+            show: true,
+            title,
+            message,
+            type,
+            confirmText,
+            actionUrl
+        });
+    };
+
+    const handleConfirm = () => {
+        if (confirmConfig.actionUrl) {
+            router.post(confirmConfig.actionUrl);
+        }
+        setConfirmConfig({ ...confirmConfig, show: false });
+    };
 
     useEffect(() => {
         if (initialRender.current) {
@@ -122,14 +150,15 @@ export default function Index({ auth, loans, filters }) {
                                                 {/* Admin Actions */}
                                                 {isPengurus && loan.status === 'diajukan' && (
                                                     <>
-                                                        <form method="post" action={route('admin.loans.verify', loan.id)} style={{ display: 'inline' }} onSubmit={(e) => { if(!confirm('Anda yakin ingin memverifikasi pengajuan ini?')) e.preventDefault(); }}>
-                                                            <input type="hidden" name="_token" value={document.head.querySelector('meta[name="csrf-token"]')?.content} />
-                                                            <button type="submit" className="ds-button-primary" style={{ padding: '6px 12px', fontSize: '12px' }}>Verifikasi</button>
-                                                        </form>
-                                                        <form method="post" action={route('admin.loans.reject', loan.id)} style={{ display: 'inline' }} onSubmit={(e) => { if(!confirm('Anda yakin ingin menolak pengajuan ini?')) e.preventDefault(); }}>
-                                                            <input type="hidden" name="_token" value={document.head.querySelector('meta[name="csrf-token"]')?.content} />
-                                                            <button type="submit" className="ds-button-primary" style={{ padding: '6px 12px', fontSize: '12px', backgroundColor: '#ef4444', color: 'white', border: 'none' }}>Tolak</button>
-                                                        </form>
+                                                        <button 
+                                                            onClick={() => openConfirm('Verifikasi Pengajuan', 'Anda yakin ingin memverifikasi pengajuan ini?', 'primary', 'Verifikasi', route('admin.loans.verify', loan.id))}
+                                                            className="ds-button-primary" style={{ padding: '6px 12px', fontSize: '12px' }}
+                                                        >Verifikasi</button>
+                                                        
+                                                        <button 
+                                                            onClick={() => openConfirm('Tolak Pengajuan', 'Anda yakin ingin menolak pengajuan ini?', 'danger', 'Tolak', route('admin.loans.reject', loan.id))}
+                                                            className="ds-button-primary" style={{ padding: '6px 12px', fontSize: '12px', backgroundColor: '#ef4444', color: 'white', border: 'none' }}
+                                                        >Tolak</button>
                                                     </>
                                                 )}
 
@@ -139,14 +168,15 @@ export default function Index({ auth, loans, filters }) {
                                                     (isKetua && ['diajukan', 'menunggu_ketua'].includes(loan.status))
                                                 ) && (
                                                     <>
-                                                        <form method="post" action={route('admin.loans.approve', loan.id)} style={{ display: 'inline' }} onSubmit={(e) => { if(!confirm('Anda yakin ingin menyetujui pengajuan ini?')) e.preventDefault(); }}>
-                                                            <input type="hidden" name="_token" value={document.head.querySelector('meta[name="csrf-token"]')?.content} />
-                                                            <button type="submit" className="ds-button-primary" style={{ padding: '6px 12px', fontSize: '12px' }}>Setujui</button>
-                                                        </form>
-                                                        <form method="post" action={route('admin.loans.reject', loan.id)} style={{ display: 'inline' }} onSubmit={(e) => { if(!confirm('Anda yakin ingin menolak pengajuan ini?')) e.preventDefault(); }}>
-                                                            <input type="hidden" name="_token" value={document.head.querySelector('meta[name="csrf-token"]')?.content} />
-                                                            <button type="submit" className="ds-button-primary" style={{ padding: '6px 12px', fontSize: '12px', backgroundColor: '#ef4444', color: 'white', border: 'none' }}>Tolak</button>
-                                                        </form>
+                                                        <button 
+                                                            onClick={() => openConfirm('Setujui Pengajuan', 'Anda yakin ingin menyetujui pengajuan ini?', 'primary', 'Setujui', route('admin.loans.approve', loan.id))}
+                                                            className="ds-button-primary" style={{ padding: '6px 12px', fontSize: '12px' }}
+                                                        >Setujui</button>
+                                                        
+                                                        <button 
+                                                            onClick={() => openConfirm('Tolak Pengajuan', 'Anda yakin ingin menolak pengajuan ini?', 'danger', 'Tolak', route('admin.loans.reject', loan.id))}
+                                                            className="ds-button-primary" style={{ padding: '6px 12px', fontSize: '12px', backgroundColor: '#ef4444', color: 'white', border: 'none' }}
+                                                        >Tolak</button>
                                                     </>
                                                 )}
 
@@ -159,10 +189,10 @@ export default function Index({ auth, loans, filters }) {
                                                 )}
 
                                                 {isBendahara && loan.status === 'disetujui' && (
-                                                    <form method="post" action={route('admin.loans.disburse', loan.id)} style={{ display: 'inline' }} onSubmit={(e) => { if(!confirm('Anda yakin ingin mencairkan dana ini? Pastikan Anda telah mentransfer dana ke rekening anggota di luar sistem.')) e.preventDefault(); }}>
-                                                        <input type="hidden" name="_token" value={document.head.querySelector('meta[name="csrf-token"]')?.content} />
-                                                        <button type="submit" className="ds-button-primary" style={{ padding: '6px 12px', fontSize: '12px', backgroundColor: '#10b981', color: 'white' }}>Dana Terkirim</button>
-                                                    </form>
+                                                    <button 
+                                                        onClick={() => openConfirm('Pencairan Dana', 'Anda yakin ingin mencairkan dana ini? Pastikan Anda telah mentransfer dana ke rekening anggota di luar sistem.', 'primary', 'Dana Terkirim', route('admin.loans.disburse', loan.id))}
+                                                        className="ds-button-primary" style={{ padding: '6px 12px', fontSize: '12px', backgroundColor: '#10b981', color: 'white' }}
+                                                    >Dana Terkirim</button>
                                                 )}
                                             </div>
                                         </td>
@@ -176,6 +206,16 @@ export default function Index({ auth, loans, filters }) {
                     </div>
                 )}
             </div>
+
+            <ConfirmModal 
+                show={confirmConfig.show}
+                onClose={() => setConfirmConfig({ ...confirmConfig, show: false })}
+                onConfirm={handleConfirm}
+                title={confirmConfig.title}
+                message={confirmConfig.message}
+                type={confirmConfig.type}
+                confirmText={confirmConfig.confirmText}
+            />
         </AdminLayout>
     );
 }

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Head, useForm, Link, router } from '@inertiajs/react';
 import AdminLayout from '@/Layouts/AdminLayout';
+import ConfirmModal from '@/Components/ConfirmModal';
 
 export default function Index({ auth, periods, inactiveMonths = [] }) {
     const monthsList = [
@@ -28,12 +29,43 @@ export default function Index({ auth, periods, inactiveMonths = [] }) {
     const formatMonth = (dateString) => new Intl.DateTimeFormat('id-ID', { year: 'numeric', month: 'long' }).format(new Date(dateString));
     const formatRp = (num) => new Intl.NumberFormat('id-ID').format(num);
 
+    const [confirmConfig, setConfirmConfig] = useState({
+        show: false,
+        title: '',
+        message: '',
+        type: 'primary',
+        confirmText: 'Konfirmasi',
+        actionCallback: null,
+    });
+
+    const openConfirm = (title, message, type, confirmText, actionCallback) => {
+        setConfirmConfig({
+            show: true,
+            title,
+            message,
+            type,
+            confirmText,
+            actionCallback
+        });
+    };
+
+    const handleConfirm = () => {
+        if (confirmConfig.actionCallback) {
+            confirmConfig.actionCallback();
+        }
+        setConfirmConfig({ ...confirmConfig, show: false });
+    };
+
     const submit = (e) => {
         e.preventDefault();
         const periodStr = `${data.selectedYear}-${data.selectedMonth}-01`;
-        if (confirm(`Yakin mau buat tagihan potongan bulan ${formatMonth(periodStr)}?\nProses ini akan membaca data semua simpanan dan pinjaman anggota aktif.`)) {
-            post(route('admin.deductions.store'));
-        }
+        openConfirm(
+            'Buat Tagihan Baru',
+            `Yakin mau buat tagihan potongan bulan ${formatMonth(periodStr)}?\nProses ini akan membaca data semua simpanan dan pinjaman anggota aktif.`,
+            'primary',
+            'Buat Tagihan',
+            () => post(route('admin.deductions.store'))
+        );
     };
 
     return (
@@ -130,9 +162,13 @@ export default function Index({ auth, periods, inactiveMonths = [] }) {
                                                 {period.status === 'proses' && auth.user.role === 'bendahara' && (
                                                     <button 
                                                         onClick={() => {
-                                                            if(confirm('Anda yakin tagihan ini sudah selesai dipotong oleh HRD? Status tidak dapat dikembalikan lagi.')) {
-                                                                router.patch(route('admin.deductions.selesai', period.id));
-                                                            }
+                                                            openConfirm(
+                                                                'Selesaikan Tagihan',
+                                                                'Anda yakin tagihan ini sudah selesai dipotong oleh HRD? Status tidak dapat dikembalikan lagi.',
+                                                                'primary',
+                                                                'Tandai Selesai',
+                                                                () => router.patch(route('admin.deductions.selesai', period.id))
+                                                            );
                                                         }}
                                                         style={{ padding: '6px 12px', fontSize: '12px', backgroundColor: 'var(--color-semantic-up)', color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 500 }}
                                                     >
@@ -156,6 +192,15 @@ export default function Index({ auth, periods, inactiveMonths = [] }) {
                     )}
                 </div>
             </div>
+            <ConfirmModal 
+                show={confirmConfig.show}
+                onClose={() => setConfirmConfig({ ...confirmConfig, show: false })}
+                onConfirm={handleConfirm}
+                title={confirmConfig.title}
+                message={confirmConfig.message}
+                type={confirmConfig.type}
+                confirmText={confirmConfig.confirmText}
+            />
         </AdminLayout>
     );
 }

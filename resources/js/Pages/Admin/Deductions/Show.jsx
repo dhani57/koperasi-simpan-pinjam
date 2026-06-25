@@ -1,7 +1,8 @@
-import React from 'react';
-import { Head, Link } from '@inertiajs/react';
+import React, { useState } from 'react';
+import { Head, Link, router } from '@inertiajs/react';
 import AdminLayout from '@/Layouts/AdminLayout';
 import Pagination from '@/Components/Pagination';
+import ConfirmModal from '@/Components/ConfirmModal';
 
 export default function Show({ auth, period, details, totals }) {
     const formatMonth = (dateString) => new Intl.DateTimeFormat('id-ID', { year: 'numeric', month: 'long' }).format(new Date(dateString));
@@ -10,6 +11,33 @@ export default function Show({ auth, period, details, totals }) {
     const totalSaving = totals?.total_saving || 0;
     const totalLoan = totals?.total_loan || 0;
     const totalAll = Number(totalSaving) + Number(totalLoan);
+
+    const [confirmConfig, setConfirmConfig] = useState({
+        show: false,
+        title: '',
+        message: '',
+        type: 'primary',
+        confirmText: 'Setujui',
+        actionCallback: null,
+    });
+
+    const openConfirm = (title, message, type, confirmText, actionCallback) => {
+        setConfirmConfig({
+            show: true,
+            title,
+            message,
+            type,
+            confirmText,
+            actionCallback
+        });
+    };
+
+    const handleConfirm = () => {
+        if (confirmConfig.actionCallback) {
+            confirmConfig.actionCallback();
+        }
+        setConfirmConfig({ ...confirmConfig, show: false });
+    };
 
     return (
         <AdminLayout auth={auth} title={`Detail Potongan: ${formatMonth(`${period.year}-${String(period.month).padStart(2, '0')}-01`)}`}>
@@ -21,22 +49,19 @@ export default function Show({ auth, period, details, totals }) {
                 </Link>
                 <div style={{ display: 'flex', gap: '12px' }}>
                     {auth.user.role === 'bendahara' && period.status === 'draf' && (
-                        <form 
-                            method="post" 
-                            action={route('admin.deductions.selesai', period.id)} 
-                            style={{ margin: 0 }}
-                            onSubmit={(e) => {
-                                if (!window.confirm('Semua potongan tagihan ini sudah berhasil diproses di Penggajian? Tindakan ini akan secara permanen menambah saldo tabungan dan mengurangi sisa pinjaman anggota.')) {
-                                    e.preventDefault();
-                                }
+                        <button 
+                            onClick={() => {
+                                openConfirm(
+                                    'Penyelesaian Tagihan',
+                                    'Semua potongan tagihan ini sudah berhasil diproses di Penggajian? Tindakan ini akan secara permanen menambah saldo tabungan dan mengurangi sisa pinjaman anggota.',
+                                    'primary',
+                                    'Sudah Dikirim',
+                                    () => router.patch(route('admin.deductions.selesai', period.id))
+                                );
                             }}
-                        >
-                            <input type="hidden" name="_token" value={document.head.querySelector('meta[name="csrf-token"]')?.content} />
-                            <input type="hidden" name="_method" value="patch" />
-                            <button type="submit" className="ds-button-primary" style={{ padding: '8px 16px', fontSize: '14px', backgroundColor: '#10b981', color: 'white', border: 'none' }}>
-                                Sudah Dikirim
-                            </button>
-                        </form>
+                            className="ds-button-primary" style={{ padding: '8px 16px', fontSize: '14px', backgroundColor: '#10b981', color: 'white', border: 'none' }}>
+                            Sudah Dikirim
+                        </button>
                     )}
                     {auth.user.role === 'bendahara' && (
                         <a 
@@ -121,6 +146,15 @@ export default function Show({ auth, period, details, totals }) {
                 </table>
                 <Pagination links={details.links} />
             </div>
+            <ConfirmModal 
+                show={confirmConfig.show}
+                onClose={() => setConfirmConfig({ ...confirmConfig, show: false })}
+                onConfirm={handleConfirm}
+                title={confirmConfig.title}
+                message={confirmConfig.message}
+                type={confirmConfig.type}
+                confirmText={confirmConfig.confirmText}
+            />
         </AdminLayout>
     );
 }

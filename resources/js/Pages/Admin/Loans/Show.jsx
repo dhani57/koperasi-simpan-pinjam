@@ -1,5 +1,7 @@
-import { Head, Link } from '@inertiajs/react';
+import { Head, Link, router } from '@inertiajs/react';
+import React, { useState } from 'react';
 import AdminLayout from '@/Layouts/AdminLayout';
+import ConfirmModal from '@/Components/ConfirmModal';
 
 export default function Show({ auth, loan, limitInfo }) {
     const isBendahara = auth.user.role === 'bendahara';
@@ -8,6 +10,33 @@ export default function Show({ auth, loan, limitInfo }) {
 
     const formatRp = (num) => new Intl.NumberFormat('id-ID').format(num);
     const formatDate = (dateString) => new Intl.DateTimeFormat('id-ID', { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' }).format(new Date(dateString));
+
+    const [confirmConfig, setConfirmConfig] = useState({
+        show: false,
+        title: '',
+        message: '',
+        type: 'primary',
+        confirmText: 'Setujui',
+        actionUrl: null,
+    });
+
+    const openConfirm = (title, message, type, confirmText, actionUrl) => {
+        setConfirmConfig({
+            show: true,
+            title,
+            message,
+            type,
+            confirmText,
+            actionUrl
+        });
+    };
+
+    const handleConfirm = () => {
+        if (confirmConfig.actionUrl) {
+            router.post(confirmConfig.actionUrl);
+        }
+        setConfirmConfig({ ...confirmConfig, show: false });
+    };
 
     return (
         <AdminLayout auth={auth} title="Detail Pengajuan Pinjaman">
@@ -86,21 +115,22 @@ export default function Show({ auth, loan, limitInfo }) {
                                 (isKetua && ['diajukan', 'diverifikasi', 'menunggu_ketua'].includes(loan.status))
                             ) ? (
                                 <div className="flex flex-col sm:flex-row gap-3">
-                                    <form method="post" action={route('admin.loans.approve', loan.id)} style={{ flex: 1 }} onSubmit={(e) => { if(!confirm('Anda yakin ingin menyetujui pengajuan ini?')) e.preventDefault(); }}>
-                                        <input type="hidden" name="_token" value={document.head.querySelector('meta[name="csrf-token"]')?.content} />
-                                        <button type="submit" className="ds-button-primary" style={{ width: '100%', padding: '12px' }}>Setujui Pengajuan</button>
-                                    </form>
-                                    <form method="post" action={route('admin.loans.reject', loan.id)} style={{ flex: 1 }} onSubmit={(e) => { if(!confirm('Anda yakin ingin menolak pengajuan ini?')) e.preventDefault(); }}>
-                                        <input type="hidden" name="_token" value={document.head.querySelector('meta[name="csrf-token"]')?.content} />
-                                        <button type="submit" className="ds-button-primary" style={{ width: '100%', padding: '12px', backgroundColor: '#ef4444', color: 'white', border: 'none' }}>Tolak</button>
-                                    </form>
+                                    <button 
+                                        onClick={() => openConfirm('Setujui Pengajuan', 'Anda yakin ingin menyetujui pengajuan ini?', 'primary', 'Setujui Pengajuan', route('admin.loans.approve', loan.id))}
+                                        className="ds-button-primary" style={{ flex: 1, padding: '12px' }}
+                                    >Setujui Pengajuan</button>
+                                    
+                                    <button 
+                                        onClick={() => openConfirm('Tolak Pengajuan', 'Anda yakin ingin menolak pengajuan ini?', 'danger', 'Tolak', route('admin.loans.reject', loan.id))}
+                                        className="ds-button-primary" style={{ flex: 1, padding: '12px', backgroundColor: '#ef4444', color: 'white', border: 'none' }}
+                                    >Tolak</button>
                                 </div>
                             ) : isBendahara && loan.status === 'disetujui' ? (
                                 <div className="flex flex-col sm:flex-row gap-3">
-                                    <form method="post" action={route('admin.loans.disburse', loan.id)} style={{ flex: 1 }} onSubmit={(e) => { if(!confirm('Anda yakin ingin mencairkan dana ini? Pastikan Anda telah mentransfer dana ke rekening anggota di luar sistem.')) e.preventDefault(); }}>
-                                        <input type="hidden" name="_token" value={document.head.querySelector('meta[name="csrf-token"]')?.content} />
-                                        <button type="submit" className="ds-button-primary" style={{ width: '100%', padding: '12px', backgroundColor: '#10b981', color: 'white' }}>Dana Terkirim</button>
-                                    </form>
+                                    <button 
+                                        onClick={() => openConfirm('Pencairan Dana', 'Anda yakin ingin mencairkan dana ini? Pastikan Anda telah mentransfer dana ke rekening anggota di luar sistem.', 'primary', 'Dana Terkirim', route('admin.loans.disburse', loan.id))}
+                                        className="ds-button-primary" style={{ flex: 1, padding: '12px', backgroundColor: '#10b981', color: 'white' }}
+                                    >Dana Terkirim</button>
                                 </div>
                             ) : (
                                 <div style={{ textAlign: 'center', padding: '16px', backgroundColor: 'var(--color-surface-soft)', borderRadius: '8px', fontSize: '14px', color: 'var(--color-muted)' }}>
@@ -180,6 +210,15 @@ export default function Show({ auth, loan, limitInfo }) {
                     </div>
                 </div>
             </div>
+            <ConfirmModal 
+                show={confirmConfig.show}
+                onClose={() => setConfirmConfig({ ...confirmConfig, show: false })}
+                onConfirm={handleConfirm}
+                title={confirmConfig.title}
+                message={confirmConfig.message}
+                type={confirmConfig.type}
+                confirmText={confirmConfig.confirmText}
+            />
         </AdminLayout>
     );
 }

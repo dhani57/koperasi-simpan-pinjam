@@ -1,7 +1,9 @@
+import React, { useState } from 'react';
 import { Head, Link, useForm } from '@inertiajs/react';
 import AdminLayout from '@/Layouts/AdminLayout';
 import ButtonPrimary from '@/Components/DesignSystem/ButtonPrimary';
 import InputLabel from '@/Components/InputLabel';
+import AlertModal from '@/Components/AlertModal';
 
 export default function Edit({ auth, user }) {
     const { data, setData, put, processing, errors } = useForm({
@@ -39,6 +41,11 @@ export default function Edit({ auth, user }) {
         { value: 'pengawas', label: 'Pengawas' }
     ];
 
+    const [alertConfig, setAlertConfig] = useState({
+        show: false,
+        message: ''
+    });
+
     const handleRoleChange = (e) => {
         const value = e.target.value;
         const checked = e.target.checked;
@@ -48,7 +55,7 @@ export default function Edit({ auth, user }) {
             if (newRoles.length < 2) {
                 newRoles.push(value);
             } else {
-                alert('Maksimal memilih 2 peran!');
+                setAlertConfig({ show: true, message: 'Maksimal memilih 2 peran!' });
                 return;
             }
         } else {
@@ -145,6 +152,14 @@ export default function Edit({ auth, user }) {
                     </div>
                 </form>
             </div>
+
+            <AlertModal 
+                show={alertConfig.show}
+                onClose={() => setAlertConfig({ ...alertConfig, show: false })}
+                title="Peringatan"
+                message={alertConfig.message}
+                type="warning"
+            />
         </AdminLayout>
     );
 }

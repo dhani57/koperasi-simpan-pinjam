@@ -1,6 +1,7 @@
 import InputError from '@/Components/InputError';
 import InputLabel from '@/Components/InputLabel';
 import ButtonPrimary from '@/Components/DesignSystem/ButtonPrimary';
+import AlertModal from '@/Components/AlertModal';
 import { Transition } from '@headlessui/react';
 import { Link, useForm, usePage } from '@inertiajs/react';
 import React, { useState } from 'react';
@@ -21,13 +22,14 @@ export default function UpdateProfileInformation({
         });
 
     const [previewPhoto, setPreviewPhoto] = useState(null);
+    const [alertConfig, setAlertConfig] = useState({ show: false, message: '' });
 
     const handlePhotoChange = (e) => {
         const file = e.target.files[0];
         clearErrors('profile_photo');
         if (file) {
             if (file.size > 2 * 1024 * 1024) {
-                alert('Ukuran file maksimal adalah 2MB. Silakan pilih file yang lebih kecil.');
+                setAlertConfig({ show: true, message: 'Ukuran file maksimal adalah 2MB. Silakan pilih file yang lebih kecil.' });
                 e.target.value = '';
                 setData('profile_photo', null);
                 setPreviewPhoto(null);
@@ -242,6 +244,14 @@ export default function UpdateProfileInformation({
                     </div>
                 </form>
             </div>
+
+            <AlertModal 
+                show={alertConfig.show}
+                onClose={() => setAlertConfig({ ...alertConfig, show: false })}
+                title="Peringatan File"
+                message={alertConfig.message}
+                type="warning"
+            />
         </section>
     );
 }
