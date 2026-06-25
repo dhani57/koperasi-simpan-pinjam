@@ -142,7 +142,7 @@ export default function Dashboard({ auth, stats, roleData }) {
                                 <div style={{ fontSize: '20px', fontWeight: 700, color: 'var(--color-semantic-up)', marginTop: '8px', fontFamily: 'var(--font-mono)' }}>Rp {numberFormat(stats.total_simpanan_masuk)}</div>
                             </div>
                             <div style={{ backgroundColor: 'var(--color-canvas)', borderRadius: 'var(--rounded-xl)', padding: '24px', boxShadow: '0 2px 6px rgba(0,0,0,0.02)' }}>
-                                <div style={{ fontSize: '14px', color: 'var(--color-muted)', fontWeight: 500 }}>Total Angsuran Masuk</div>
+                                <div style={{ fontSize: '14px', color: 'var(--color-muted)', fontWeight: 500 }}>Total Pembayaran Pinjaman</div>
                                 <div style={{ fontSize: '20px', fontWeight: 700, color: 'var(--color-semantic-up)', marginTop: '8px', fontFamily: 'var(--font-mono)' }}>Rp {numberFormat(stats.total_angsuran_masuk)}</div>
                             </div>
                             <div style={{ backgroundColor: 'var(--color-canvas)', borderRadius: 'var(--rounded-xl)', padding: '24px', boxShadow: '0 2px 6px rgba(0,0,0,0.02)' }}>
