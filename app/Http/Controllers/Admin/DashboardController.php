@@ -20,7 +20,6 @@ class DashboardController extends Controller
         if ($role === 'pengurus') {
             $stats['total_members'] = $totalMembers;
             $stats['pending_verification'] = \App\Models\Loan::where('status', 'diajukan')->count();
-            $stats['job_queue_status'] = 'Optimal';
             
             // Pertumbuhan Anggota
             $memberGrowth = collect();

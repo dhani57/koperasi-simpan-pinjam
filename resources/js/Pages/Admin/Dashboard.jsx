@@ -83,10 +83,6 @@ export default function Dashboard({ auth, stats, roleData }) {
                                 <div style={{ fontSize: '24px', fontWeight: 700, color: 'var(--color-ink)', marginTop: '8px' }}>{stats.total_members}</div>
                             </div>
 
-                            <div style={{ backgroundColor: 'var(--color-canvas)', borderRadius: 'var(--rounded-xl)', padding: '24px', boxShadow: '0 2px 6px rgba(0,0,0,0.02)' }}>
-                                <div style={{ fontSize: '14px', color: 'var(--color-muted)', fontWeight: 500 }}>Status Antrean Proses</div>
-                                <div style={{ fontSize: '24px', fontWeight: 700, color: 'var(--color-semantic-up)', marginTop: '8px' }}>{stats.job_queue_status}</div>
-                            </div>
                         </>
                     )}
 
