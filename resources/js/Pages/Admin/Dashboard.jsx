@@ -78,11 +78,18 @@ export default function Dashboard({ auth, stats, roleData }) {
                     
                     {auth.user.role === 'pengurus' && (
                         <>
-                            <div style={{ backgroundColor: 'var(--color-canvas)', borderRadius: 'var(--rounded-xl)', padding: '24px', boxShadow: '0 2px 6px rgba(0,0,0,0.02)' }}>
+                            <div className="lg:col-span-2" style={{ backgroundColor: 'var(--color-canvas)', borderRadius: 'var(--rounded-xl)', padding: '24px', boxShadow: '0 2px 6px rgba(0,0,0,0.02)' }}>
                                 <div style={{ fontSize: '14px', color: 'var(--color-muted)', fontWeight: 500 }}>Total Anggota Aktif</div>
                                 <div style={{ fontSize: '24px', fontWeight: 700, color: 'var(--color-ink)', marginTop: '8px' }}>{stats.total_members}</div>
                             </div>
-
+                            <div style={{ backgroundColor: 'var(--color-canvas)', borderRadius: 'var(--rounded-xl)', padding: '24px', boxShadow: '0 2px 6px rgba(0,0,0,0.02)' }}>
+                                <div style={{ fontSize: '14px', color: 'var(--color-muted)', fontWeight: 500 }}>Parameter: Bulan Non-Aktif</div>
+                                <div style={{ fontSize: '24px', fontWeight: 700, color: 'var(--color-ink)', marginTop: '8px' }}>{roleData.system_parameters['Bulan Non-Aktif']}</div>
+                            </div>
+                            <div style={{ backgroundColor: 'var(--color-canvas)', borderRadius: 'var(--rounded-xl)', padding: '24px', boxShadow: '0 2px 6px rgba(0,0,0,0.02)' }}>
+                                <div style={{ fontSize: '14px', color: 'var(--color-muted)', fontWeight: 500 }}>Parameter: Jasa Default</div>
+                                <div style={{ fontSize: '24px', fontWeight: 700, color: 'var(--color-ink)', marginTop: '8px' }}>{roleData.system_parameters['Jasa Default']}</div>
+                            </div>
                         </>
                     )}
 
@@ -165,18 +172,7 @@ export default function Dashboard({ auth, stats, roleData }) {
                             </div>
                         </div>
 
-                        <div className="col-span-1 lg:col-span-12 flex flex-col lg:flex-row gap-6 mt-4">
-                            <div className="flex-1" style={{ backgroundColor: 'var(--color-canvas)', borderRadius: 'var(--rounded-xl)', padding: '24px', boxShadow: '0 2px 6px rgba(0,0,0,0.02)' }}>
-                                <h3 style={{ fontSize: '16px', fontWeight: 600, color: 'var(--color-ink)', marginBottom: '16px' }}>Parameter Sistem</h3>
-                                {Object.entries(roleData.system_parameters || {}).map(([key, value]) => (
-                                    <div key={key} style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px', fontSize: '14px' }}>
-                                        <span style={{ color: 'var(--color-muted)' }}>{key}</span>
-                                        <span style={{ fontWeight: 600 }}>{value}</span>
-                                    </div>
-                                ))}
-                            </div>
-                            {/* Alerts dihapus karena datanya dihapus di controller */}
-                        </div>
+                        {/* Parameter sistem dipindah ke baris atas */}
                     </>
                 )}
 
