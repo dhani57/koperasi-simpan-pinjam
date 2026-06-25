@@ -16,6 +16,8 @@ class ShuService
      */
     public function calculateEstimatedShu(string $year): array
     {
+        $formulaBase = Setting::where('key', 'shu_formula_base')->value('value') ?? 'total_jasa_pinjaman';
+
         // Global Totals
         $totalGlobalJasa = Mutation::whereYear('created_at', $year)
             ->where('type', 'angsuran_jasa')
@@ -73,6 +75,7 @@ class ShuService
 
         return [
             'total_score' => $totalScore, // Total Jasa
+            'formula_base' => $formulaBase,
             'total_shu_dibagikan' => $totalShuDibagikan,
             'total_global_jasa' => $totalGlobalJasa,
             'total_global_simpanan' => $totalGlobalSimpanan,
