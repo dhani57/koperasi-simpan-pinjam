@@ -84,7 +84,7 @@ export default function Dashboard({ auth, stats, roleData }) {
                             </div>
 
                             <div style={{ backgroundColor: 'var(--color-canvas)', borderRadius: 'var(--rounded-xl)', padding: '24px', boxShadow: '0 2px 6px rgba(0,0,0,0.02)' }}>
-                                <div style={{ fontSize: '14px', color: 'var(--color-muted)', fontWeight: 500 }}>Status Job Queue</div>
+                                <div style={{ fontSize: '14px', color: 'var(--color-muted)', fontWeight: 500 }}>Status Antrean Proses</div>
                                 <div style={{ fontSize: '24px', fontWeight: 700, color: 'var(--color-semantic-up)', marginTop: '8px' }}>{stats.job_queue_status}</div>
                             </div>
                         </>
@@ -97,7 +97,7 @@ export default function Dashboard({ auth, stats, roleData }) {
                                 <div style={{ fontSize: '20px', fontWeight: 700, color: 'var(--color-ink)', marginTop: '8px', fontFamily: 'var(--font-mono)' }}>Rp {numberFormat(stats.total_savings)}</div>
                             </div>
                             <div style={{ backgroundColor: 'var(--color-canvas)', borderRadius: 'var(--rounded-xl)', padding: '24px', boxShadow: '0 2px 6px rgba(0,0,0,0.02)' }}>
-                                <div style={{ fontSize: '14px', color: 'var(--color-muted)', fontWeight: 500 }}>Pinjaman Outstanding</div>
+                                <div style={{ fontSize: '14px', color: 'var(--color-muted)', fontWeight: 500 }}>Total Pinjaman Berjalan</div>
                                 <div style={{ fontSize: '20px', fontWeight: 700, color: 'var(--color-ink)', marginTop: '8px', fontFamily: 'var(--font-mono)' }}>Rp {numberFormat(stats.total_active_loans)}</div>
                             </div>
                             <div style={{ backgroundColor: 'var(--color-canvas)', borderRadius: 'var(--rounded-xl)', padding: '24px', boxShadow: '0 2px 6px rgba(0,0,0,0.02)' }}>
@@ -118,7 +118,7 @@ export default function Dashboard({ auth, stats, roleData }) {
                                 <div style={{ fontSize: '20px', fontWeight: 700, color: 'var(--color-ink)', marginTop: '8px', fontFamily: 'var(--font-mono)' }}>Rp {numberFormat(stats.total_assets)}</div>
                             </div>
                             <div style={{ backgroundColor: 'var(--color-canvas)', borderRadius: 'var(--rounded-xl)', padding: '24px', boxShadow: '0 2px 6px rgba(0,0,0,0.02)' }}>
-                                <div style={{ fontSize: '14px', color: 'var(--color-muted)', fontWeight: 500 }}>Pinjaman Outstanding</div>
+                                <div style={{ fontSize: '14px', color: 'var(--color-muted)', fontWeight: 500 }}>Total Pinjaman Berjalan</div>
                                 <div style={{ fontSize: '20px', fontWeight: 700, color: 'var(--color-ink)', marginTop: '8px', fontFamily: 'var(--font-mono)' }}>Rp {numberFormat(stats.total_active_loans)}</div>
                             </div>
                             <div style={{ backgroundColor: 'var(--color-canvas)', borderRadius: 'var(--rounded-xl)', padding: '24px', boxShadow: '0 2px 6px rgba(0,0,0,0.02)' }}>
@@ -211,7 +211,7 @@ export default function Dashboard({ auth, stats, roleData }) {
                     <>
                         <div className="col-span-1 lg:col-span-12 grid grid-cols-1 lg:grid-cols-2 gap-6 mt-4">
                             <div style={{ backgroundColor: 'var(--color-canvas)', borderRadius: 'var(--rounded-xl)', padding: '24px', boxShadow: '0 2px 6px rgba(0,0,0,0.02)' }}>
-                                <h3 style={{ fontSize: '16px', fontWeight: 600, color: 'var(--color-ink)', marginBottom: '16px' }}>Arus Kas (Cash Flow)</h3>
+                                <h3 style={{ fontSize: '16px', fontWeight: 600, color: 'var(--color-ink)', marginBottom: '16px' }}>Arus Kas Bulanan</h3>
                                 <div style={{ width: '100%', height: '250px' }}>
                                     <ResponsiveContainer width="100%" height="100%">
                                         <LineChart data={roleData.cash_flow}>
@@ -247,7 +247,7 @@ export default function Dashboard({ auth, stats, roleData }) {
 
                         <div className="col-span-1 lg:col-span-8" style={{ backgroundColor: 'var(--color-canvas)', borderRadius: 'var(--rounded-xl)', padding: '24px', boxShadow: '0 2px 6px rgba(0,0,0,0.02)', marginTop: 'var(--spacing-md)' }}>
                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-                                <h3 style={{ fontSize: '16px', fontWeight: 600, color: 'var(--color-ink)' }}>Antrian Approval Bendahara</h3>
+                                <h3 style={{ fontSize: '16px', fontWeight: 600, color: 'var(--color-ink)' }}>Daftar Tunggu Persetujuan Bendahara</h3>
                             </div>
                             {roleData.approval_queue && roleData.approval_queue.length > 0 ? (
                                 <div className="overflow-x-auto w-full">
@@ -327,7 +327,7 @@ export default function Dashboard({ auth, stats, roleData }) {
                         </div>
 
                         <div className="col-span-1 lg:col-span-8" style={{ backgroundColor: 'var(--color-canvas)', borderRadius: 'var(--rounded-xl)', padding: '24px', boxShadow: '0 2px 6px rgba(0,0,0,0.02)', marginTop: 'var(--spacing-md)' }}>
-                            <h3 style={{ fontSize: '16px', fontWeight: 600, color: 'var(--color-ink)', marginBottom: '16px' }}>Approval Tingkat Eksekutif</h3>
+                            <h3 style={{ fontSize: '16px', fontWeight: 600, color: 'var(--color-ink)', marginBottom: '16px' }}>Persetujuan Pimpinan</h3>
                             {roleData.executive_approvals && roleData.executive_approvals.length > 0 ? (
                                 <div className="overflow-x-auto w-full">
                                 <table style={{ width: '100%', textAlign: 'left', borderCollapse: 'collapse', minWidth: '400px' }}>
@@ -350,7 +350,7 @@ export default function Dashboard({ auth, stats, roleData }) {
                                 </table>
                                 </div>
                             ) : (
-                                <div style={{ padding: '20px', textAlign: 'center', color: 'var(--color-muted)', fontSize: '14px' }}>Tidak ada antrian persetujuan eksekutif.</div>
+                                <div style={{ padding: '20px', textAlign: 'center', color: 'var(--color-muted)', fontSize: '14px' }}>Tidak ada persetujuan pimpinan yang menunggu.</div>
                             )}
                         </div>
 

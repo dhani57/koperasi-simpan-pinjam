@@ -34,15 +34,15 @@ export default function Index({ auth, mutations, filters }) {
     };
 
     return (
-        <AdminLayout auth={auth} title="Log Mutasi (Audit Trail)">
-            <Head title="Log Mutasi" />
+        <AdminLayout auth={auth} title="Riwayat Transaksi">
+            <Head title="Riwayat Transaksi" />
 
             <div style={{ backgroundColor: 'white', borderRadius: 'var(--rounded-xl)', padding: '32px', border: '1px solid var(--color-hairline)' }}>
                 <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
                     <div>
-                        <h2 className="ds-title-md">Histori Mutasi Sistem</h2>
+                        <h2 className="ds-title-md">Riwayat Transaksi</h2>
                         <p style={{ color: 'var(--color-muted)', fontSize: '14px', marginTop: '4px' }}>
-                            Pelacakan seluruh riwayat transaksi dan perubahan saldo anggota untuk kebutuhan audit.
+                            Pantau semua pergerakan saldo anggota secara lengkap dan transparan.
                         </p>
                     </div>
                     

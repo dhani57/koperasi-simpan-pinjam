@@ -31,14 +31,14 @@ export default function Index({ auth, periods, inactiveMonths = [] }) {
     const submit = (e) => {
         e.preventDefault();
         const periodStr = `${data.selectedYear}-${data.selectedMonth}-01`;
-        if (confirm(`Anda yakin ingin memicu tagihan potongan massal untuk bulan ${formatMonth(periodStr)}?\nProses ini akan membaca data semua simpanan dan pinjaman anggota aktif.`)) {
+        if (confirm(`Yakin mau buat tagihan potongan bulan ${formatMonth(periodStr)}?\nProses ini akan membaca data semua simpanan dan pinjaman anggota aktif.`)) {
             post(route('admin.deductions.store'));
         }
     };
 
     return (
-        <AdminLayout auth={auth} title="Potongan Bulanan (Tagihan)">
-            <Head title="Potongan Bulanan" />
+        <AdminLayout auth={auth} title="Iuran & Tagihan Bulanan">
+            <Head title="Tagihan Bulanan" />
 
             <div className={`grid gap-6 ${auth.user.role === 'pengawas' ? 'grid-cols-1' : 'grid-cols-1 lg:grid-cols-3'}`}>
                 {/* Generate Form */}
@@ -46,7 +46,7 @@ export default function Index({ auth, periods, inactiveMonths = [] }) {
                     <div className="lg:col-span-1" style={{ backgroundColor: 'white', borderRadius: 'var(--rounded-xl)', padding: '24px', border: '1px solid var(--color-hairline)', alignSelf: 'start' }}>
                         <h2 className="ds-title-md" style={{ marginBottom: '8px' }}>Buat Tagihan Baru</h2>
                         <p style={{ color: 'var(--color-muted)', fontSize: '13px', marginBottom: '24px' }}>
-                            Generate tagihan potongan simpanan rutin dan angsuran pinjaman untuk diserahkan ke bagian Payroll.
+                            Buat tagihan iuran simpanan rutin dan angsuran pinjaman bulanan untuk diserahkan ke bagian Penggajian.
                         </p>
 
                         <form onSubmit={submit}>
@@ -85,7 +85,7 @@ export default function Index({ auth, periods, inactiveMonths = [] }) {
                                 className="ds-button-primary"
                                 style={{ width: '100%', padding: '12px' }}
                             >
-                                {processing ? 'Memproses...' : 'Generate Tagihan'}
+                                {processing ? 'Memproses...' : 'Buat Tagihan'}
                             </button>
                         </form>
                     </div>

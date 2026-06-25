@@ -40,7 +40,7 @@ export default function Show({ auth, loan, limitInfo }) {
                             </div>
 
                             <div>
-                                <div style={{ fontSize: '13px', color: 'var(--color-muted)', marginBottom: '4px' }}>Nominal Pinjaman (Plafon)</div>
+                                <div style={{ fontSize: '13px', color: 'var(--color-muted)', marginBottom: '4px' }}>Jumlah Pinjaman</div>
                                 <div style={{ fontSize: '20px', fontFamily: 'var(--font-mono)', fontWeight: 600, color: 'var(--color-primary)' }}>Rp {formatRp(loan.principal_amount)}</div>
                             </div>
 
@@ -134,7 +134,7 @@ export default function Show({ auth, loan, limitInfo }) {
 
                         {/* Limit Info Card */}
                         <div style={{ backgroundColor: 'var(--color-surface-dark)', color: 'white', borderRadius: 'var(--rounded-xl)', padding: '32px' }}>
-                            <h3 style={{ fontSize: '16px', fontWeight: 600, marginBottom: '24px' }}>Analisis Kapasitas Bayar (DBR)</h3>
+                            <h3 style={{ fontSize: '16px', fontWeight: 600, marginBottom: '24px' }}>Kemampuan Bayar Anggota</h3>
                             
                             <div style={{ marginBottom: '24px' }}>
                                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px', fontSize: '13px' }}>
@@ -171,7 +171,7 @@ export default function Show({ auth, loan, limitInfo }) {
 
                                 {limitInfo.usedPercentage > 100 && (
                                     <div style={{ marginTop: '16px', padding: '12px', backgroundColor: '#ef444420', border: '1px solid #ef4444', borderRadius: '8px', color: '#fca5a5', fontSize: '12px', lineHeight: '1.5' }}>
-                                        <strong>⚠️ Peringatan:</strong> Total cicilan anggota ini telah melampaui limit potongan gaji yang diizinkan institusi. Disarankan untuk menolak pengajuan ini demi keamanan finansial.
+                                        <strong>⚠️ Peringatan:</strong> Total cicilan anggota ini sudah melebihi batas potongan gaji yang diizinkan. Sebaiknya pengajuan ini ditolak demi kebaikan finansial anggota.
                                     </div>
                                 )}
                             </div>

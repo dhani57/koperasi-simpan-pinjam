@@ -26,7 +26,7 @@ export default function Show({ auth, period, details, totals }) {
                             action={route('admin.deductions.selesai', period.id)} 
                             style={{ margin: 0 }}
                             onSubmit={(e) => {
-                                if (!window.confirm('Apakah Anda yakin semua potongan tagihan ini telah berhasil dilakukan di luar sistem (Payroll)? Aksi ini akan secara permanen menambah saldo simpanan dan mengurangi sisa pinjaman anggota.')) {
+                                if (!window.confirm('Semua potongan tagihan ini sudah berhasil diproses di Penggajian? Tindakan ini akan secara permanen menambah saldo tabungan dan mengurangi sisa pinjaman anggota.')) {
                                     e.preventDefault();
                                 }
                             }}
@@ -90,7 +90,7 @@ export default function Show({ auth, period, details, totals }) {
                             <th style={{ padding: '12px', color: 'var(--color-muted)', fontWeight: 600, fontSize: '13px' }}>Nama Anggota</th>
                             <th style={{ padding: '12px', color: 'var(--color-muted)', fontWeight: 600, fontSize: '13px' }}>NIP/NIM</th>
                             <th style={{ padding: '12px', color: 'var(--color-muted)', fontWeight: 600, fontSize: '13px', textAlign: 'right' }}>Simpanan Rutin</th>
-                            <th style={{ padding: '12px', color: 'var(--color-muted)', fontWeight: 600, fontSize: '13px', textAlign: 'right' }}>Pokok + Jasa Pinjaman</th>
+                            <th style={{ padding: '12px', color: 'var(--color-muted)', fontWeight: 600, fontSize: '13px', textAlign: 'right' }}>Cicilan + Biaya Layanan</th>
                             <th style={{ padding: '12px', color: 'var(--color-muted)', fontWeight: 600, fontSize: '13px', textAlign: 'right' }}>Total</th>
                         </tr>
                     </thead>
