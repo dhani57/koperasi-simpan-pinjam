@@ -23,6 +23,13 @@ return Application::configure(basePath: dirname(__DIR__))
             'admin' => \App\Http\Middleware\EnsureUserIsAdmin::class,
             'role' => \App\Http\Middleware\RoleMiddleware::class,
         ]);
+
+        $middleware->redirectUsersTo(function (Request $request) {
+            if ($request->user() && in_array($request->user()->role, ['pengurus', 'bendahara', 'ketua', 'pengawas'])) {
+                return route('admin.dashboard');
+            }
+            return route('dashboard');
+        });
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->shouldRenderJsonWhen(
