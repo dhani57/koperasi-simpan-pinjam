@@ -71,7 +71,7 @@ export default function Index({ auth, settings }) {
                         </div>
 
                         <div>
-                            <InputLabel htmlFor="default_salary_limit" value="Limit Maksimal Potongan Gaji (Rp)" />
+                            <InputLabel htmlFor="default_salary_limit" value="Batas Potongan Gaji Bulanan (Rp)" />
                             <TextInput
                                 id="default_salary_limit"
                                 type="number"
@@ -90,12 +90,12 @@ export default function Index({ auth, settings }) {
                 <div style={{ backgroundColor: 'var(--color-canvas)', borderRadius: 'var(--rounded-xl)', padding: '32px', boxShadow: '0 2px 6px rgba(0,0,0,0.02)' }}>
                     <div style={{ marginBottom: '24px' }}>
                         <h2 style={{ fontSize: '18px', fontWeight: 600, color: 'var(--color-ink)' }}>Parameter Pinjaman</h2>
-                        <p style={{ color: 'var(--color-muted)', fontSize: '14px', marginTop: '4px' }}>Pengaturan perhitungan jasa (bunga) untuk pengajuan pinjaman.</p>
+                        <p style={{ color: 'var(--color-muted)', fontSize: '14px', marginTop: '4px' }}>Pengaturan biaya layanan (jasa) untuk setiap pengajuan pinjaman.</p>
                     </div>
 
                     <div className="grid grid-cols-1 gap-6 max-w-md">
                         <div>
-                            <InputLabel htmlFor="loan_interest_rate" value="Persentase Jasa Pinjaman (% per bulan)" />
+                            <InputLabel htmlFor="loan_interest_rate" value="Biaya Layanan Pinjaman (% per bulan)" />
                             <div className="relative mt-1">
                                 <TextInput
                                     id="loan_interest_rate"
