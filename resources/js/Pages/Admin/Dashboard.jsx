@@ -138,12 +138,16 @@ export default function Dashboard({ auth, stats, roleData }) {
                                 <div style={{ fontSize: '24px', fontWeight: 700, color: 'var(--color-ink)', marginTop: '8px' }}>{stats.total_transactions}</div>
                             </div>
                             <div style={{ backgroundColor: 'var(--color-canvas)', borderRadius: 'var(--rounded-xl)', padding: '24px', boxShadow: '0 2px 6px rgba(0,0,0,0.02)' }}>
-                                <div style={{ fontSize: '14px', color: 'var(--color-muted)', fontWeight: 500 }}>Jumlah Potongan Gagal</div>
-                                <div style={{ fontSize: '24px', fontWeight: 700, color: 'var(--color-semantic-down)', marginTop: '8px' }}>{stats.failed_deductions}</div>
+                                <div style={{ fontSize: '14px', color: 'var(--color-muted)', fontWeight: 500 }}>Total Simpanan Masuk</div>
+                                <div style={{ fontSize: '20px', fontWeight: 700, color: 'var(--color-semantic-up)', marginTop: '8px', fontFamily: 'var(--font-mono)' }}>Rp {numberFormat(stats.total_simpanan_masuk)}</div>
                             </div>
                             <div style={{ backgroundColor: 'var(--color-canvas)', borderRadius: 'var(--rounded-xl)', padding: '24px', boxShadow: '0 2px 6px rgba(0,0,0,0.02)' }}>
-                                <div style={{ fontSize: '14px', color: 'var(--color-muted)', fontWeight: 500 }}>Belum Direkalkulasi</div>
-                                <div style={{ fontSize: '24px', fontWeight: 700, color: 'var(--color-ink)', marginTop: '8px' }}>{stats.pending_recalculation}</div>
+                                <div style={{ fontSize: '14px', color: 'var(--color-muted)', fontWeight: 500 }}>Total Angsuran Masuk</div>
+                                <div style={{ fontSize: '20px', fontWeight: 700, color: 'var(--color-semantic-up)', marginTop: '8px', fontFamily: 'var(--font-mono)' }}>Rp {numberFormat(stats.total_angsuran_masuk)}</div>
+                            </div>
+                            <div style={{ backgroundColor: 'var(--color-canvas)', borderRadius: 'var(--rounded-xl)', padding: '24px', boxShadow: '0 2px 6px rgba(0,0,0,0.02)' }}>
+                                <div style={{ fontSize: '14px', color: 'var(--color-muted)', fontWeight: 500 }}>Total Pencairan Keluar</div>
+                                <div style={{ fontSize: '20px', fontWeight: 700, color: 'var(--color-semantic-down)', marginTop: '8px', fontFamily: 'var(--font-mono)' }}>Rp {numberFormat(stats.total_pencairan_keluar)}</div>
                             </div>
                         </>
                     )}
@@ -351,47 +355,21 @@ export default function Dashboard({ auth, stats, roleData }) {
                 {/* 4. Pengawas */}
                 {auth.user.role === 'pengawas' && (
                     <>
-                        <div className="col-span-1 lg:col-span-12 grid grid-cols-1 lg:grid-cols-2 gap-6 mt-4">
+                        <div className="col-span-1 lg:col-span-12 mt-4">
                             <div style={{ backgroundColor: 'var(--color-canvas)', borderRadius: 'var(--rounded-xl)', padding: '24px', boxShadow: '0 2px 6px rgba(0,0,0,0.02)' }}>
-                                <h3 style={{ fontSize: '16px', fontWeight: 600, color: 'var(--color-ink)', marginBottom: '16px' }}>Tren Transaksi (Berhasil vs Gagal)</h3>
+                                <h3 style={{ fontSize: '16px', fontWeight: 600, color: 'var(--color-ink)', marginBottom: '16px' }}>Tren Mutasi (Masuk vs Keluar)</h3>
                                 <div style={{ width: '100%', height: '250px' }}>
                                     <ResponsiveContainer width="100%" height="100%">
                                         <BarChart data={roleData.transaction_trend}>
                                             <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f0f0f0" />
                                             <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{fill: '#888', fontSize: 12}} />
-                                            <YAxis axisLine={false} tickLine={false} tick={{fill: '#888', fontSize: 12}} />
-                                            <Tooltip />
+                                            <YAxis axisLine={false} tickLine={false} tick={{fill: '#888', fontSize: 12}} tickFormatter={(val) => `Rp${(val/1000000).toFixed(0)}jt`} />
+                                            <Tooltip formatter={(value) => `Rp${new Intl.NumberFormat('id-ID').format(value)}`} />
                                             <Legend />
-                                            <Bar dataKey="Berhasil" fill="var(--color-semantic-up)" radius={[4, 4, 0, 0]} />
-                                            <Bar dataKey="Gagal" fill="var(--color-semantic-down)" radius={[4, 4, 0, 0]} />
+                                            <Bar dataKey="Masuk" fill="var(--color-semantic-up)" radius={[4, 4, 0, 0]} />
+                                            <Bar dataKey="Keluar" fill="var(--color-semantic-down)" radius={[4, 4, 0, 0]} />
                                         </BarChart>
                                     </ResponsiveContainer>
-                                </div>
-                            </div>
-                            
-                            <div style={{ backgroundColor: 'var(--color-canvas)', borderRadius: 'var(--rounded-xl)', padding: '24px', boxShadow: '0 2px 6px rgba(0,0,0,0.02)' }}>
-                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-                                    <h3 style={{ fontSize: '16px', fontWeight: 600, color: 'var(--color-ink)' }}>Riwayat Jasa Tahunan</h3>
-                                </div>
-                                <div style={{ overflowX: 'auto' }}>
-                                    <table style={{ width: '100%', textAlign: 'left', borderCollapse: 'collapse' }}>
-                                        <thead>
-                                            <tr style={{ borderBottom: '1px solid var(--color-hairline)' }}>
-                                                <th style={{ padding: '8px 4px', fontSize: '12px', color: 'var(--color-muted)', fontWeight: 500 }}>Pinjaman</th>
-                                                <th style={{ padding: '8px 4px', fontSize: '12px', color: 'var(--color-muted)', fontWeight: 500 }}>Tahun Ke</th>
-                                                <th style={{ padding: '8px 4px', fontSize: '12px', color: 'var(--color-muted)', fontWeight: 500 }}>Pokok Sisa</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            {roleData.annual_services?.map((svc, idx) => (
-                                                <tr key={idx} style={{ borderBottom: '1px solid var(--color-hairline)' }}>
-                                                    <td style={{ padding: '8px 4px', fontSize: '13px' }}>{svc.loan?.user?.name}</td>
-                                                    <td style={{ padding: '8px 4px', fontSize: '13px' }}>{svc.year_number}</td>
-                                                    <td style={{ padding: '8px 4px', fontSize: '13px', fontFamily: 'var(--font-mono)' }}>Rp{numberFormat(svc.remaining_principal)}</td>
-                                                </tr>
-                                            ))}
-                                        </tbody>
-                                    </table>
                                 </div>
                             </div>
                         </div>

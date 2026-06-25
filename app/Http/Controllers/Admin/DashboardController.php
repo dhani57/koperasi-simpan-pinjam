@@ -117,32 +117,24 @@ class DashboardController extends Controller
             
         } elseif ($role === 'pengawas') {
             $stats['total_transactions'] = \App\Models\Mutation::whereMonth('created_at', now()->month)->count();
-            
-            $currentPeriodId = \App\Models\DeductionPeriod::where('year', now()->year)->where('month', now()->month)->value('id');
-            $stats['failed_deductions'] = $currentPeriodId ? \App\Models\DeductionDetail::where('deduction_period_id', $currentPeriodId)->where('status', 'gagal')->count() : 0;
-            $stats['pending_recalculation'] = 0;
+            $stats['total_simpanan_masuk'] = \App\Models\Mutation::whereMonth('created_at', now()->month)->where('type', 'simpanan')->sum('amount');
+            $stats['total_angsuran_masuk'] = \App\Models\Mutation::whereMonth('created_at', now()->month)->whereIn('type', ['angsuran_pokok', 'angsuran_jasa'])->sum('amount');
+            $stats['total_pencairan_keluar'] = \App\Models\Mutation::whereMonth('created_at', now()->month)->where('type', 'pencairan_pinjaman')->sum('amount');
 
             // Log Mutasi
             $data['mutation_logs'] = \App\Models\Mutation::with('user')->orderBy('created_at', 'desc')->take(10)->get();
             
-            // Status Rincian
-            $data['failed_details'] = \App\Models\DeductionDetail::with('user')
-                ->where('status', 'gagal')
-                ->orderBy('created_at', 'desc')->take(5)->get();
-            
-            // Tren Transaksi
+            // Tren Transaksi Mutasi (Masuk vs Keluar)
             $trxTrend = collect();
             for ($i = 5; $i >= 0; $i--) {
                 $date = now()->subMonths($i);
-                $periodIds = \App\Models\DeductionPeriod::where('year', $date->year)->where('month', $date->month)->pluck('id');
-                $berhasil = \App\Models\DeductionDetail::whereIn('deduction_period_id', $periodIds)->where('status', 'berhasil')->count();
-                $gagal = \App\Models\DeductionDetail::whereIn('deduction_period_id', $periodIds)->where('status', 'gagal')->count();
-                $trxTrend->push(['name' => $date->translatedFormat('M'), 'Berhasil' => $berhasil, 'Gagal' => $gagal]);
+                $masuk = \App\Models\Mutation::whereYear('created_at', $date->year)->whereMonth('created_at', $date->month)
+                            ->whereIn('type', ['simpanan', 'angsuran_pokok', 'angsuran_jasa'])->sum('amount');
+                $keluar = \App\Models\Mutation::whereYear('created_at', $date->year)->whereMonth('created_at', $date->month)
+                            ->where('type', 'pencairan_pinjaman')->sum('amount');
+                $trxTrend->push(['name' => $date->translatedFormat('M'), 'Masuk' => $masuk, 'Keluar' => $keluar]);
             }
             $data['transaction_trend'] = $trxTrend;
-            
-            // Riwayat Jasa Tahunan
-            $data['annual_services'] = \App\Models\LoanAnnualService::with('loan.user')->take(5)->get() ?? [];
         }
 
         return inertia('Admin/Dashboard', [
