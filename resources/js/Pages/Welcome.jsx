@@ -136,7 +136,7 @@ export default function Welcome({ auth, adminPhone }) {
                         <div ref={heroCardsRef} className="relative w-full max-w-[440px] mb-8 lg:mb-[100px] lg:mr-[50px] px-4 lg:px-0">
                             <ProductUiCardLight className="relative z-10 w-full opacity-0" style={{ opacity: 0 }}>
                                 <div style={{ marginBottom: 'var(--spacing-md)' }}>
-                                    <div className="ds-body-md" style={{ color: 'var(--color-muted)' }}>Estimasi Potong Gaji (Okt)</div>
+                                    <div className="ds-body-md" style={{ color: 'var(--color-muted)' }}>Perkiraan Potongan Gaji (Okt)</div>
                                     <div style={{ fontFamily: 'var(--font-mono)', fontSize: '28px', fontWeight: 600 }}>Rp 750.000</div>
                                 </div>
                                 
@@ -145,7 +145,7 @@ export default function Welcome({ auth, adminPhone }) {
                                         <div className="ds-asset-icon-circular">S</div>
                                         <div>
                                             <div className="ds-title-sm" style={{ color: 'var(--color-ink)' }}>Simpanan Wajib</div>
-                                            <div className="ds-body-sm" style={{ color: 'var(--color-muted)' }}>Auto-deduct tgl 25</div>
+                                            <div className="ds-body-sm" style={{ color: 'var(--color-muted)' }}>Potong otomatis tgl 25</div>
                                         </div>
                                     </div>
                                     <div style={{ fontFamily: 'var(--font-mono)', fontSize: '16px', fontWeight: 500 }}>Rp 100.000</div>
@@ -165,7 +165,7 @@ export default function Welcome({ auth, adminPhone }) {
                             
                             <ProductUiCardLight className="relative lg:absolute lg:top-[calc(100%-20px)] lg:-right-[50px] z-20 w-[95%] lg:w-[320px] mx-auto lg:mx-0 -mt-6 lg:mt-0 shadow-2xl opacity-0" style={{ opacity: 0 }}>
                                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--spacing-sm)' }}>
-                                    <div className="ds-body-sm" style={{ color: 'var(--color-muted)' }}>Proyeksi SHU Akhir Tahun</div>
+                                    <div className="ds-body-sm" style={{ color: 'var(--color-muted)' }}>Perkiraan Bagi Hasil (SHU)</div>
                                     <span className="ds-badge-pill">ESTIMASI</span>
                                 </div>
                                 <div style={{ fontFamily: 'var(--font-mono)', fontSize: '24px', fontWeight: 600, color: 'var(--color-accent-yellow)' }}>

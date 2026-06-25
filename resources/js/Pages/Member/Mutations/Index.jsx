@@ -6,12 +6,12 @@ export default function Index({ auth, mutations }) {
     const formatRp = (num) => new Intl.NumberFormat('id-ID').format(num);
 
     return (
-        <MemberLayout auth={auth} title="Riwayat Mutasi">
-            <Head title="Riwayat Mutasi" />
+        <MemberLayout auth={auth} title="Riwayat Transaksi">
+            <Head title="Riwayat Transaksi" />
 
             <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
                 <div style={{ textAlign: 'center', marginBottom: 'var(--spacing-xl)' }}>
-                    <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-gray-900 mb-3">Riwayat Mutasi & E-Slip</h2>
+                    <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-gray-900 mb-3">Riwayat Transaksi & E-Slip</h2>
                     <p style={{ color: 'var(--color-muted)', fontSize: '14px', lineHeight: '1.6' }}>
                         Pantau rekam jejak kontribusi dan potongan gaji Anda setiap bulan secara transparan.
                     </p>
@@ -89,7 +89,7 @@ export default function Index({ auth, mutations }) {
                         })
                     ) : (
                         <div style={{ padding: 'var(--spacing-xl)', textAlign: 'center', color: 'var(--color-muted)' }}>
-                            Belum ada catatan mutasi.
+                            Belum ada catatan transaksi.
                         </div>
                     )}
                 </div>

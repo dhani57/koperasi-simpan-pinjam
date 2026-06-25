@@ -134,7 +134,7 @@ export default function AdminLayout({ auth, children, title }) {
                             onClick={() => setIsSidebarOpen(false)}
                         >
                             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"></rect><line x1="2" y1="10" x2="22" y2="10"></line></svg>
-                            Potongan Bulanan
+                            Tagihan Bulanan
                         </Link>
                     )}
                     
@@ -155,7 +155,7 @@ export default function AdminLayout({ auth, children, title }) {
                             onClick={() => setIsSidebarOpen(false)}
                         >
                             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"></path><path d="M22 12A10 10 0 0 0 12 2v10z"></path></svg>
-                            Laporan SHU
+                            Bagi Hasil (SHU)
                         </Link>
                     )}
 
@@ -176,7 +176,7 @@ export default function AdminLayout({ auth, children, title }) {
                             onClick={() => setIsSidebarOpen(false)}
                         >
                             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
-                            Log Mutasi
+                            Riwayat Transaksi
                         </Link>
                     )}
                 </nav>

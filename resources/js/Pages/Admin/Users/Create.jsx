@@ -106,12 +106,12 @@ export default function Create({ auth }) {
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
                         <div>
-                            <InputLabel htmlFor="monthly_saving_nominal" value={<span>Potongan Simpanan Wajib (Rp) <span className="text-red-500">*</span></span>} className="ds-label" />
+                            <InputLabel htmlFor="monthly_saving_nominal" value={<span>Iuran Simpanan Bulanan (Rp) <span className="text-red-500">*</span></span>} className="ds-label" />
                             <input id="monthly_saving_nominal" type="text" className="ds-text-input" value={formatNumber(data.monthly_saving_nominal)} onChange={e => handleNumberInput('monthly_saving_nominal', e.target.value)} required />
                             {errors.monthly_saving_nominal && <div className="ds-error-text">{errors.monthly_saving_nominal}</div>}
                         </div>
                         <div>
-                            <InputLabel htmlFor="max_salary_deduction_limit" value={<span>Limit Maksimal Gaji (Rp) <span className="text-red-500">*</span></span>} className="ds-label" />
+                            <InputLabel htmlFor="max_salary_deduction_limit" value={<span>Batas Potongan Gaji (Rp) <span className="text-red-500">*</span></span>} className="ds-label" />
                             <input id="max_salary_deduction_limit" type="text" className="ds-text-input" value={formatNumber(data.max_salary_deduction_limit)} onChange={e => handleNumberInput('max_salary_deduction_limit', e.target.value)} required />
                             {errors.max_salary_deduction_limit && <div className="ds-error-text">{errors.max_salary_deduction_limit}</div>}
                         </div>

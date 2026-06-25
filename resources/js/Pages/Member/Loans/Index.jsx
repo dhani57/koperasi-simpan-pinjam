@@ -39,7 +39,7 @@ export default function Index({ auth, loans }) {
                         <thead style={{ backgroundColor: 'var(--color-surface-soft)', borderBottom: '1px solid var(--color-hairline)' }}>
                             <tr>
                                 <th style={{ padding: '16px 24px', fontSize: '13px', color: 'var(--color-muted)', fontWeight: 600 }}>Tanggal</th>
-                                <th style={{ padding: '16px 24px', fontSize: '13px', color: 'var(--color-muted)', fontWeight: 600 }}>Pokok Pinjaman</th>
+                                <th style={{ padding: '16px 24px', fontSize: '13px', color: 'var(--color-muted)', fontWeight: 600 }}>Jumlah Pinjaman</th>
                                 <th style={{ padding: '16px 24px', fontSize: '13px', color: 'var(--color-muted)', fontWeight: 600 }}>Tenor</th>
                                 <th style={{ padding: '16px 24px', fontSize: '13px', color: 'var(--color-muted)', fontWeight: 600 }}>Cicilan/Bulan</th>
                                 <th style={{ padding: '16px 24px', fontSize: '13px', color: 'var(--color-muted)', fontWeight: 600 }}>Status</th>

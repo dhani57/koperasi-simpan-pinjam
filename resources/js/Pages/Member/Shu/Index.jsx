@@ -5,8 +5,8 @@ export default function Index({ auth, totalShu, porsiSimpanan, porsiPinjaman, pe
     const formatRp = (num) => new Intl.NumberFormat('id-ID').format(num);
 
     return (
-        <MemberLayout auth={auth} title={`Rapor SHU ${tahunBuku}`}>
-            <Head title={`Rapor SHU ${tahunBuku}`} />
+        <MemberLayout auth={auth} title={`Bagi Hasil (SHU) ${tahunBuku}`}>
+            <Head title={`Bagi Hasil (SHU) ${tahunBuku}`} />
 
             <div style={{ position: 'relative' }}>
                 {/* Dark Blue Background for Top Half */}
@@ -27,7 +27,7 @@ export default function Index({ auth, totalShu, porsiSimpanan, porsiPinjaman, pe
                         <div className="w-12 h-12 rounded-full bg-white/10 inline-flex items-center justify-center mb-4">
                             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--color-accent-yellow)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
                         </div>
-                        <h1 className="text-3xl sm:text-4xl font-bold mb-3">Rapor SHU Anda {tahunBuku}</h1>
+                        <h1 className="text-3xl sm:text-4xl font-bold mb-3">Laporan Bagi Hasil (SHU) {tahunBuku}</h1>
                         <p className="text-white/70 text-sm sm:text-base leading-relaxed max-w-lg mx-auto">
                             Terima kasih atas partisipasi aktif Anda. Ini adalah porsi keuntungan koperasi yang dikembalikan kepada Anda tahun ini.
                         </p>
@@ -36,7 +36,7 @@ export default function Index({ auth, totalShu, porsiSimpanan, porsiPinjaman, pe
                     {/* Big SHU Card */}
                     <div className="bg-[#1e293b] rounded-2xl p-6 sm:p-12 text-center shadow-2xl mb-12 border border-slate-700">
                         <div className="text-xs sm:text-sm text-white/60 tracking-wider uppercase mb-4 font-medium">
-                            Total Sisa Hasil Usaha (SHU)
+                            Total Sisa Hasil Usaha (Bagi Hasil)
                         </div>
                         <div className="font-mono text-4xl sm:text-6xl font-bold text-[#eab308] tracking-widest break-words">
                             Rp {formatRp(totalShu)}
@@ -81,13 +81,13 @@ export default function Index({ auth, totalShu, porsiSimpanan, porsiPinjaman, pe
                                 <div style={{ width: '32px', height: '32px', borderRadius: '8px', backgroundColor: 'var(--color-surface-soft)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--color-primary)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
                                 </div>
-                                <div style={{ fontWeight: 600, fontSize: '15px' }}>Porsi Jasa Pinjaman</div>
+                                <div style={{ fontWeight: 600, fontSize: '15px' }}>Porsi Biaya Layanan Pinjaman</div>
                             </div>
                             <div style={{ fontFamily: 'var(--font-mono)', fontSize: '28px', fontWeight: 600, marginBottom: '16px' }}>
                                 Rp {formatRp(porsiPinjaman)}
                             </div>
                             <p style={{ fontSize: '13px', color: 'var(--color-muted)', lineHeight: '1.6', marginBottom: '24px', minHeight: '60px' }}>
-                                Anda melunasi jasa pinjaman sebesar Rp {formatRp(totalJasaPinjaman)} tahun ini. Semakin tinggi aktivitas peminjaman sehat, semakin tinggi margin SHU yang dikembalikan.
+                                Anda melunasi biaya layanan pinjaman sebesar Rp {formatRp(totalJasaPinjaman)} tahun ini. Semakin tinggi aktivitas peminjaman sehat, semakin tinggi margin SHU yang dikembalikan.
                             </p>
                             <div>
                                 <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px', fontWeight: 600, marginBottom: '8px' }}>

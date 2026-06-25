@@ -89,7 +89,7 @@ export default function Create({ auth, hasActiveLoan, defaultFee, availableLimit
                         {/* Input Card */}
                         <div style={{ backgroundColor: 'white', borderRadius: 'var(--rounded-lg)', padding: 'var(--spacing-xl)', border: '1px solid var(--color-hairline)', marginBottom: 'var(--spacing-lg)' }}>
                             <div style={{ marginBottom: 'var(--spacing-xl)' }}>
-                                <label style={{ display: 'block', fontWeight: 600, fontSize: '13px', marginBottom: '8px' }}>Nominal Pinjaman</label>
+                                <label style={{ display: 'block', fontWeight: 600, fontSize: '13px', marginBottom: '8px' }}>Jumlah Pinjaman</label>
                                 <div style={{ position: 'relative' }}>
                                     <span style={{ position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)', fontFamily: 'var(--font-mono)', fontSize: '18px', color: 'var(--color-muted)' }}>Rp</span>
                                     <input
@@ -114,14 +114,14 @@ export default function Create({ auth, hasActiveLoan, defaultFee, availableLimit
                                 
                                 <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '12px', fontSize: '12px' }}>
                                     <span style={{ color: 'var(--color-muted)' }}>
-                                        Plafon maksimal Anda: <span style={{ fontWeight: 600, color: 'var(--color-ink)' }}>Rp {formatRp(availableLimit * 12)}</span>
+                                        Batas pinjaman Anda: <span style={{ fontWeight: 600, color: 'var(--color-ink)' }}>Rp {formatRp(availableLimit * 12)}</span>
                                     </span>
                                     <span style={{ color: 'var(--color-semantic-up)', fontWeight: 600 }}>Tersedia</span>
                                 </div>
                             </div>
 
                             <div>
-                                <label style={{ display: 'block', fontWeight: 600, fontSize: '13px', marginBottom: '12px' }}>Pilihan Tenor</label>
+                                <label style={{ display: 'block', fontWeight: 600, fontSize: '13px', marginBottom: '12px' }}>Pilihan Lama Pinjaman</label>
                                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                                     {[1, 2, 3].map(years => (
                                         <div 
@@ -137,7 +137,7 @@ export default function Create({ auth, hasActiveLoan, defaultFee, availableLimit
                                             }}
                                         >
                                             <div style={{ fontWeight: 600, color: (!data.is_custom_tenor && data.tenor_years === years) ? 'var(--color-primary)' : 'var(--color-ink)', marginBottom: '4px' }}>{years} Tahun</div>
-                                            <div style={{ fontSize: '11px', color: 'var(--color-muted)' }}>Jasa {defaultFee}% / bln</div>
+                                            <div style={{ fontSize: '11px', color: 'var(--color-muted)' }}>Biaya Layanan {defaultFee}% / bln</div>
                                         </div>
                                     ))}
                                     <div 
@@ -159,7 +159,7 @@ export default function Create({ auth, hasActiveLoan, defaultFee, availableLimit
 
                                 {data.is_custom_tenor && (
                                     <div style={{ marginTop: '16px' }}>
-                                        <label style={{ display: 'block', fontWeight: 600, fontSize: '13px', marginBottom: '8px' }}>Tenor Custom (Bulan)</label>
+                                        <label style={{ display: 'block', fontWeight: 600, fontSize: '13px', marginBottom: '8px' }}>Lama Pinjaman Pilihan (Bulan)</label>
                                         <div style={{ position: 'relative' }}>
                                             <input
                                                 type="number"
@@ -220,11 +220,11 @@ export default function Create({ auth, hasActiveLoan, defaultFee, availableLimit
                                         <span className="font-mono font-medium text-white whitespace-nowrap text-right">Rp {formatRp(auth.user.monthly_saving_nominal)}</span>
                                     </div>
                                     <div className="flex justify-between items-start gap-4 text-sm text-white/80">
-                                        <span className="flex-1 leading-snug">Cicilan Pokok Pinjaman Baru</span>
+                                        <span className="flex-1 leading-snug">Cicilan Pinjaman Baru</span>
                                         <span className="font-mono font-medium text-white whitespace-nowrap text-right">Rp {formatRp(simulation.pokokSebulan)}</span>
                                     </div>
                                     <div className="flex justify-between items-start gap-4 text-sm text-white/80">
-                                        <span className="flex-1 leading-snug">Jasa Pinjaman ({defaultFee}%)</span>
+                                        <span className="flex-1 leading-snug">Biaya Layanan Pinjaman ({defaultFee}%)</span>
                                         <span className="font-mono font-medium text-white whitespace-nowrap text-right">Rp {formatRp(simulation.jasaSebulan)}</span>
                                     </div>
                                 </div>

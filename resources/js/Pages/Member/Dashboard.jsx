@@ -5,7 +5,7 @@ export default function Dashboard({ auth, totalSimpanan, simpananRutin, plafonTe
     // Kalkulasi untuk "Estimasi Potongan Gaji"
     const estimasiPotongan = simpananRutin + activeLoans.reduce((acc, loan) => acc + parseFloat(loan.monthly_installment), 0);
     
-    // Kalkulasi untuk "Sisa Pokok Pinjaman Aktif"
+    // Kalkulasi untuk "Sisa Utang Pinjaman"
     const totalPokokPinjamanAktif = activeLoans.reduce((acc, loan) => acc + parseFloat(loan.principal_amount), 0);
 
     return (
@@ -47,19 +47,19 @@ export default function Dashboard({ auth, totalSimpanan, simpananRutin, plafonTe
                 {/* Cards Grid */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
                     <div style={{ backgroundColor: 'white', borderRadius: 'var(--rounded-lg)', padding: 'var(--spacing-lg)', border: '1px solid var(--color-hairline)' }}>
-                        <div style={{ fontSize: '13px', color: 'var(--color-muted)', marginBottom: '8px' }}>Total Kontribusi Simpanan</div>
+                        <div style={{ fontSize: '13px', color: 'var(--color-muted)', marginBottom: '8px' }}>Total Tabungan Saya</div>
                         <div style={{ fontFamily: 'var(--font-mono)', fontSize: '24px', fontWeight: 600 }}>
                             Rp {new Intl.NumberFormat('id-ID').format(totalSimpanan)}
                         </div>
                     </div>
                     <div style={{ backgroundColor: 'white', borderRadius: 'var(--rounded-lg)', padding: 'var(--spacing-lg)', border: '1px solid var(--color-hairline)' }}>
-                        <div style={{ fontSize: '13px', color: 'var(--color-muted)', marginBottom: '8px' }}>Sisa Pokok Pinjaman Aktif</div>
+                        <div style={{ fontSize: '13px', color: 'var(--color-muted)', marginBottom: '8px' }}>Sisa Utang Pinjaman</div>
                         <div style={{ fontFamily: 'var(--font-mono)', fontSize: '24px', fontWeight: 600 }}>
                             Rp {new Intl.NumberFormat('id-ID').format(totalPokokPinjamanAktif)}
                         </div>
                     </div>
                     <div style={{ backgroundColor: 'white', borderRadius: 'var(--rounded-lg)', padding: 'var(--spacing-lg)', border: '1px solid var(--color-hairline)' }}>
-                        <div style={{ fontSize: '13px', color: 'var(--color-muted)', marginBottom: '8px' }}>SHU Diterima (Terakhir)</div>
+                        <div style={{ fontSize: '13px', color: 'var(--color-muted)', marginBottom: '8px' }}>Bagi Hasil (SHU) Terakhir</div>
                         <div style={{ fontFamily: 'var(--font-mono)', fontSize: '24px', fontWeight: 600, color: 'var(--color-semantic-up)' }}>
                             Rp {new Intl.NumberFormat('id-ID').format(lastShu || 0)}
                         </div>

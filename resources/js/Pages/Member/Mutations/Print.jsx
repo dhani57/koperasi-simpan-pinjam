@@ -36,7 +36,7 @@ export default function Print({ auth, mutations }) {
             {/* Header / Kop Slip */}
             <div style={{ borderBottom: '2px solid black', paddingBottom: '20px', marginBottom: '30px', textAlign: 'center' }}>
                 <h1 style={{ margin: 0, fontSize: '24px', fontWeight: 'bold' }}>KOPERASI INTERNAL</h1>
-                <p style={{ margin: '5px 0 0 0', fontSize: '14px' }}>E-SLIP MUTASI ANGGOTA</p>
+                <p style={{ margin: '5px 0 0 0', fontSize: '14px' }}>E-SLIP TRANSAKSI ANGGOTA</p>
             </div>
 
             {/* Informasi Anggota */}
@@ -64,7 +64,7 @@ export default function Print({ auth, mutations }) {
 
             {/* Detail Mutasi */}
             <div style={{ marginBottom: '40px' }}>
-                <h3 style={{ fontSize: '16px', borderBottom: '1px solid #ddd', paddingBottom: '10px', marginBottom: '15px' }}>Rincian Mutasi</h3>
+                <h3 style={{ fontSize: '16px', borderBottom: '1px solid #ddd', paddingBottom: '10px', marginBottom: '15px' }}>Rincian Transaksi</h3>
                 
                 <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '14px' }}>
                     <thead>
@@ -100,7 +100,7 @@ export default function Print({ auth, mutations }) {
                         ) : (
                             <tr>
                                 <td colSpan="4" style={{ border: '1px solid black', padding: '10px', textAlign: 'center' }}>
-                                    Belum ada catatan mutasi.
+                                    Belum ada catatan transaksi.
                                 </td>
                             </tr>
                         )}

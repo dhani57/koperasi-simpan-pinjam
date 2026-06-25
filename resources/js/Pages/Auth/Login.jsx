@@ -242,7 +242,7 @@ export default function Login({ status, canResetPassword }) {
                                 disabled={processing}
                                 style={{ width: '100%', height: '52px', fontSize: '16px', marginBottom: 'var(--spacing-lg)', boxShadow: '0 4px 12px rgba(11,94,168,0.2)' }}
                             >
-                                Log me in
+                                Masuk
                             </button>
 
                             <div style={{ textAlign: 'center' }}>

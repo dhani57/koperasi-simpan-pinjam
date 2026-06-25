@@ -10,9 +10,9 @@ export default function MemberLayout({ auth, children }) {
 
     const navLinks = [
         { label: 'Dashboard', href: route('member.dashboard'), active: url === '/member/dashboard' },
-        { label: 'Pengajuan', href: route('member.loans.index'), active: url.startsWith('/member/loans') },
-        { label: 'Mutasi', href: route('member.mutations.index'), active: url.startsWith('/member/mutations') },
-        { label: 'Rapor SHU', href: route('member.shu.index'), active: url.startsWith('/member/shu') },
+        { label: 'Pinjaman', href: route('member.loans.index'), active: url.startsWith('/member/loans') },
+        { label: 'Riwayat', href: route('member.mutations.index'), active: url.startsWith('/member/mutations') },
+        { label: 'Bagi Hasil (SHU)', href: route('member.shu.index'), active: url.startsWith('/member/shu') },
     ];
 
     return (
