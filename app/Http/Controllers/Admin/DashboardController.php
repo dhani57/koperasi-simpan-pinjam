@@ -33,27 +33,6 @@ class DashboardController extends Controller
             }
             $data['member_growth'] = $memberGrowth;
             
-            // Distribusi Limit
-            $users = \App\Models\User::where('role', 'anggota')->with(['loans' => function($q) {
-                $q->whereIn('status', ['disetujui', 'aktif']);
-            }])->get();
-            
-            $dist = ['< 30%' => 0, '30% - 50%' => 0, '> 50%' => 0];
-            foreach($users as $user) {
-                $loanInstallments = $user->loans->sum(function($l) { return $l->monthly_principal_installment + $l->current_year_monthly_fee; });
-                $used = $user->monthly_saving_nominal + $loanInstallments;
-                $limit = $user->max_salary_deduction_limit;
-                $pct = $limit > 0 ? ($used / $limit) * 100 : 0;
-                if ($pct < 30) $dist['< 30%']++;
-                elseif ($pct <= 50) $dist['30% - 50%']++;
-                else $dist['> 50%']++;
-            }
-            $data['limit_distribution'] = [
-                ['name' => '< 30%', 'Jumlah' => $dist['< 30%']],
-                ['name' => '30% - 50%', 'Jumlah' => $dist['30% - 50%']],
-                ['name' => '> 50%', 'Jumlah' => $dist['> 50%']],
-            ];
-            
             // Status Parameter Sistem
             $inactiveMonths = \App\Models\Setting::where('key', 'inactive_months')->value('value') ?? '11,12';
             $data['system_parameters'] = [
@@ -63,9 +42,6 @@ class DashboardController extends Controller
             
             // Alerts
             $data['alerts'] = [];
-            if ($dist['> 50%'] > 0) {
-                $data['alerts'][] = ['type' => 'warning', 'message' => $dist['> 50%'] . ' anggota mendekati/melebihi limit potongan gaji (50%+).'];
-            }
 
         } elseif ($role === 'bendahara') {
             $stats['total_savings'] = $totalSavings;

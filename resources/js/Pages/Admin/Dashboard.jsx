@@ -148,7 +148,7 @@ export default function Dashboard({ auth, stats, roleData }) {
                 {/* 1. Pengurus */}
                 {auth.user.role === 'pengurus' && (
                     <>
-                        <div className="col-span-1 lg:col-span-12 grid grid-cols-1 lg:grid-cols-2 gap-6 mt-4">
+                        <div className="col-span-1 lg:col-span-12 mt-4">
                             <div style={{ backgroundColor: 'var(--color-canvas)', borderRadius: 'var(--rounded-xl)', padding: '24px', boxShadow: '0 2px 6px rgba(0,0,0,0.02)' }}>
                                 <h3 style={{ fontSize: '16px', fontWeight: 600, color: 'var(--color-ink)', marginBottom: '16px' }}>Pertumbuhan Anggota</h3>
                                 <div style={{ width: '100%', height: '250px' }}>
@@ -160,21 +160,6 @@ export default function Dashboard({ auth, stats, roleData }) {
                                             <Tooltip contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }} />
                                             <Line type="monotone" dataKey="Anggota_Baru" stroke="var(--color-primary)" strokeWidth={3} />
                                         </LineChart>
-                                    </ResponsiveContainer>
-                                </div>
-                            </div>
-                            
-                            <div style={{ backgroundColor: 'var(--color-canvas)', borderRadius: 'var(--rounded-xl)', padding: '24px', boxShadow: '0 2px 6px rgba(0,0,0,0.02)' }}>
-                                <h3 style={{ fontSize: '16px', fontWeight: 600, color: 'var(--color-ink)', marginBottom: '16px' }}>Distribusi Limit Potongan</h3>
-                                <div style={{ width: '100%', height: '250px' }}>
-                                    <ResponsiveContainer width="100%" height="100%">
-                                        <BarChart data={roleData.limit_distribution}>
-                                            <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f0f0f0" />
-                                            <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{fill: '#888', fontSize: 12}} />
-                                            <YAxis axisLine={false} tickLine={false} tick={{fill: '#888', fontSize: 12}} />
-                                            <Tooltip contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }} />
-                                            <Bar dataKey="Jumlah" fill="var(--color-accent-teal)" radius={[4, 4, 0, 0]} />
-                                        </BarChart>
                                     </ResponsiveContainer>
                                 </div>
                             </div>
@@ -190,14 +175,7 @@ export default function Dashboard({ auth, stats, roleData }) {
                                     </div>
                                 ))}
                             </div>
-                            {roleData.alerts && roleData.alerts.length > 0 && (
-                                <div className="flex-1" style={{ backgroundColor: 'rgba(235, 168, 52, 0.1)', border: '1px solid #eba834', borderRadius: 'var(--rounded-xl)', padding: '24px' }}>
-                                    <h3 style={{ fontSize: '14px', fontWeight: 600, color: '#b87e14', marginBottom: '16px' }}>Peringatan (Alert)</h3>
-                                    {roleData.alerts.map((alert, idx) => (
-                                        <div key={idx} style={{ fontSize: '13px', color: '#b87e14', marginBottom: '8px' }}>• {alert.message}</div>
-                                    ))}
-                                </div>
-                            )}
+                            {/* Alerts dihapus karena datanya dihapus di controller */}
                         </div>
                     </>
                 )}
