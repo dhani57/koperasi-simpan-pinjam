@@ -21,27 +21,40 @@ class ShuController extends Controller
             $shuData['member_proportions'] = array_values($shuData['member_proportions']);
         }
 
+        $isDistributed = \App\Models\Setting::where('key', 'shu_distributed_' . $year)->exists();
+        $hasDraft = \App\Models\Setting::where('key', 'shu_draft_' . $year)->exists();
+
         // Just display a page to trigger SHU
         return inertia('Admin/Shu/Index', [
             'year' => $year,
             'shuData' => $shuData,
-            'filters' => ['search' => $search]
+            'filters' => ['search' => $search],
+            'isDistributed' => $isDistributed,
+            'hasDraft' => $hasDraft
         ]);
     }
 
     public function store(Request $request)
     {
-        // Simulate SHU generation
-        // In a real application, this would calculate profits based on loans, settings, and distribute to members
-        // For now, we will just return a success message.
-        
-        // This process might take a long time, so it should ideally be queued.
-        // \App\Jobs\CalculateShuJob::dispatch();
-        
+        $year = $request->query('year', now()->year);
+
+        if (\App\Models\Setting::where('key', 'shu_distributed_' . $year)->exists()) {
+            return redirect()->back()->with('error', "SHU tahun {$year} telah didistribusikan.");
+        }
+
+        if (\App\Models\Setting::where('key', 'shu_draft_' . $year)->exists()) {
+            return redirect()->back()->with('error', "Draf SHU tahun {$year} sudah dikirim.");
+        }
+
+        \App\Models\Setting::updateOrCreate(
+            ['key' => 'shu_draft_' . $year],
+            ['value' => '1']
+        );
+
         app(\App\Services\AuditLogService::class)->log(
             auth()->user(),
             'shu_generated',
-            "Membuat draft perhitungan SHU"
+            "Membuat draft perhitungan SHU tahun {$year}"
         );
         
         return redirect()->back()->with('success', 'Draft perhitungan SHU berhasil dibuat dan menunggu persetujuan Ketua.');
@@ -49,10 +62,21 @@ class ShuController extends Controller
 
     public function approve(Request $request)
     {
+        $year = $request->query('year', now()->year);
+
+        if (\App\Models\Setting::where('key', 'shu_distributed_' . $year)->exists()) {
+            return redirect()->back()->with('error', "SHU tahun {$year} telah didistribusikan.");
+        }
+
+        \App\Models\Setting::updateOrCreate(
+            ['key' => 'shu_distributed_' . $year],
+            ['value' => '1']
+        );
+
         app(\App\Services\AuditLogService::class)->log(
             auth()->user(),
             'shu_approved',
-            "Menyetujui distribusi SHU"
+            "Menyetujui distribusi SHU tahun {$year}"
         );
         return redirect()->back()->with('success', 'Distribusi SHU telah disetujui dan dibagikan ke saldo anggota.');
     }

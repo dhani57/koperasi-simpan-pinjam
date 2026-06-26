@@ -3,7 +3,7 @@ import { Head, useForm, router } from '@inertiajs/react';
 import AdminLayout from '@/Layouts/AdminLayout';
 import ConfirmModal from '@/Components/ConfirmModal';
 
-export default function Index({ auth, year, shuData, filters }) {
+export default function Index({ auth, year, shuData, filters, isDistributed, hasDraft }) {
     const { post, processing } = useForm();
     const [currentPage, setCurrentPage] = useState(1);
     const itemsPerPage = 10;
@@ -68,7 +68,7 @@ export default function Index({ auth, year, shuData, filters }) {
             'Anda yakin ingin mengirim draf perhitungan SHU tahun ini?\n\nPERINGATAN: Tindakan ini akan meneruskan draf ke Ketua untuk persetujuan final.',
             'primary',
             'Kirim Draf',
-            () => post(route('admin.shu.store'))
+            () => post(route('admin.shu.store', { year: yearFilter }))
         );
     };
 
@@ -207,45 +207,54 @@ export default function Index({ auth, year, shuData, filters }) {
                 {/* Actions */}
                 {!isPengawas && (
                     <div style={{ backgroundColor: 'white', borderRadius: 'var(--rounded-xl)', padding: '24px', border: '1px solid var(--color-hairline)', display: 'flex', flexDirection: 'column', gap: '16px' }}>
-                        <h3 className="ds-title-md">{isKetua ? 'Persetujuan Final' : 'Kirim Draf SHU'}</h3>
-                        <p style={{ color: 'var(--color-muted)', fontSize: '14px' }}>
-                            {isKetua 
-                                ? 'Tinjau draf perhitungan Sisa Hasil Usaha (SHU) di atas sebelum didistribusikan ke masing-masing anggota. Persetujuan Anda diperlukan untuk mengesahkan proses ini.'
-                                : 'Pastikan rincian pembagian di atas sudah sesuai sebelum mengirimkannya ke Ketua untuk persetujuan akhir.'
-                            }
-                        </p>
-                        
-                        {isKetua ? (
-                            <form onSubmit={(e) => {
-                                e.preventDefault();
-                                openConfirm(
-                                    'Persetujuan Distribusi SHU',
-                                    'Anda yakin ingin menyetujui distribusi SHU ini? Tindakan ini tidak dapat dibatalkan.',
-                                    'primary',
-                                    'Setujui & Distribusikan',
-                                    () => post(route('admin.shu.approve'))
-                                );
-                            }}>
-                                <button 
-                                    type="submit" 
-                                    disabled={processing || shuData.member_proportions.length === 0}
-                                    className="ds-button-primary"
-                                    style={{ padding: '12px 24px', fontSize: '14px', backgroundColor: '#10b981', border: 'none', cursor: (processing || shuData.member_proportions.length === 0) ? 'not-allowed' : 'pointer' }}
-                                >
-                                    {processing ? 'Memproses...' : 'Setujui & Distribusikan SHU'}
-                                </button>
-                            </form>
+                        {isDistributed ? (
+                            <div style={{ textAlign: 'center', padding: '16px', backgroundColor: 'var(--color-surface-soft)', borderRadius: '8px' }}>
+                                <h3 style={{ fontSize: '16px', fontWeight: 600, color: 'var(--color-ink)' }}>Telah Dibagikan</h3>
+                                <p style={{ color: 'var(--color-muted)', fontSize: '14px', marginTop: '4px' }}>SHU untuk tahun {year} telah sukses didistribusikan ke seluruh anggota dan dicatat di buku besar.</p>
+                            </div>
                         ) : (
-                            <form onSubmit={submit}>
-                                <button 
-                                    type="submit" 
-                                    disabled={processing || shuData.member_proportions.length === 0}
-                                    className="ds-button-primary"
-                                    style={{ padding: '12px 24px', fontSize: '14px', backgroundColor: 'var(--color-primary)', border: 'none', cursor: (processing || shuData.member_proportions.length === 0) ? 'not-allowed' : 'pointer' }}
-                                >
-                                    {processing ? 'Memproses...' : 'Kirim Draf SHU ke Ketua'}
-                                </button>
-                            </form>
+                            <>
+                                <h3 className="ds-title-md">{isKetua ? 'Persetujuan Final' : 'Kirim Draf SHU'}</h3>
+                                <p style={{ color: 'var(--color-muted)', fontSize: '14px' }}>
+                                    {isKetua 
+                                        ? (hasDraft ? 'Tinjau draf perhitungan Sisa Hasil Usaha (SHU) di atas sebelum didistribusikan ke masing-masing anggota. Persetujuan Anda diperlukan untuk mengesahkan proses ini.' : 'Belum ada draf SHU yang dikirim oleh Bendahara untuk tahun ini.')
+                                        : (hasDraft ? 'Draf SHU telah dikirim ke Ketua dan sedang menunggu persetujuan.' : 'Pastikan rincian pembagian di atas sudah sesuai sebelum mengirimkannya ke Ketua untuk persetujuan akhir.')
+                                    }
+                                </p>
+                                
+                                {isKetua ? (
+                                    <form onSubmit={(e) => {
+                                        e.preventDefault();
+                                        openConfirm(
+                                            'Persetujuan Distribusi SHU',
+                                            'Anda yakin ingin menyetujui distribusi SHU ini? Tindakan ini tidak dapat dibatalkan.',
+                                            'primary',
+                                            'Setujui & Distribusikan',
+                                            () => post(route('admin.shu.approve', { year: yearFilter }))
+                                        );
+                                    }}>
+                                        <button 
+                                            type="submit" 
+                                            disabled={processing || shuData.member_proportions.length === 0 || !hasDraft}
+                                            className="ds-button-primary"
+                                            style={{ padding: '12px 24px', fontSize: '14px', backgroundColor: '#10b981', border: 'none', cursor: (processing || shuData.member_proportions.length === 0 || !hasDraft) ? 'not-allowed' : 'pointer' }}
+                                        >
+                                            {processing ? 'Memproses...' : 'Setujui & Distribusikan SHU'}
+                                        </button>
+                                    </form>
+                                ) : (
+                                    <form onSubmit={submit}>
+                                        <button 
+                                            type="submit" 
+                                            disabled={processing || shuData.member_proportions.length === 0 || hasDraft}
+                                            className="ds-button-primary"
+                                            style={{ padding: '12px 24px', fontSize: '14px', backgroundColor: 'var(--color-primary)', border: 'none', cursor: (processing || shuData.member_proportions.length === 0 || hasDraft) ? 'not-allowed' : 'pointer' }}
+                                        >
+                                            {processing ? 'Memproses...' : (hasDraft ? 'Draf Telah Dikirim' : 'Kirim Draf SHU ke Ketua')}
+                                        </button>
+                                    </form>
+                                )}
+                            </>
                         )}
                     </div>
                 )}
