@@ -180,7 +180,7 @@ export default function AdminLayout({ auth, children, title }) {
                         </Link>
                     )}
 
-                    {(auth.user.role === 'pengawas' || auth.user.role === 'ketua') && (
+                    {auth.user.role === 'pengawas' && (
                         <Link 
                             href={route('admin.audit-logs.index')} 
                             style={{ 

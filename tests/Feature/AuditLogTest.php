@@ -21,14 +21,13 @@ class AuditLogTest extends TestCase
         $response->assertInertia(fn ($page) => $page->component('Admin/AuditLogs/Index'));
     }
 
-    public function test_ketua_can_access_audit_logs()
+    public function test_ketua_cannot_access_audit_logs()
     {
         $ketua = User::factory()->create(['role' => 'ketua']);
         
         $response = $this->actingAs($ketua)->get(route('admin.audit-logs.index'));
         
-        $response->assertStatus(200);
-        $response->assertInertia(fn ($page) => $page->component('Admin/AuditLogs/Index'));
+        $response->assertStatus(403);
     }
 
     public function test_anggota_cannot_access_audit_logs()

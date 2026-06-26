@@ -87,7 +87,7 @@ Route::middleware(['auth', 'verified', 'admin'])->prefix('admin')->name('admin.'
     // Audit Log Route
     Route::get('audit-logs', [\App\Http\Controllers\Admin\AuditLogController::class, 'index'])
         ->name('audit-logs.index')
-        ->middleware('role:pengawas,ketua');
+        ->middleware('role:pengawas');
 });
 
 require __DIR__.'/auth.php';

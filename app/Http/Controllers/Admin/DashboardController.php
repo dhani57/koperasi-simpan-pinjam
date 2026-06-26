@@ -35,9 +35,11 @@ class DashboardController extends Controller
             
             // Status Parameter Sistem
             $inactiveMonths = \App\Models\Setting::where('key', 'inactive_months')->value('value') ?? '11,12';
+            $jasaDefault = \App\Models\Setting::where('key', 'loan_interest_rate')->value('value') ?? '1.5';
+            
             $data['system_parameters'] = [
-                'Bulan Non-Aktif' => $inactiveMonths,
-                'Jasa Default' => '1.5% / bulan'
+                'Bulan Non-Aktif' => str_replace(['[', ']', '"'], '', $inactiveMonths),
+                'Jasa Default' => $jasaDefault . '% / bulan'
             ];
             
             // Alerts
