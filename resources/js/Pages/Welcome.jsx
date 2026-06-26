@@ -185,18 +185,18 @@ export default function Welcome({ auth, adminPhone }) {
                         <h2 className="ds-display-lg" style={{ textAlign: 'center', marginBottom: 'var(--spacing-xxl)' }}>Layanan Unggulan</h2>
                         <div ref={featuresRef} className="ds-grid-3up">
                             <div style={{ opacity: 0 }}>
-                                <FeatureCard title="Simpanan Rutin Otomatis">
-                                    Pemotongan simpanan wajib dan sukarela dilakukan secara otomatis setiap bulan langsung dari payroll, tanpa perlu transfer manual.
+                                <FeatureCard title="Buku Besar Transparan">
+                                    Pantau riwayat seluruh mutasi, potongan, dan saldo simpanan secara real-time layaknya buku besar digital pribadi.
                                 </FeatureCard>
                             </div>
                             <div style={{ opacity: 0 }}>
-                                <FeatureCard title="Pengajuan Pinjaman Online">
-                                    Ajukan pinjaman dengan mudah melalui platform. Sistem akan menampilkan simulasi cicilan sesuai dengan batas kemampuan potongan gaji Anda.
+                                <FeatureCard title="Simpan Pinjam Potong Gaji">
+                                    Pemotongan simpanan wajib dan cicilan pinjaman dilakukan otomatis via payroll, disesuaikan dengan batas limit gaji.
                                 </FeatureCard>
                             </div>
                             <div style={{ opacity: 0 }}>
-                                <FeatureCard title="Transparansi Mutasi Real-time">
-                                    Pantau riwayat seluruh mutasi, potongan, dan saldo simpanan secara langsung dan terperinci.
+                                <FeatureCard title="Bagi Hasil (SHU) Progresif">
+                                    Sisa Hasil Usaha didistribusikan secara transparan dan adil berdasarkan persentase kontribusi aktif Anda di koperasi.
                                 </FeatureCard>
                             </div>
                         </div>

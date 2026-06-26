@@ -96,9 +96,25 @@ export default function Login({ status, canResetPassword }) {
                                 </svg>
                             </div>
                             <div>
-                                <h3 className="ds-title-sm" style={{ marginBottom: '6px', color: 'var(--color-on-dark)', fontSize: '16px' }}>Visibilitas Real-time</h3>
+                                <h3 className="ds-title-sm" style={{ marginBottom: '6px', color: 'var(--color-on-dark)', fontSize: '16px' }}>Buku Besar Real-time</h3>
                                 <p className="ds-body-sm" style={{ color: 'rgba(255,255,255,0.6)', lineHeight: '1.5' }}>
                                     Lacak pergerakan dana, sisa pinjaman, dan akumulasi simpanan Anda secara langsung.
+                                </p>
+                            </div>
+                        </div>
+
+                        {/* Feature 3 */}
+                        <div style={{ display: 'flex', gap: 'var(--spacing-md)', alignItems: 'flex-start' }}>
+                            <div style={{ width: '48px', height: '48px', borderRadius: '16px', backgroundColor: 'rgba(255,255,255,0.08)', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', backdropFilter: 'blur(5px)' }}>
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--color-canvas)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                                    <circle cx="12" cy="12" r="10"></circle>
+                                    <polyline points="12 6 12 12 16 14"></polyline>
+                                </svg>
+                            </div>
+                            <div>
+                                <h3 className="ds-title-sm" style={{ marginBottom: '6px', color: 'var(--color-on-dark)', fontSize: '16px' }}>Bagi Hasil Progresif</h3>
+                                <p className="ds-body-sm" style={{ color: 'rgba(255,255,255,0.6)', lineHeight: '1.5' }}>
+                                    Nikmati pembagian SHU yang transparan berdasarkan kontribusi aktif Anda setiap tahunnya.
                                 </p>
                             </div>
                         </div>
