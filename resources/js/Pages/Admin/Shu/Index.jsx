@@ -10,7 +10,16 @@ export default function Index({ auth, year, shuData, filters, isDistributed, has
 
     const [search, setSearch] = useState(filters?.search || '');
     const [yearFilter, setYearFilter] = useState(year);
+    const [editedShu, setEditedShu] = useState({});
     const initialRender = useRef(true);
+
+    useEffect(() => {
+        const initialEdits = {};
+        shuData.member_proportions.forEach(item => {
+            initialEdits[item.user.id] = item.nominal_shu;
+        });
+        setEditedShu(initialEdits);
+    }, [shuData]);
 
     useEffect(() => {
         if (initialRender.current) {
@@ -32,6 +41,13 @@ export default function Index({ auth, year, shuData, filters, isDistributed, has
     const handleYearChange = (e) => {
         setCurrentPage(1);
         setYearFilter(e.target.value);
+    };
+
+    const handleEditChange = (userId, value) => {
+        setEditedShu(prev => ({
+            ...prev,
+            [userId]: value
+        }));
     };
 
     const [confirmConfig, setConfirmConfig] = useState({
@@ -68,7 +84,10 @@ export default function Index({ auth, year, shuData, filters, isDistributed, has
             'Anda yakin ingin mengirim draf perhitungan SHU tahun ini?\n\nPERINGATAN: Tindakan ini akan meneruskan draf ke Ketua untuk persetujuan final.',
             'primary',
             'Kirim Draf',
-            () => post(route('admin.shu.store', { year: yearFilter }))
+            () => {
+                const editedPayload = Object.entries(editedShu).map(([userId, nominal]) => ({ userId, nominal }));
+                post(route('admin.shu.store', { year: yearFilter, edited_shu: editedPayload }));
+            }
         );
     };
 
@@ -163,7 +182,23 @@ export default function Index({ auth, year, shuData, filters, isDistributed, has
                                     <td style={{ padding: '12px', fontSize: '14px', fontWeight: 500 }}>{item.user.name}</td>
                                     <td className="number-display" style={{ padding: '12px', textAlign: 'right' }}>{formatRp(item.score)}</td>
                                     <td className="number-display" style={{ padding: '12px', textAlign: 'right', fontWeight: 'bold' }}>{item.proportion_percentage.toFixed(2)}%</td>
-                                    <td className="number-display" style={{ padding: '12px', textAlign: 'right', fontWeight: '700', color: 'var(--color-semantic-up)' }}>Rp {formatRp(item.nominal_shu)}</td>
+                                    <td className="number-display" style={{ padding: '12px', textAlign: 'right', fontWeight: '700', color: 'var(--color-semantic-up)' }}>
+                                        {!isDistributed && !hasDraft && isBendahara ? (
+                                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: '4px' }}>
+                                                <span>Rp</span>
+                                                <input 
+                                                    type="number" 
+                                                    value={editedShu[item.user.id] !== undefined ? editedShu[item.user.id] : item.nominal_shu} 
+                                                    onChange={(e) => handleEditChange(item.user.id, e.target.value)}
+                                                    className="ds-input"
+                                                    style={{ width: '120px', textAlign: 'right', padding: '4px 8px', fontSize: '14px', height: '32px' }}
+                                                    min="0"
+                                                />
+                                            </div>
+                                        ) : (
+                                            `Rp ${formatRp(item.nominal_shu)}`
+                                        )}
+                                    </td>
                                 </tr>
                             ))}
                             {shuData.member_proportions.length === 0 && (
