@@ -3,6 +3,7 @@ import { Head, useForm } from '@inertiajs/react';
 import AdminLayout from '@/Layouts/AdminLayout';
 import InputLabel from '@/Components/InputLabel';
 import TextInput from '@/Components/TextInput';
+import CurrencyInput from '@/Components/CurrencyInput';
 import InputError from '@/Components/InputError';
 import ButtonPrimary from '@/Components/DesignSystem/ButtonPrimary';
 import Notification from '@/Components/DesignSystem/Notification';
@@ -58,9 +59,8 @@ export default function Index({ auth, settings }) {
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
                             <InputLabel htmlFor="default_monthly_saving" value="Simpanan Rutin Default (Rp)" />
-                            <TextInput
+                            <CurrencyInput
                                 id="default_monthly_saving"
-                                type="number"
                                 className="mt-1 block w-full"
                                 value={data.default_monthly_saving}
                                 onChange={(e) => setData('default_monthly_saving', e.target.value)}
@@ -72,9 +72,8 @@ export default function Index({ auth, settings }) {
 
                         <div>
                             <InputLabel htmlFor="default_salary_limit" value="Batas Potongan Gaji Bulanan (Rp)" />
-                            <TextInput
+                            <CurrencyInput
                                 id="default_salary_limit"
-                                type="number"
                                 className="mt-1 block w-full"
                                 value={data.default_salary_limit}
                                 onChange={(e) => setData('default_salary_limit', e.target.value)}
