@@ -24,15 +24,6 @@ class ShuController extends Controller
         $isDistributed = \App\Models\Setting::where('key', 'shu_distributed_' . $year)->exists();
         $hasDraft = \App\Models\Setting::where('key', 'shu_draft_' . $year)->exists();
 
-        if ($hasDraft || $isDistributed) {
-            $drafts = \App\Models\ShuDraft::where('year', $year)->get()->keyBy('user_id');
-            foreach ($shuData['member_proportions'] as &$item) {
-                if (isset($drafts[$item['user']->id])) {
-                    $item['nominal_shu'] = (float) $drafts[$item['user']->id]->nominal_shu;
-                }
-            }
-        }
-
         // Just display a page to trigger SHU
         return inertia('Admin/Shu/Index', [
             'year' => $year,
@@ -55,21 +46,10 @@ class ShuController extends Controller
             return redirect()->back()->with('error', "Draf SHU tahun {$year} sudah dikirim.");
         }
 
-        $editedShu = $request->input('edited_shu', []);
-
-        \Illuminate\Support\Facades\DB::transaction(function () use ($year, $editedShu) {
-            foreach ($editedShu as $item) {
-                \App\Models\ShuDraft::updateOrCreate(
-                    ['year' => $year, 'user_id' => $item['userId']],
-                    ['nominal_shu' => $item['nominal']]
-                );
-            }
-
-            \App\Models\Setting::updateOrCreate(
-                ['key' => 'shu_draft_' . $year],
-                ['value' => '1']
-            );
-        });
+        \App\Models\Setting::updateOrCreate(
+            ['key' => 'shu_draft_' . $year],
+            ['value' => '1']
+        );
 
         app(\App\Services\AuditLogService::class)->log(
             auth()->user(),
@@ -90,13 +70,11 @@ class ShuController extends Controller
 
         \Illuminate\Support\Facades\DB::transaction(function () use ($year, $shuService) {
             $shuData = $shuService->calculateEstimatedShu($year);
-            $drafts = \App\Models\ShuDraft::where('year', $year)->get()->keyBy('user_id');
 
             foreach ($shuData['member_proportions'] as $memberData) {
-                $amount = isset($drafts[$memberData['user']->id]) ? (float) $drafts[$memberData['user']->id]->nominal_shu : $memberData['nominal_shu'];
-                
-                if ($amount > 0) {
+                if ($memberData['nominal_shu'] > 0) {
                     $user = \App\Models\User::find($memberData['user']->id);
+                    $amount = $memberData['nominal_shu'];
                     
                     \App\Models\Mutation::create([
                         'user_id' => $user->id,
