@@ -35,8 +35,13 @@ export default function Index({ auth, totalShu, porsiSimpanan, porsiPinjaman, pe
 
                     {/* Big SHU Card */}
                     <div className="bg-[#1e293b] rounded-2xl p-6 sm:p-12 text-center shadow-2xl mb-12 border border-slate-700">
-                        <div className="text-xs sm:text-sm text-white/60 tracking-wider uppercase mb-4 font-medium">
+                        <div className="text-xs sm:text-sm text-white/60 tracking-wider uppercase mb-4 font-medium flex items-center justify-center gap-3">
                             Total Sisa Hasil Usaha (Bagi Hasil)
+                            {isDistributed ? (
+                                <span style={{ backgroundColor: 'rgba(16, 185, 129, 0.2)', color: '#34d399', padding: '2px 8px', borderRadius: '100px', fontSize: '10px', fontWeight: 'bold' }}>SELESAI</span>
+                            ) : (
+                                <span style={{ backgroundColor: 'rgba(245, 158, 11, 0.2)', color: '#fbbf24', padding: '2px 8px', borderRadius: '100px', fontSize: '10px', fontWeight: 'bold' }}>ESTIMASI</span>
+                            )}
                         </div>
                         <div className="font-mono text-4xl sm:text-6xl font-bold text-[#eab308] tracking-widest break-words">
                             Rp {formatRp(totalShu)}
