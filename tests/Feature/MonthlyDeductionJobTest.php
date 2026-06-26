@@ -67,4 +67,74 @@ class MonthlyDeductionJobTest extends TestCase
         $this->assertEquals(15000, $detail->loan_fee_amount);
         $this->assertEquals('menunggu', $detail->status);
     }
+
+    public function test_member_without_loan_gets_savings_only_detail()
+    {
+        // Anggota tanpa pinjaman → hanya simpanan
+        $member = User::factory()->create(['role' => 'anggota', 'monthly_saving_nominal' => 200000]);
+
+        $period = DeductionPeriod::create(['month' => 5, 'year' => 2026, 'status' => 'proses']);
+
+        $job = new ProcessMonthlyDeduction($period);
+        $job->handle(new \App\Services\DeductionService());
+
+        $detail = DeductionDetail::where('deduction_period_id', $period->id)
+            ->where('user_id', $member->id)
+            ->first();
+
+        $this->assertNotNull($detail);
+        $this->assertNull($detail->loan_id);
+        $this->assertEquals(200000, $detail->routine_saving_amount);
+        $this->assertEquals(0, $detail->loan_principal_amount);
+        $this->assertEquals(0, $detail->loan_fee_amount);
+    }
+
+    public function test_member_with_multiple_loans_has_savings_on_first_row_only()
+    {
+        $member = User::factory()->create(['role' => 'anggota', 'monthly_saving_nominal' => 100000]);
+
+        $loan1 = Loan::create([
+            'user_id' => $member->id,
+            'principal_amount' => 1000000,
+            'cooperative_fee_percentage' => 1.5,
+            'tenor_months' => 10,
+            'tenor_years' => 1,
+            'monthly_principal_installment' => 100000,
+            'current_remaining_principal' => 1000000,
+            'current_year_monthly_fee' => 15000,
+            'status' => 'aktif',
+        ]);
+
+        $loan2 = Loan::create([
+            'user_id' => $member->id,
+            'principal_amount' => 500000,
+            'cooperative_fee_percentage' => 1.5,
+            'tenor_months' => 5,
+            'tenor_years' => 1,
+            'monthly_principal_installment' => 50000,
+            'current_remaining_principal' => 500000,
+            'current_year_monthly_fee' => 7500,
+            'status' => 'aktif',
+        ]);
+
+        $period = DeductionPeriod::create(['month' => 5, 'year' => 2026, 'status' => 'proses']);
+
+        $job = new ProcessMonthlyDeduction($period);
+        $job->handle(new \App\Services\DeductionService());
+
+        $details = DeductionDetail::where('deduction_period_id', $period->id)
+            ->where('user_id', $member->id)
+            ->orderBy('id')
+            ->get();
+
+        $this->assertCount(2, $details);
+
+        // Baris pertama (loan1) → carry simpanan
+        $this->assertEquals(100000, $details[0]->routine_saving_amount);
+        $this->assertEquals($loan1->id, $details[0]->loan_id);
+
+        // Baris kedua (loan2) → simpanan = 0
+        $this->assertEquals(0, $details[1]->routine_saving_amount);
+        $this->assertEquals($loan2->id, $details[1]->loan_id);
+    }
 }

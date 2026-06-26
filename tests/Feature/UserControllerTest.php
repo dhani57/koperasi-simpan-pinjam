@@ -77,4 +77,115 @@ class UserControllerTest extends TestCase
         $this->assertEquals('bendahara', $user->role);
         $this->assertTrue($user->is_anggota);
     }
+
+    public function test_user_can_be_updated_successfully(): void
+    {
+        $user = User::factory()->create([
+            'role' => 'anggota',
+            'is_anggota' => true,
+            'monthly_saving_nominal' => 100000,
+            'max_salary_deduction_limit' => 1000000,
+        ]);
+
+        $response = $this->actingAs($this->admin)->put(route('admin.users.update', $user->id), [
+            'name' => 'Updated Name',
+            'identity_number' => $user->identity_number,
+            'email' => $user->email,
+            'monthly_saving_nominal' => 200000,
+            'max_salary_deduction_limit' => 3000000,
+            'roles' => ['anggota'],
+        ]);
+
+        $response->assertSessionHasNoErrors();
+        $response->assertRedirect(route('admin.users.index'));
+
+        $user->refresh();
+        $this->assertEquals('Updated Name', $user->name);
+        $this->assertEquals(200000, $user->monthly_saving_nominal);
+        $this->assertEquals(3000000, $user->max_salary_deduction_limit);
+    }
+
+    public function test_user_update_with_optional_password(): void
+    {
+        $user = User::factory()->create([
+            'role' => 'anggota',
+            'is_anggota' => true,
+            'monthly_saving_nominal' => 100000,
+            'max_salary_deduction_limit' => 1000000,
+        ]);
+
+        // Update tanpa password → password tidak berubah
+        $response = $this->actingAs($this->admin)->put(route('admin.users.update', $user->id), [
+            'name' => $user->name,
+            'identity_number' => $user->identity_number,
+            'email' => $user->email,
+            'monthly_saving_nominal' => 100000,
+            'max_salary_deduction_limit' => 1000000,
+            'roles' => ['anggota'],
+            'password' => '',
+            'password_confirmation' => '',
+        ]);
+
+        $response->assertSessionHasNoErrors();
+        $response->assertRedirect(route('admin.users.index'));
+    }
+
+    public function test_user_can_be_deleted(): void
+    {
+        $user = User::factory()->create([
+            'role' => 'anggota',
+            'is_anggota' => true,
+        ]);
+
+        $response = $this->actingAs($this->admin)->delete(route('admin.users.destroy', $user->id));
+
+        $response->assertRedirect(route('admin.users.index'));
+        $this->assertNull(User::find($user->id));
+    }
+
+    public function test_pengawas_can_view_users_list(): void
+    {
+        $pengawas = User::factory()->create(['role' => 'pengawas']);
+
+        $response = $this->actingAs($pengawas)->get(route('admin.users.index'));
+        $response->assertStatus(200);
+    }
+
+    public function test_pengawas_cannot_create_user(): void
+    {
+        $pengawas = User::factory()->create(['role' => 'pengawas']);
+
+        $response = $this->actingAs($pengawas)->post(route('admin.users.store'), [
+            'name' => 'Should Fail',
+            'identity_number' => '9999999',
+            'email' => 'shouldfail@example.com',
+            'password' => 'password',
+            'password_confirmation' => 'password',
+            'monthly_saving_nominal' => 100000,
+            'max_salary_deduction_limit' => 1000000,
+            'roles' => ['anggota'],
+        ]);
+
+        $response->assertStatus(403);
+        $this->assertEquals(0, User::where('email', 'shouldfail@example.com')->count());
+    }
+
+    public function test_pengawas_cannot_delete_user(): void
+    {
+        $pengawas = User::factory()->create(['role' => 'pengawas']);
+        $user = User::factory()->create(['role' => 'anggota']);
+
+        $response = $this->actingAs($pengawas)->delete(route('admin.users.destroy', $user->id));
+
+        $response->assertStatus(403);
+        $this->assertNotNull(User::find($user->id));
+    }
+
+    public function test_bendahara_cannot_access_user_management(): void
+    {
+        $bendahara = User::factory()->create(['role' => 'bendahara']);
+
+        $response = $this->actingAs($bendahara)->get(route('admin.users.index'));
+        $response->assertStatus(403);
+    }
 }

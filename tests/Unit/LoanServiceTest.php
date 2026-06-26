@@ -69,4 +69,66 @@ class LoanServiceTest extends TestCase
         // Fee = 1.5% of 10M = 150,000
         $this->assertEquals(150000, $loan->current_year_monthly_fee);
     }
+
+    public function test_validate_limit_passes_when_within_limit()
+    {
+        $service = new LoanService();
+        $user = User::factory()->create([
+            'role' => 'anggota',
+            'monthly_saving_nominal' => 100000,
+            'max_salary_deduction_limit' => 5000000,
+        ]);
+
+        // Cicilan bulan pertama = 500.000 (di bawah sisa limit 4.900.000)
+        $this->assertTrue($service->validateLimit($user, 500000));
+    }
+
+    public function test_validate_limit_fails_when_exceeds_limit()
+    {
+        $service = new LoanService();
+        $user = User::factory()->create([
+            'role' => 'anggota',
+            'monthly_saving_nominal' => 100000,
+            'max_salary_deduction_limit' => 500000,
+        ]);
+
+        // Cicilan 1.500.000 > sisa limit (500k - 100k = 400k)
+        $this->assertFalse($service->validateLimit($user, 1500000));
+    }
+
+    public function test_create_loan_creates_loan_and_annual_service_record()
+    {
+        $service = new LoanService();
+        $user = User::factory()->create(['role' => 'anggota']);
+
+        $loan = $service->createLoan($user, 10000000, 2);
+
+        $this->assertNotNull($loan);
+        $this->assertEquals('diajukan', $loan->status);
+        $this->assertEquals(10000000, $loan->principal_amount);
+        $this->assertEquals(10000000, $loan->current_remaining_principal);
+
+        // LoanAnnualService year 1 harus terbuat
+        $annualService = \App\Models\LoanAnnualService::where('loan_id', $loan->id)->first();
+        $this->assertNotNull($annualService);
+        $this->assertEquals(1, $annualService->year_number);
+        $this->assertEquals(10000000, $annualService->starting_remaining_principal);
+    }
+
+    public function test_advance_to_next_year_marks_loan_lunas_when_principal_depleted()
+    {
+        $service = new LoanService();
+        $user = User::factory()->create(['role' => 'anggota']);
+
+        // Buat pinjaman 1 tahun (10 bulan aktif)
+        $loan = $service->createLoan($user, 5000000, 1);
+
+        // Advance ke tahun 2 → sisa pokok harus 0, status lunas
+        $service->advanceToNextYear($loan, 2);
+
+        $loan->refresh();
+        $this->assertEquals(0, $loan->current_remaining_principal);
+        $this->assertEquals(0, $loan->current_year_monthly_fee);
+        $this->assertEquals('lunas', $loan->status);
+    }
 }
