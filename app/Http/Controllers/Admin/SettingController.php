@@ -43,6 +43,12 @@ class SettingController extends Controller
             );
         }
 
+        app(\App\Services\AuditLogService::class)->log(
+            auth()->user(),
+            'parameter_change',
+            'Memperbarui parameter sistem koperasi'
+        );
+
         return redirect()->back()->with('success', 'Parameter sistem berhasil diperbarui.');
     }
 }

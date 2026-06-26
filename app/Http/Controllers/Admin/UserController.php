@@ -77,6 +77,12 @@ class UserController extends Controller
             }
         });
 
+        app(\App\Services\AuditLogService::class)->log(
+            auth()->user(),
+            'user_created',
+            "Menambahkan anggota/user baru dengan email: {$validated['email']}"
+        );
+
         return redirect()->route('admin.users.index')->with('success', 'Anggota berhasil ditambahkan.');
     }
 
@@ -116,12 +122,25 @@ class UserController extends Controller
 
         $user->update($validated);
 
+        app(\App\Services\AuditLogService::class)->log(
+            auth()->user(),
+            'user_updated',
+            "Memperbarui data anggota/user dengan email: {$user->email}"
+        );
+
         return redirect()->route('admin.users.index')->with('success', 'Data anggota berhasil diperbarui.');
     }
 
     public function destroy(User $user)
     {
+        $email = $user->email;
         $user->delete();
+
+        app(\App\Services\AuditLogService::class)->log(
+            auth()->user(),
+            'user_deleted',
+            "Menghapus data anggota/user dengan email: {$email}"
+        );
         return redirect()->route('admin.users.index')->with('success', 'Anggota berhasil dihapus.');
     }
 }

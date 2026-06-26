@@ -96,6 +96,12 @@ class LoanController extends Controller
             'admin_verified_by' => auth()->id(),
         ]);
 
+        app(\App\Services\AuditLogService::class)->log(
+            auth()->user(),
+            'loan_verified',
+            "Memverifikasi administrasi pinjaman #{$loan->id}"
+        );
+
         return redirect()->back()->with('success', 'Pinjaman berhasil diverifikasi secara administrasi.');
     }
 
@@ -112,6 +118,12 @@ class LoanController extends Controller
             'admin_verified_at' => auth()->user()->role === 'pengurus' ? now() : $loan->admin_verified_at,
             'admin_verified_by' => auth()->user()->role === 'pengurus' ? auth()->id() : $loan->admin_verified_by,
         ]);
+
+        app(\App\Services\AuditLogService::class)->log(
+            auth()->user(),
+            'loan_rejected',
+            "Menolak pengajuan pinjaman #{$loan->id}"
+        );
 
         return redirect()->back()->with('success', 'Pinjaman berhasil ditolak.');
     }
@@ -144,6 +156,12 @@ class LoanController extends Controller
 
         $loan->save();
 
+        app(\App\Services\AuditLogService::class)->log(
+            auth()->user(),
+            'loan_approved',
+            "Menyetujui pinjaman #{$loan->id} (Status baru: {$loan->status})"
+        );
+
         return redirect()->back()->with('success', 'Persetujuan pinjaman berhasil dicatat.');
     }
 
@@ -170,6 +188,12 @@ class LoanController extends Controller
             'description' => 'Pencairan pinjaman #' . $loan->id,
         ]);
 
+        app(\App\Services\AuditLogService::class)->log(
+            auth()->user(),
+            'loan_disbursed',
+            "Mencairkan pinjaman #{$loan->id} sejumlah " . number_format($loan->principal_amount, 0, ',', '.')
+        );
+
         return redirect()->back()->with('success', 'Dana berhasil dikirim dan pinjaman kini telah aktif.');
     }
 
@@ -195,6 +219,12 @@ class LoanController extends Controller
             'balance_after' => 0, // In a real scenario, this is derived from member's balance logic if applicable
             'description' => 'Pencairan pinjaman #' . $loan->id,
         ]);
+
+        app(\App\Services\AuditLogService::class)->log(
+            auth()->user(),
+            'loan_disbursement_verified',
+            "Memverifikasi pencairan pinjaman #{$loan->id}"
+        );
 
         return redirect()->back()->with('success', 'Pencairan pinjaman berhasil diverifikasi. Pinjaman kini aktif.');
     }

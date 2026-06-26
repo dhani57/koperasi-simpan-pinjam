@@ -58,6 +58,12 @@ class DeductionController extends Controller
             // Dispatch job instead of running synchronously
             \App\Jobs\ProcessMonthlyDeduction::dispatch($period);
 
+            app(\App\Services\AuditLogService::class)->log(
+                auth()->user(),
+                'deduction_generated',
+                "Memulai proses generate tagihan bulanan untuk periode {$month}/{$year}"
+            );
+
             return redirect()->back()->with('success', 'Berhasil memulai proses antrean generate tagihan potongan bulanan. Silakan tunggu beberapa saat.');
         } catch (\Exception $e) {
             return redirect()->back()->with('error', 'Gagal generate tagihan: ' . $e->getMessage());
@@ -167,6 +173,12 @@ class DeductionController extends Controller
                 }
             }
         });
+
+        app(\App\Services\AuditLogService::class)->log(
+            auth()->user(),
+            'deduction_completed',
+            "Menyelesaikan tagihan bulanan periode {$deduction->month}/{$deduction->year}"
+        );
 
         return redirect()->back()->with('success', 'Status tagihan bulanan berhasil ditandai selesai dan transaksi telah dicatat.');
     }

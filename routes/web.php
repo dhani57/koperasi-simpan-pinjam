@@ -83,6 +83,11 @@ Route::middleware(['auth', 'verified', 'admin'])->prefix('admin')->name('admin.'
     Route::get('shu', [ShuController::class, 'index'])->name('shu.index')->middleware('role:bendahara,ketua,pengawas');
     Route::post('shu/generate', [ShuController::class, 'store'])->name('shu.store')->middleware('role:bendahara');
     Route::post('shu/approve', [ShuController::class, 'approve'])->name('shu.approve')->middleware('role:ketua');
+
+    // Audit Log Route
+    Route::get('audit-logs', [\App\Http\Controllers\Admin\AuditLogController::class, 'index'])
+        ->name('audit-logs.index')
+        ->middleware('role:pengawas,ketua');
 });
 
 require __DIR__.'/auth.php';

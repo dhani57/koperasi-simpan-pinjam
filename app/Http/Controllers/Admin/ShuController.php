@@ -38,11 +38,22 @@ class ShuController extends Controller
         // This process might take a long time, so it should ideally be queued.
         // \App\Jobs\CalculateShuJob::dispatch();
         
+        app(\App\Services\AuditLogService::class)->log(
+            auth()->user(),
+            'shu_generated',
+            "Membuat draft perhitungan SHU"
+        );
+        
         return redirect()->back()->with('success', 'Draft perhitungan SHU berhasil dibuat dan menunggu persetujuan Ketua.');
     }
 
     public function approve(Request $request)
     {
+        app(\App\Services\AuditLogService::class)->log(
+            auth()->user(),
+            'shu_approved',
+            "Menyetujui distribusi SHU"
+        );
         return redirect()->back()->with('success', 'Distribusi SHU telah disetujui dan dibagikan ke saldo anggota.');
     }
 }
