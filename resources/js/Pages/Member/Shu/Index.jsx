@@ -1,7 +1,7 @@
 import { Head } from '@inertiajs/react';
 import MemberLayout from '@/Layouts/MemberLayout';
 
-export default function Index({ auth, totalShu, porsiSimpanan, porsiPinjaman, persenKontribusiAset, totalSimpananAkumulasi, totalJasaPinjaman, tahunBuku }) {
+export default function Index({ auth, totalShu, porsiSimpanan, porsiPinjaman, persenKontribusiAset, totalSimpananAkumulasi, totalJasaPinjaman, tahunBuku, isDistributed }) {
     const formatRp = (num) => new Intl.NumberFormat('id-ID').format(num);
 
     return (
@@ -102,17 +102,31 @@ export default function Index({ auth, totalShu, porsiSimpanan, porsiPinjaman, pe
                     </div>
 
                     {/* Status Card */}
-                    <div style={{ backgroundColor: 'white', borderRadius: 'var(--rounded-lg)', padding: 'var(--spacing-xl)', border: '1px solid var(--color-hairline)', display: 'flex', gap: '20px', alignItems: 'flex-start' }}>
-                        <div style={{ width: '40px', height: '40px', borderRadius: '50%', backgroundColor: '#dcfce7', color: 'var(--color-semantic-up)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                        </div>
-                        <div>
-                            <div style={{ fontWeight: 600, fontSize: '15px', marginBottom: '8px' }}>Pencairan Otomatis Selesai</div>
-                            <div style={{ fontSize: '13px', color: 'var(--color-muted)', lineHeight: '1.6' }}>
-                                Seluruh dana SHU Anda sebesar <strong style={{ color: 'var(--color-ink)' }}>Rp {formatRp(totalShu)}</strong> telah dikreditkan secara otomatis ke Saldo Simpanan Anda pada <strong style={{ color: 'var(--color-ink)' }}>31 Desember {tahunBuku}</strong>. Tidak ada tindakan lebih lanjut yang perlu Anda lakukan. Anda bisa memantau perubahannya di Buku Besar.
+                    {isDistributed ? (
+                        <div style={{ backgroundColor: 'white', borderRadius: 'var(--rounded-lg)', padding: 'var(--spacing-xl)', border: '1px solid var(--color-hairline)', display: 'flex', gap: '20px', alignItems: 'flex-start' }}>
+                            <div style={{ width: '40px', height: '40px', borderRadius: '50%', backgroundColor: '#dcfce7', color: 'var(--color-semantic-up)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                            </div>
+                            <div>
+                                <div style={{ fontWeight: 600, fontSize: '15px', marginBottom: '8px' }}>Pencairan Otomatis Selesai</div>
+                                <div style={{ fontSize: '13px', color: 'var(--color-muted)', lineHeight: '1.6' }}>
+                                    Seluruh dana SHU Anda sebesar <strong style={{ color: 'var(--color-ink)' }}>Rp {formatRp(totalShu)}</strong> telah dikreditkan secara otomatis ke Saldo Simpanan Anda pada <strong style={{ color: 'var(--color-ink)' }}>31 Desember {tahunBuku}</strong>. Tidak ada tindakan lebih lanjut yang perlu Anda lakukan. Anda bisa memantau perubahannya di Buku Besar.
+                                </div>
                             </div>
                         </div>
-                    </div>
+                    ) : (
+                        <div style={{ backgroundColor: 'white', borderRadius: 'var(--rounded-lg)', padding: 'var(--spacing-xl)', border: '1px solid var(--color-hairline)', display: 'flex', gap: '20px', alignItems: 'flex-start' }}>
+                            <div style={{ width: '40px', height: '40px', borderRadius: '50%', backgroundColor: '#fef3c7', color: '#d97706', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                            </div>
+                            <div>
+                                <div style={{ fontWeight: 600, fontSize: '15px', marginBottom: '8px' }}>Proses Tutup Buku</div>
+                                <div style={{ fontSize: '13px', color: 'var(--color-muted)', lineHeight: '1.6' }}>
+                                    Nilai di atas merupakan <strong>estimasi</strong>. SHU akan masuk secara otomatis ke Saldo Simpanan Anda setelah Ketua menyetujui laporan akhir tahun.
+                                </div>
+                            </div>
+                        </div>
+                    )}
                 </div>
             </div>
         </MemberLayout>

@@ -60,7 +60,7 @@ class ShuController extends Controller
         return redirect()->back()->with('success', 'Draft perhitungan SHU berhasil dibuat dan menunggu persetujuan Ketua.');
     }
 
-    public function approve(Request $request)
+    public function approve(Request $request, \App\Services\ShuService $shuService)
     {
         $year = $request->query('year', now()->year);
 
@@ -68,10 +68,32 @@ class ShuController extends Controller
             return redirect()->back()->with('error', "SHU tahun {$year} telah didistribusikan.");
         }
 
-        \App\Models\Setting::updateOrCreate(
-            ['key' => 'shu_distributed_' . $year],
-            ['value' => '1']
-        );
+        \Illuminate\Support\Facades\DB::transaction(function () use ($year, $shuService) {
+            $shuData = $shuService->calculateEstimatedShu($year);
+
+            foreach ($shuData['member_proportions'] as $memberData) {
+                if ($memberData['nominal_shu'] > 0) {
+                    $user = \App\Models\User::find($memberData['user']->id);
+                    $amount = $memberData['nominal_shu'];
+                    
+                    \App\Models\Mutation::create([
+                        'user_id' => $user->id,
+                        'type' => 'shu_distribution',
+                        'amount' => $amount,
+                        'balance_after' => $user->total_saving_balance + $amount,
+                        'description' => "Pembagian SHU Tahun {$year}",
+                    ]);
+
+                    $user->total_saving_balance += $amount;
+                    $user->save();
+                }
+            }
+
+            \App\Models\Setting::updateOrCreate(
+                ['key' => 'shu_distributed_' . $year],
+                ['value' => '1']
+            );
+        });
 
         app(\App\Services\AuditLogService::class)->log(
             auth()->user(),

@@ -14,6 +14,8 @@ class ShuController extends Controller
 
         // Gunakan layanan sentral untuk perhitungan SHU
         $shuData = $shuService->calculateEstimatedShuForUser($year, $user->id);
+        
+        $isDistributed = \App\Models\Setting::where('key', 'shu_distributed_' . $year)->exists();
 
         return inertia('Member/Shu/Index', [
             'totalShu' => $shuData['totalShu'],
@@ -22,7 +24,8 @@ class ShuController extends Controller
             'persenKontribusiAset' => $shuData['persenKontribusiAset'],
             'totalSimpananAkumulasi' => $shuData['totalSimpananAkumulasi'],
             'totalJasaPinjaman' => $shuData['totalJasaPinjaman'],
-            'tahunBuku' => $year
+            'tahunBuku' => $year,
+            'isDistributed' => $isDistributed,
         ]);
     }
 }
