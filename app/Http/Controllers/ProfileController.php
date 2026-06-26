@@ -25,14 +25,6 @@ class ProfileController extends Controller
             $roleData['active_loans_count'] = 0; // Placeholder
             $roleData['shu_history'] = []; // Placeholder
         } else {
-            $roleData['activity_logs'] = \App\Models\UserActivityLog::where('user_id', $user->id)
-                ->orderBy('created_at', 'desc')
-                ->take(10)
-                ->get();
-            
-            if ($user->role === 'pengurus') {
-                $roleData['active_parameters'] = \App\Models\Setting::all();
-            }
             if ($user->role === 'bendahara') {
                 $roleData['approved_loans_count'] = 0; // Placeholder
                 $roleData['disbursed_loans_count'] = 0; // Placeholder
