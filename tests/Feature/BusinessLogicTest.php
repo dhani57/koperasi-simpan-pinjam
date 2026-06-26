@@ -91,4 +91,88 @@ class BusinessLogicTest extends TestCase
         // Pastikan tidak ada pinjaman yang terbuat
         $this->assertEquals(0, \App\Models\Loan::count());
     }
+
+    public function test_shu_progressive_distribution()
+    {
+        // BIZ-02: SHU Berbasis Kontribusi Progresif
+        $year = now()->year;
+
+        // Buat 2 anggota dengan saldo simpanan awal
+        $anggotaA = User::factory()->create(['role' => 'anggota', 'total_saving_balance' => 2000000]);
+        $anggotaB = User::factory()->create(['role' => 'anggota', 'total_saving_balance' => 500000]);
+
+        // Anggota A: Simpanan besar (2jt), Jasa Pinjaman kecil (0)
+        \App\Models\Mutation::create([
+            'user_id' => $anggotaA->id,
+            'type' => 'simpanan_rutin',
+            'amount' => 2000000,
+            'balance_after' => 2000000,
+            'description' => 'Simpanan',
+            'created_at' => now()->startOfYear()
+        ]);
+
+        // Anggota B: Simpanan kecil (500rb), Jasa Pinjaman besar (1jt)
+        \App\Models\Mutation::create([
+            'user_id' => $anggotaB->id,
+            'type' => 'simpanan_rutin',
+            'amount' => 500000,
+            'balance_after' => 500000,
+            'description' => 'Simpanan',
+            'created_at' => now()->startOfYear()
+        ]);
+        
+        \App\Models\Mutation::create([
+            'user_id' => $anggotaB->id,
+            'type' => 'angsuran_jasa',
+            'amount' => 1000000,
+            'balance_after' => 500000,
+            'description' => 'Angsuran Jasa',
+            'created_at' => now()->startOfYear()
+        ]);
+
+        // Global Totals: 
+        // Jasa = 1,000,000
+        // Simpanan = 2,500,000
+        // Profit = 1,000,000
+        // SHU Dibagikan = 70% * 1,000,000 = 700,000
+        // Porsi Simpanan (40%) = 280,000
+        // Porsi Pinjaman (60%) = 420,000
+
+        // Porsi A: 
+        // Simpanan: (2jt / 2.5jt) * 280k = 224,000
+        // Jasa: (0) * 420k = 0
+        // Total A = 224,000
+
+        // Porsi B:
+        // Simpanan: (500k / 2.5jt) * 280k = 56,000
+        // Jasa: (1jt / 1jt) * 420k = 420,000
+        // Total B = 476,000
+
+        $service = new \App\Services\ShuService();
+        $result = $service->calculateEstimatedShu($year);
+
+        $memberA_Shu = collect($result['member_proportions'])->firstWhere('user.id', $anggotaA->id);
+        $memberB_Shu = collect($result['member_proportions'])->firstWhere('user.id', $anggotaB->id);
+
+        $this->assertEquals(224000, $memberA_Shu['nominal_shu']);
+        $this->assertEquals(476000, $memberB_Shu['nominal_shu']);
+
+        // Uji eksekusi riil Distribusi (Mutasi terbuat)
+        $ketua = User::factory()->create(['role' => 'ketua']);
+        $this->actingAs($ketua);
+
+        $response = $this->post("/admin/shu/approve?year={$year}");
+        $response->assertRedirect();
+        
+        // Verifikasi mutasi distribusi SHU dibuat
+        $mutasiA = \App\Models\Mutation::where('user_id', $anggotaA->id)
+            ->where('type', 'shu_distribution')
+            ->first();
+        $this->assertNotNull($mutasiA);
+        $this->assertEquals(224000, $mutasiA->amount);
+
+        // Verifikasi saldo anggota bertambah
+        $anggotaA->refresh();
+        $this->assertEquals(2000000 + 224000, $anggotaA->total_saving_balance);
+    }
 }
