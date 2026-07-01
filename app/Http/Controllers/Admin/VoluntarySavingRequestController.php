@@ -36,9 +36,28 @@ class VoluntarySavingRequestController extends Controller
             'approved_at' => now(),
         ]);
 
-        $voluntarySavingRequest->user->update([
-            'monthly_simpanan_sukarela' => $voluntarySavingRequest->new_monthly_amount
-        ]);
+        if ($voluntarySavingRequest->type === 'tarik') {
+            $user = $voluntarySavingRequest->user;
+            // Prevent overdraft
+            if ($user->simpanan_sukarela_balance < $voluntarySavingRequest->amount) {
+                return back()->with('error', 'Saldo simpanan sukarela anggota tidak mencukupi.');
+            }
+            $user->update([
+                'simpanan_sukarela_balance' => $user->simpanan_sukarela_balance - $voluntarySavingRequest->amount
+            ]);
+            
+            \App\Models\Mutation::create([
+                'user_id' => $user->id,
+                'type' => 'penarikan_sukarela',
+                'amount' => $voluntarySavingRequest->amount,
+                'description' => 'Penarikan Simpanan Sukarela disetujui',
+                'balance_after' => $user->simpanan_sukarela_balance
+            ]);
+        } else {
+            $voluntarySavingRequest->user->update([
+                'monthly_simpanan_sukarela' => $voluntarySavingRequest->new_monthly_amount
+            ]);
+        }
 
         app(\App\Services\AuditLogService::class)->log(
             auth()->user(),

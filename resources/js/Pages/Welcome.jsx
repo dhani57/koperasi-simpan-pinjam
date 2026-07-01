@@ -1,288 +1,302 @@
-import { Head } from '@inertiajs/react';
+import { Head, Link } from '@inertiajs/react';
 import React, { useEffect, useRef } from 'react';
-import anime from 'animejs';
 import TopNavUnila from '../Components/DesignSystem/TopNavUnila';
 import HeroBandDark from '../Components/DesignSystem/HeroBandDark';
-import ProductUiCardLight from '../Components/DesignSystem/ProductUiCardLight';
-import ButtonPrimary from '../Components/DesignSystem/ButtonPrimary';
-import ButtonSecondaryDark from '../Components/DesignSystem/ButtonSecondaryDark';
-import FeatureCard from '../Components/DesignSystem/FeatureCard';
-import CtaBandDark from '../Components/DesignSystem/CtaBandDark';
 import FooterLight from '../Components/DesignSystem/FooterLight';
-import ButtonPillCta from '../Components/DesignSystem/ButtonPillCta';
 
-export default function Welcome({ auth, adminPhone }) {
-    // Generate WhatsApp Link
-    let waLink = "mailto:admin@koperasi.internal"; // fallback
-    if (adminPhone) {
-        let cleanPhone = adminPhone.replace(/\D/g, ''); // remove non-digits
-        if (cleanPhone.startsWith('0')) {
-            cleanPhone = '62' + cleanPhone.substring(1);
-        }
-        waLink = `https://wa.me/${cleanPhone}`;
-    }
+export default function Welcome({ auth, stats, departmentDistribution, boardMembers }) {
+    const heroRef = useRef(null);
+    const statsRef = useRef(null);
+    const boardRef = useRef(null);
+    const distRef = useRef(null);
 
-    const heroTextRef = useRef(null);
-    const heroCardsRef = useRef(null);
-    const featuresRef = useRef(null);
-    const stepsRef = useRef(null);
-    const ctaRef = useRef(null);
+    const formatRp = (num) => {
+        if (num >= 1000000000) return `Rp ${(num / 1000000000).toFixed(1)} M`;
+        if (num >= 1000000) return `Rp ${(num / 1000000).toFixed(0)} Jt`;
+        return `Rp ${new Intl.NumberFormat('id-ID').format(num)}`;
+    };
 
     useEffect(() => {
-        // Hero Animations
-        anime.timeline({ easing: 'easeOutExpo' })
-        .add({
-            targets: heroTextRef.current.children,
-            translateY: [30, 0],
-            opacity: [0, 1],
-            duration: 1200,
-            delay: anime.stagger(200)
-        })
-        .add({
-            targets: heroCardsRef.current.children,
-            translateX: [50, 0],
-            opacity: [0, 1],
-            duration: 1200,
-            delay: anime.stagger(300)
-        }, '-=800');
-
-        // Scroll Animations setup using IntersectionObserver
-        const observerOptions = { threshold: 0.2 };
-        
+        const observerOptions = { threshold: 0.15 };
         const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
-                    if (entry.target === featuresRef.current) {
-                        anime({
-                            targets: featuresRef.current.children,
-                            translateY: [40, 0],
-                            opacity: [0, 1],
-                            duration: 1000,
-                            easing: 'easeOutQuart',
-                            delay: anime.stagger(150)
-                        });
-                    }
-                    if (entry.target === stepsRef.current) {
-                        anime({
-                            targets: stepsRef.current.children,
-                            translateX: [-40, 0],
-                            opacity: [0, 1],
-                            duration: 1000,
-                            easing: 'easeOutQuart',
-                            delay: anime.stagger(200)
-                        });
-                    }
-                    if (entry.target === ctaRef.current) {
-                        anime({
-                            targets: ctaRef.current.children,
-                            scale: [0.9, 1],
-                            opacity: [0, 1],
-                            duration: 1000,
-                            easing: 'easeOutBack',
-                            delay: anime.stagger(200)
-                        });
-                    }
-                } else {
-                    // Reset when out of view so it repeats
-                    if (entry.target === featuresRef.current) {
-                        anime.set(featuresRef.current.children, { opacity: 0, translateY: 40 });
-                    }
-                    if (entry.target === stepsRef.current) {
-                        anime.set(stepsRef.current.children, { opacity: 0, translateX: -40 });
-                    }
-                    if (entry.target === ctaRef.current) {
-                        anime.set(ctaRef.current.children, { opacity: 0, scale: 0.9 });
-                    }
+                    const children = entry.target.querySelectorAll('[data-animate]');
+                    children.forEach((el, i) => {
+                        setTimeout(() => {
+                            el.style.opacity = '1';
+                            el.style.transform = 'translateY(0)';
+                        }, i * 120);
+                    });
                 }
             });
         }, observerOptions);
 
-        if (featuresRef.current) observer.observe(featuresRef.current);
-        if (stepsRef.current) observer.observe(stepsRef.current);
-        if (ctaRef.current) observer.observe(ctaRef.current);
+        [heroRef, statsRef, boardRef, distRef].forEach(ref => {
+            if (ref.current) observer.observe(ref.current);
+        });
 
         return () => observer.disconnect();
     }, []);
 
+    const roleColors = {
+        ketua: { bg: '#4f46e5', text: '#fff' },
+        bendahara: { bg: '#0891b2', text: '#fff' },
+        pengurus: { bg: '#7c3aed', text: '#fff' },
+    };
+
+    // Calculate max for distribution bar chart
+    const maxDist = departmentDistribution?.length > 0
+        ? Math.max(...departmentDistribution.map(d => d.total))
+        : 1;
+
     return (
-        <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
-            <Head title="Koperasi Institusi" />
-            
+        <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', backgroundColor: 'var(--color-canvas)' }}>
+            <Head title="Koperasi FT Unila" />
+
             <div style={{ backgroundColor: 'var(--color-surface-dark)' }}>
                 <TopNavUnila auth={auth} />
             </div>
 
             <main style={{ flex: 1 }}>
+                {/* Hero — Profil Koperasi */}
                 <HeroBandDark>
-                    <div ref={heroTextRef} className="lg:pr-8 max-w-[560px] mx-auto lg:mx-0">
-                        <h1 className="ds-display-mega" style={{ marginBottom: 'var(--spacing-md)', opacity: 0 }}>
-                            Buku Besar Digital Karyawan.
-                        </h1>
-                        <p className="ds-body-md" style={{ color: 'var(--color-on-dark-soft)', marginBottom: 'var(--spacing-xl)', opacity: 0 }}>
-                            Sistem tertutup dengan integrasi potong gaji otomatis. Aman, transparan, dan tanpa repot. Khusus untuk ekosistem internal perusahaan.
-                        </p>
-                        <div className="flex justify-center lg:justify-start gap-4 opacity-0">
-                            <ButtonPrimary href={auth.user ? (['pengurus', 'bendahara', 'ketua', 'pengawas'].includes(auth.user.role) ? route('admin.dashboard') : route('dashboard')) : route('login')} className="hover:opacity-90 transition-opacity" style={{ backgroundColor: 'var(--color-canvas)', color: 'var(--color-primary)', boxShadow: '0 4px 12px rgba(0,0,0,0.15)' }}>
-                                Lihat Dashboard
-                            </ButtonPrimary>
-                            <ButtonSecondaryDark href="#cara-kerja">
-                                Cara Kerja
-                            </ButtonSecondaryDark>
+                    <div ref={heroRef} style={{ textAlign: 'center', maxWidth: '720px', margin: '0 auto', padding: '24px 0' }}>
+                        <div data-animate style={{ opacity: 0, transform: 'translateY(24px)', transition: 'all 0.8s cubic-bezier(0.16,1,0.3,1)' }}>
+                            <div style={{ display: 'inline-flex', alignItems: 'center', gap: '12px', padding: '8px 20px', borderRadius: '100px', backgroundColor: 'rgba(255,255,255,0.08)', marginBottom: '24px', border: '1px solid rgba(255,255,255,0.1)' }}>
+                                <div style={{ width: '32px', height: '32px', borderRadius: '50%', background: 'linear-gradient(135deg, var(--color-primary), #60a5fa)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                    <span style={{ color: '#fff', fontWeight: 700, fontSize: '16px' }}>K</span>
+                                </div>
+                                <span style={{ color: 'rgba(255,255,255,0.9)', fontSize: '14px', fontWeight: 600, letterSpacing: '0.5px' }}>Koperasi FT Unila</span>
+                            </div>
                         </div>
-                    </div>
-                    
-                    <div className="flex-1 flex justify-center mt-12 lg:mt-0 w-full">
-                        {/* Wrapper acts as bounding box for both cards. Margin offsets the absolute card on desktop. */}
-                        <div ref={heroCardsRef} className="relative w-full max-w-[440px] mb-8 lg:mb-[100px] lg:mr-[50px] px-4 lg:px-0">
-                            <ProductUiCardLight className="relative z-10 w-full opacity-0" style={{ opacity: 0 }}>
-                                <div style={{ marginBottom: 'var(--spacing-md)' }}>
-                                    <div className="ds-body-md" style={{ color: 'var(--color-muted)' }}>Perkiraan Potongan Gaji (Okt)</div>
-                                    <div style={{ fontFamily: 'var(--font-mono)', fontSize: '28px', fontWeight: 600 }}>Rp 750.000</div>
-                                </div>
-                                
-                                <div className="ds-asset-row">
-                                    <div style={{ display: 'flex', gap: 'var(--spacing-base)' }}>
-                                        <div className="ds-asset-icon-circular">S</div>
-                                        <div>
-                                            <div className="ds-title-sm" style={{ color: 'var(--color-ink)' }}>Simpanan Wajib & Sukarela</div>
-                                            <div className="ds-body-sm" style={{ color: 'var(--color-muted)' }}>Potong otomatis tgl 25</div>
-                                        </div>
-                                    </div>
-                                    <div style={{ fontFamily: 'var(--font-mono)', fontSize: '16px', fontWeight: 500 }}>Rp 150.000</div>
-                                </div>
-                                
-                                <div className="ds-asset-row" style={{ borderBottom: 'none', paddingBottom: 0 }}>
-                                    <div style={{ display: 'flex', gap: 'var(--spacing-base)' }}>
-                                        <div className="ds-asset-icon-circular" style={{ backgroundColor: 'var(--color-surface-strong)', color: 'var(--color-primary)' }}>P</div>
-                                        <div>
-                                            <div className="ds-title-sm" style={{ color: 'var(--color-ink)' }}>Cicilan Pinjaman #124</div>
-                                            <div className="ds-body-sm" style={{ color: 'var(--color-muted)' }}>Sisa 3 bulan</div>
-                                        </div>
-                                    </div>
-                                    <div style={{ fontFamily: 'var(--font-mono)', fontSize: '16px', fontWeight: 500 }}>Rp 650.000</div>
-                                </div>
-                            </ProductUiCardLight>
-                            
-                            <ProductUiCardLight className="relative lg:absolute lg:top-[calc(100%-20px)] lg:-right-[50px] z-20 w-[95%] lg:w-[320px] mx-auto lg:mx-0 -mt-6 lg:mt-0 shadow-2xl opacity-0" style={{ opacity: 0 }}>
-                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--spacing-sm)' }}>
-                                    <div className="ds-body-sm" style={{ color: 'var(--color-muted)' }}>Perkiraan Bagi Hasil (SHU)</div>
-                                    <span className="ds-badge-pill">ESTIMASI</span>
-                                </div>
-                                <div style={{ fontFamily: 'var(--font-mono)', fontSize: '24px', fontWeight: 600, color: 'var(--color-accent-yellow)' }}>
-                                    Rp 2.150.000
-                                </div>
-                                <div className="ds-body-sm" style={{ color: 'var(--color-semantic-up)', marginTop: '4px', fontWeight: 500 }}>
-                                    +12.5% dari tahun lalu
-                                </div>
-                            </ProductUiCardLight>
+
+                        <h1 data-animate className="ds-display-mega" style={{ marginBottom: '16px', opacity: 0, transform: 'translateY(24px)', transition: 'all 0.8s cubic-bezier(0.16,1,0.3,1) 0.1s', lineHeight: 1.15 }}>
+                            Koperasi Simpan Pinjam<br />Fakultas Teknik Universitas Lampung
+                        </h1>
+
+                        <p data-animate className="ds-body-md" style={{ color: 'var(--color-on-dark-soft)', marginBottom: '32px', maxWidth: '520px', margin: '0 auto 32px', opacity: 0, transform: 'translateY(24px)', transition: 'all 0.8s cubic-bezier(0.16,1,0.3,1) 0.2s', lineHeight: 1.7 }}>
+                            Melayani kesejahteraan karyawan dan dosen Fakultas Teknik Universitas Lampung melalui program simpanan dan pinjaman yang transparan, aman, dan adil.
+                        </p>
+
+                        <div data-animate style={{ opacity: 0, transform: 'translateY(24px)', transition: 'all 0.8s cubic-bezier(0.16,1,0.3,1) 0.3s' }}>
+                            {auth?.user ? (
+                                <Link
+                                    href={['pengurus', 'bendahara', 'ketua', 'pengawas'].includes(auth.user.role) ? route('admin.dashboard') : route('dashboard')}
+                                    style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', padding: '14px 32px', borderRadius: '100px', backgroundColor: '#fff', color: 'var(--color-primary)', fontWeight: 600, fontSize: '15px', textDecoration: 'none', boxShadow: '0 4px 16px rgba(0,0,0,0.15)', transition: 'transform 0.2s' }}
+                                >
+                                    Buka Dashboard
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+                                </Link>
+                            ) : (
+                                <Link
+                                    href={route('login')}
+                                    style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', padding: '14px 32px', borderRadius: '100px', backgroundColor: '#fff', color: 'var(--color-primary)', fontWeight: 600, fontSize: '15px', textDecoration: 'none', boxShadow: '0 4px 16px rgba(0,0,0,0.15)', transition: 'transform 0.2s' }}
+                                >
+                                    Login Anggota
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+                                </Link>
+                            )}
                         </div>
                     </div>
                 </HeroBandDark>
 
-                {/* PRD Content Restored */}
-                <section style={{ backgroundColor: 'var(--color-surface-soft)', padding: 'var(--spacing-section) var(--spacing-xl)' }}>
-                    <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
-                        <h2 className="ds-display-lg" style={{ textAlign: 'center', marginBottom: 'var(--spacing-xxl)' }}>Layanan Unggulan</h2>
-                        <div ref={featuresRef} className="ds-grid-3up">
-                            <div style={{ opacity: 0 }}>
-                                <FeatureCard title="Buku Besar Transparan">
-                                    Pantau riwayat seluruh mutasi, potongan, dan saldo simpanan secara real-time layaknya buku besar digital pribadi.
-                                </FeatureCard>
-                            </div>
-                            <div style={{ opacity: 0 }}>
-                                <FeatureCard title="Simpan Pinjam Potong Gaji">
-                                    Pemotongan simpanan wajib dan cicilan pinjaman dilakukan otomatis via payroll, disesuaikan dengan batas limit gaji.
-                                </FeatureCard>
-                            </div>
-                            <div style={{ opacity: 0 }}>
-                                <FeatureCard title="Bagi Hasil (SHU) Progresif">
-                                    Sisa Hasil Usaha didistribusikan secara transparan dan adil berdasarkan persentase kontribusi aktif Anda di koperasi.
-                                </FeatureCard>
-                            </div>
+                {/* Statistik Umum Koperasi */}
+                <section style={{ padding: '64px 24px', backgroundColor: 'var(--color-canvas)' }}>
+                    <div ref={statsRef} style={{ maxWidth: '1000px', margin: '0 auto' }}>
+                        <div data-animate style={{ textAlign: 'center', marginBottom: '40px', opacity: 0, transform: 'translateY(24px)', transition: 'all 0.7s cubic-bezier(0.16,1,0.3,1)' }}>
+                            <h2 className="ds-display-lg" style={{ marginBottom: '8px' }}>Ringkasan Koperasi</h2>
+                            <p className="ds-body-md" style={{ color: 'var(--color-muted)' }}>Data agregat keuangan koperasi saat ini</p>
+                        </div>
+
+                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '20px' }}>
+                            {[
+                                {
+                                    label: 'Total Dana Dikelola',
+                                    value: formatRp((stats?.totalSavings || 0) + (stats?.totalActiveLoans || 0)),
+                                    icon: (
+                                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#4f46e5" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M2 10h20"/></svg>
+                                    ),
+                                    gradient: 'linear-gradient(135deg, #eef2ff, #e0e7ff)',
+                                    color: '#4338ca'
+                                },
+                                {
+                                    label: 'Total Simpanan Anggota',
+                                    value: formatRp(stats?.totalSavings || 0),
+                                    icon: (
+                                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#059669" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 5c-1.5 0-2.8 1.4-3 2-3.5-1.5-11-.3-11 5 0 1.8 0 3 2 4.5V20h4v-2h3v2h4v-4c1-0.5 1.7-1 2-2h2v-4h-2c0-1-.5-1.5-1-2"/><path d="M2 9.5a.5.5 0 1 0 1 0 .5.5 0 1 0-1 0"/></svg>
+                                    ),
+                                    gradient: 'linear-gradient(135deg, #ecfdf5, #d1fae5)',
+                                    color: '#047857'
+                                },
+                                {
+                                    label: 'Total Anggota Aktif',
+                                    value: `${stats?.totalMembers || 0} Orang`,
+                                    icon: (
+                                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#0891b2" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                                    ),
+                                    gradient: 'linear-gradient(135deg, #ecfeff, #cffafe)',
+                                    color: '#0e7490'
+                                },
+                            ].map((item, i) => (
+                                <div data-animate key={i} style={{
+                                    background: item.gradient,
+                                    borderRadius: 'var(--rounded-xl)',
+                                    padding: '28px',
+                                    border: '1px solid rgba(0,0,0,0.05)',
+                                    opacity: 0,
+                                    transform: 'translateY(24px)',
+                                    transition: `all 0.7s cubic-bezier(0.16,1,0.3,1) ${0.1 + i * 0.1}s`
+                                }}>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px' }}>
+                                        <div style={{ width: '44px', height: '44px', borderRadius: '12px', backgroundColor: 'rgba(255,255,255,0.7)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                            {item.icon}
+                                        </div>
+                                    </div>
+                                    <div style={{ fontSize: '13px', color: 'var(--color-muted)', marginBottom: '6px', fontWeight: 500 }}>{item.label}</div>
+                                    <div style={{ fontSize: '28px', fontWeight: 700, fontFamily: 'var(--font-mono)', color: item.color, letterSpacing: '-0.5px' }}>
+                                        {item.value}
+                                    </div>
+                                </div>
+                            ))}
                         </div>
                     </div>
                 </section>
 
-                <section id="cara-kerja" style={{ backgroundColor: 'var(--color-canvas)', padding: 'var(--spacing-section) var(--spacing-xl)' }}>
-                    <div style={{ maxWidth: '800px', margin: '0 auto', textAlign: 'center' }}>
-                        <h2 className="ds-display-lg" style={{ marginBottom: 'var(--spacing-xxl)' }}>Cara Kerja Sistem</h2>
-                        <div ref={stepsRef} style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-lg)', textAlign: 'left' }}>
-                            <div style={{ display: 'flex', gap: 'var(--spacing-md)', opacity: 0 }}>
-                                <div style={{ 
-                                    minWidth: '48px', height: '48px', borderRadius: 'var(--rounded-full)', 
-                                    backgroundColor: 'var(--color-surface-strong)', display: 'flex', 
-                                    alignItems: 'center', justifyContent: 'center', fontWeight: '600',
-                                    fontSize: '20px'
-                                }}>1</div>
-                                <div>
-                                    <h3 className="ds-title-md">Terdaftar oleh Admin</h3>
-                                    <p className="ds-body-md" style={{ color: 'var(--color-body)' }}>Akun Anda dibuat secara terpusat oleh Admin menggunakan nomor identitas NIP/NIM yang valid.</p>
-                                </div>
-                            </div>
-                            <div style={{ display: 'flex', gap: 'var(--spacing-md)', opacity: 0 }}>
-                                <div style={{ 
-                                    minWidth: '48px', height: '48px', borderRadius: 'var(--rounded-full)', 
-                                    backgroundColor: 'var(--color-surface-strong)', display: 'flex', 
-                                    alignItems: 'center', justifyContent: 'center', fontWeight: '600',
-                                    fontSize: '20px'
-                                }}>2</div>
-                                <div>
-                                    <h3 className="ds-title-md">Mulai Menabung atau Mengajukan Pinjaman</h3>
-                                    <p className="ds-body-md" style={{ color: 'var(--color-body)' }}>Setiap bulan, potongan simpanan akan otomatis diproses. Anda juga bisa mulai mengajukan pinjaman sesuai limit gaji.</p>
-                                </div>
-                            </div>
-                            <div style={{ display: 'flex', gap: 'var(--spacing-md)', opacity: 0 }}>
-                                <div style={{ 
-                                    minWidth: '48px', height: '48px', borderRadius: 'var(--rounded-full)', 
-                                    backgroundColor: 'var(--color-surface-strong)', display: 'flex', 
-                                    alignItems: 'center', justifyContent: 'center', fontWeight: '600',
-                                    fontSize: '20px'
-                                }}>3</div>
-                                <div>
-                                    <h3 className="ds-title-md">Pantau Mutasi Kapan Saja</h3>
-                                    <p className="ds-body-md" style={{ color: 'var(--color-body)' }}>Akses buku besar digital pribadi Anda untuk melacak setiap rupiah yang dipotong maupun disetorkan ke koperasi.</p>
-                                </div>
-                            </div>
+                {/* Profil Pengurus */}
+                <section style={{ padding: '64px 24px', backgroundColor: 'var(--color-surface-soft)' }}>
+                    <div ref={boardRef} style={{ maxWidth: '900px', margin: '0 auto' }}>
+                        <div data-animate style={{ textAlign: 'center', marginBottom: '40px', opacity: 0, transform: 'translateY(24px)', transition: 'all 0.7s cubic-bezier(0.16,1,0.3,1)' }}>
+                            <h2 className="ds-display-lg" style={{ marginBottom: '8px' }}>Pengurus Koperasi</h2>
+                            <p className="ds-body-md" style={{ color: 'var(--color-muted)' }}>Dipercaya mengelola keuangan anggota dengan integritas</p>
                         </div>
+
+                        {boardMembers && boardMembers.length > 0 ? (
+                            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '24px', justifyItems: 'center' }}>
+                                {boardMembers.map((member, i) => {
+                                    const colors = roleColors[member.role] || { bg: '#6b7280', text: '#fff' };
+                                    const initials = member.name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase();
+                                    return (
+                                        <div data-animate key={i} style={{
+                                            backgroundColor: '#fff',
+                                            borderRadius: 'var(--rounded-xl)',
+                                            padding: '32px 24px',
+                                            textAlign: 'center',
+                                            border: '1px solid var(--color-hairline)',
+                                            width: '100%',
+                                            maxWidth: '280px',
+                                            opacity: 0,
+                                            transform: 'translateY(24px)',
+                                            transition: `all 0.7s cubic-bezier(0.16,1,0.3,1) ${0.1 + i * 0.12}s`
+                                        }}>
+                                            {/* Avatar with initials */}
+                                            <div style={{
+                                                width: '80px', height: '80px', borderRadius: '50%',
+                                                background: `linear-gradient(135deg, ${colors.bg}, ${colors.bg}cc)`,
+                                                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                                margin: '0 auto 16px',
+                                                boxShadow: `0 4px 16px ${colors.bg}30`,
+                                            }}>
+                                                <span style={{ color: colors.text, fontSize: '28px', fontWeight: 700 }}>{initials}</span>
+                                            </div>
+                                            <h3 style={{ fontSize: '16px', fontWeight: 600, color: 'var(--color-ink)', marginBottom: '6px' }}>{member.name}</h3>
+                                            <span style={{
+                                                display: 'inline-block',
+                                                padding: '4px 12px',
+                                                borderRadius: '100px',
+                                                fontSize: '12px',
+                                                fontWeight: 600,
+                                                backgroundColor: `${colors.bg}15`,
+                                                color: colors.bg,
+                                                marginBottom: '8px'
+                                            }}>
+                                                {member.role_label}
+                                            </span>
+                                            {member.department && (
+                                                <div style={{ fontSize: '12px', color: 'var(--color-muted)', marginTop: '4px' }}>{member.department}</div>
+                                            )}
+                                        </div>
+                                    );
+                                })}
+                            </div>
+                        ) : (
+                            <div style={{ textAlign: 'center', padding: '40px', color: 'var(--color-muted)', fontSize: '14px' }}>
+                                Data pengurus akan segera ditampilkan.
+                            </div>
+                        )}
                     </div>
                 </section>
 
-                <CtaBandDark>
-                    <div ref={ctaRef} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                        <h2 className="ds-display-lg" style={{ marginBottom: 'var(--spacing-xl)', opacity: 0 }}>Ingin menjadi anggota?</h2>
-                        <a href={waLink} target="_blank" rel="noopener noreferrer" className="ds-button-pill-cta hover:opacity-90 transition-opacity" style={{ backgroundColor: 'var(--color-surface-strong)', color: 'var(--color-ink)', boxShadow: '0 4px 12px rgba(0,0,0,0.1)', opacity: 0 }}>
-                            Hubungi Admin
-                        </a>
+                {/* Distribusi Anggota per Fakultas */}
+                <section style={{ padding: '64px 24px', backgroundColor: 'var(--color-canvas)' }}>
+                    <div ref={distRef} style={{ maxWidth: '700px', margin: '0 auto' }}>
+                        <div data-animate style={{ textAlign: 'center', marginBottom: '40px', opacity: 0, transform: 'translateY(24px)', transition: 'all 0.7s cubic-bezier(0.16,1,0.3,1)' }}>
+                            <h2 className="ds-display-lg" style={{ marginBottom: '8px' }}>Distribusi Anggota</h2>
+                            <p className="ds-body-md" style={{ color: 'var(--color-muted)' }}>Jumlah anggota berdasarkan Fakultas / Unit Kerja</p>
+                        </div>
+
+                        {departmentDistribution && departmentDistribution.length > 0 ? (
+                            <div style={{ backgroundColor: '#fff', borderRadius: 'var(--rounded-xl)', padding: '32px', border: '1px solid var(--color-hairline)' }}>
+                                <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                                    {departmentDistribution.map((dept, i) => {
+                                        const pct = Math.round((dept.total / maxDist) * 100);
+                                        const barColors = ['#4f46e5', '#0891b2', '#059669', '#d97706', '#dc2626', '#7c3aed', '#be185d'];
+                                        const barColor = barColors[i % barColors.length];
+                                        return (
+                                            <div data-animate key={i} style={{
+                                                opacity: 0,
+                                                transform: 'translateY(16px)',
+                                                transition: `all 0.6s cubic-bezier(0.16,1,0.3,1) ${0.05 + i * 0.08}s`
+                                            }}>
+                                                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '6px', fontSize: '13px' }}>
+                                                    <span style={{ fontWeight: 600, color: 'var(--color-ink)' }}>{dept.department}</span>
+                                                    <span style={{ fontFamily: 'var(--font-mono)', fontWeight: 600, color: barColor }}>{dept.total} anggota</span>
+                                                </div>
+                                                <div style={{ width: '100%', height: '10px', backgroundColor: 'var(--color-surface-soft)', borderRadius: '5px', overflow: 'hidden' }}>
+                                                    <div style={{
+                                                        height: '100%',
+                                                        width: `${pct}%`,
+                                                        backgroundColor: barColor,
+                                                        borderRadius: '5px',
+                                                        transition: 'width 1s cubic-bezier(0.16,1,0.3,1) 0.3s'
+                                                    }}></div>
+                                                </div>
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+                            </div>
+                        ) : (
+                            <div style={{ textAlign: 'center', padding: '40px', color: 'var(--color-muted)', fontSize: '14px', backgroundColor: '#fff', borderRadius: 'var(--rounded-xl)', border: '1px solid var(--color-hairline)' }}>
+                                Belum ada data distribusi anggota per fakultas.
+                            </div>
+                        )}
                     </div>
-                </CtaBandDark>
+                </section>
             </main>
-            
+
             <FooterLight>
-                <div style={{ maxWidth: '1200px', margin: '0 auto', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 'var(--spacing-xl)' }}>
+                <div style={{ maxWidth: '1000px', margin: '0 auto', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: 'var(--spacing-xl)' }}>
                     <div>
-                        <h3 className="ds-title-md" style={{ color: 'var(--color-ink)' }}>Koperasi Internal</h3>
-                        <p style={{ marginTop: 'var(--spacing-sm)' }}>Platform manajemen sirkulasi finansial tertutup yang didesain khusus untuk efisiensi ekosistem internal perusahaan.</p>
+                        <h3 className="ds-title-md" style={{ color: 'var(--color-ink)' }}>Koperasi FT Unila</h3>
+                        <p style={{ marginTop: 'var(--spacing-sm)', lineHeight: 1.6, fontSize: '13px' }}>
+                            Koperasi Simpan Pinjam Fakultas Teknik Universitas Lampung. Melayani kesejahteraan anggota melalui program simpanan dan pinjaman yang aman dan transparan.
+                        </p>
                     </div>
                     <div>
-                        <h3 className="ds-title-md" style={{ color: 'var(--color-ink)' }}>Produk & Layanan</h3>
-                        <ul style={{ listStyle: 'none', padding: 0, marginTop: 'var(--spacing-sm)', display: 'flex', flexDirection: 'column', gap: 'var(--spacing-xs)' }}>
-                            <li>Simpanan Wajib & Sukarela</li>
-                            <li>Pinjaman Multiguna</li>
-                            <li>Proyeksi SHU (Sisa Hasil Usaha)</li>
-                            <li>Integrasi Payroll Otomatis</li>
+                        <h3 className="ds-title-md" style={{ color: 'var(--color-ink)' }}>Layanan</h3>
+                        <ul style={{ listStyle: 'none', padding: 0, marginTop: 'var(--spacing-sm)', display: 'flex', flexDirection: 'column', gap: 'var(--spacing-xs)', fontSize: '13px' }}>
+                            <li>Simpanan Pokok, Wajib &amp; Sukarela</li>
+                            <li>Pinjaman dengan Potong Gaji Otomatis</li>
+                            <li>Sisa Hasil Usaha (SHU) Tahunan</li>
                         </ul>
                     </div>
                     <div>
-                        <h3 className="ds-title-md" style={{ color: 'var(--color-ink)' }}>Hubungi Kami</h3>
-                        <ul style={{ listStyle: 'none', padding: 0, marginTop: 'var(--spacing-sm)', display: 'flex', flexDirection: 'column', gap: 'var(--spacing-xs)' }}>
-                            <li>Sekretariat Pusat</li>
-                            <li>Gedung Utama Perusahaan, Lt. 3</li>
-                            {adminPhone ? (
-                                <li>WA: <a href={waLink} target="_blank" rel="noopener noreferrer" style={{ color: 'var(--color-primary)', textDecoration: 'none' }}>{adminPhone}</a></li>
-                            ) : (
-                                <li>Email: admin@koperasi.internal</li>
-                            )}
-                            <li>Senin - Jumat, 08:00 - 16:00</li>
+                        <h3 className="ds-title-md" style={{ color: 'var(--color-ink)' }}>Kontak</h3>
+                        <ul style={{ listStyle: 'none', padding: 0, marginTop: 'var(--spacing-sm)', display: 'flex', flexDirection: 'column', gap: 'var(--spacing-xs)', fontSize: '13px' }}>
+                            <li>Fakultas Teknik, Universitas Lampung</li>
+                            <li>Jl. Prof. Dr. Ir. Sumantri Brojonegoro No.1</li>
+                            <li>Bandar Lampung, Lampung</li>
                         </ul>
                     </div>
                 </div>

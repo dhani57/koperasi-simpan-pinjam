@@ -29,7 +29,8 @@ class VoluntarySavingRequestController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'proposed_amount' => 'required|numeric|min:0',
+            'type' => 'required|in:ubah_nominal,tarik',
+            'amount' => 'required|numeric|min:0',
         ]);
 
         $hasPending = VoluntarySavingRequest::where('user_id', auth()->id())
@@ -37,20 +38,41 @@ class VoluntarySavingRequestController extends Controller
             ->exists();
             
         if ($hasPending) {
-            return back()->withErrors(['proposed_amount' => 'Anda masih memiliki pengajuan yang belum diproses.']);
+            return back()->withErrors(['amount' => 'Anda masih memiliki pengajuan yang belum diproses.']);
         }
 
-        VoluntarySavingRequest::create([
-            'user_id' => auth()->id(),
-            'type' => 'ubah_nominal',
-            'amount' => 0,
-            'new_monthly_amount' => $request->proposed_amount,
-            'status' => 'menunggu',
-            'balance_before' => auth()->user()->simpanan_sukarela_balance ?? 0,
-            'balance_after' => auth()->user()->simpanan_sukarela_balance ?? 0,
-        ]);
+        $user = auth()->user();
+        $type = $request->type;
+        $amount = $request->amount;
 
-        return redirect()->route('member.voluntary-saving-requests.index')
-            ->with('success', 'Pengajuan perubahan nominal simpanan sukarela berhasil dikirim.');
+        if ($type === 'tarik') {
+            if ($amount <= 0 || $amount > $user->simpanan_sukarela_balance) {
+                return back()->withErrors(['amount' => 'Jumlah penarikan tidak valid atau melebihi saldo.']);
+            }
+            VoluntarySavingRequest::create([
+                'user_id' => $user->id,
+                'type' => 'tarik',
+                'amount' => $amount,
+                'new_monthly_amount' => 0,
+                'status' => 'menunggu',
+                'balance_before' => $user->simpanan_sukarela_balance ?? 0,
+                'balance_after' => ($user->simpanan_sukarela_balance ?? 0) - $amount,
+            ]);
+            $msg = 'Pengajuan penarikan simpanan sukarela berhasil dikirim.';
+        } else {
+            // ubah_nominal
+            VoluntarySavingRequest::create([
+                'user_id' => $user->id,
+                'type' => 'ubah_nominal',
+                'amount' => 0,
+                'new_monthly_amount' => $amount,
+                'status' => 'menunggu',
+                'balance_before' => $user->simpanan_sukarela_balance ?? 0,
+                'balance_after' => $user->simpanan_sukarela_balance ?? 0,
+            ]);
+            $msg = 'Pengajuan perubahan nominal simpanan sukarela berhasil dikirim.';
+        }
+
+        return redirect()->route('member.voluntary-saving-requests.index')->with('success', $msg);
     }
 }

@@ -55,8 +55,8 @@ export default function Index({ auth, requests }) {
                                     <tr>
                                         <th className="px-6 py-4 font-semibold text-gray-700">Tanggal Pengajuan</th>
                                         <th className="px-6 py-4 font-semibold text-gray-700">Anggota</th>
-                                        <th className="px-6 py-4 font-semibold text-gray-700 text-right">Nominal Lama</th>
-                                        <th className="px-6 py-4 font-semibold text-gray-700 text-right">Nominal Baru</th>
+                                        <th className="px-6 py-4 font-semibold text-gray-700">Tipe Pengajuan</th>
+                                        <th className="px-6 py-4 font-semibold text-gray-700 text-right">Detail</th>
                                         <th className="px-6 py-4 font-semibold text-gray-700">Status</th>
                                         <th className="px-6 py-4 font-semibold text-gray-700 text-center">Aksi</th>
                                     </tr>
@@ -73,8 +73,22 @@ export default function Index({ auth, requests }) {
                                                 <div className="font-semibold text-gray-900">{req.user?.name}</div>
                                                 <div className="text-xs text-gray-500">{req.user?.identity_number}</div>
                                             </td>
-                                            <td className="px-6 py-4 font-mono text-right text-gray-500">Rp {formatRp(req.balance_before)}</td>
-                                            <td className="px-6 py-4 font-mono text-right text-primary font-semibold">Rp {formatRp(req.new_monthly_amount)}</td>
+                                            <td className="px-6 py-4">
+                                                <span className={`inline-flex items-center px-2 py-1 rounded text-xs font-semibold ${req.type === 'tarik' ? 'bg-orange-100 text-orange-800' : 'bg-blue-100 text-blue-800'}`}>
+                                                    {req.type === 'tarik' ? 'Penarikan Saldo' : 'Ubah Setoran'}
+                                                </span>
+                                            </td>
+                                            <td className="px-6 py-4 font-mono text-right text-gray-700">
+                                                {req.type === 'tarik' ? (
+                                                    <>
+                                                        Tarik: <span className="font-bold text-red-600">Rp {formatRp(req.amount)}</span>
+                                                    </>
+                                                ) : (
+                                                    <>
+                                                        Setoran Baru: <span className="font-bold text-primary">Rp {formatRp(req.new_monthly_amount)}</span>
+                                                    </>
+                                                )}
+                                            </td>
                                             <td className="px-6 py-4">
                                                 <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
                                                     req.status === 'disetujui' ? 'bg-green-100 text-green-800' :
@@ -88,13 +102,13 @@ export default function Index({ auth, requests }) {
                                                 {req.status === 'menunggu' && auth.user.role === 'bendahara' && (
                                                     <div className="flex justify-center gap-2">
                                                         <button 
-                                                            onClick={() => openConfirm('Setujui Pengajuan', `Yakin menyetujui perubahan simpanan sukarela untuk ${req.user?.name} menjadi Rp ${formatRp(req.new_monthly_amount)}?`, 'primary', 'Setujui', route('admin.voluntary_saving_requests.approve', req.id))}
+                                                            onClick={() => openConfirm('Setujui Pengajuan', `Yakin menyetujui ${req.type === 'tarik' ? 'penarikan' : 'perubahan'} simpanan sukarela untuk ${req.user?.name}?`, 'primary', 'Setujui', route('admin.voluntary_saving_requests.approve', req.id))}
                                                             className="text-white bg-green-600 hover:bg-green-700 px-3 py-1.5 rounded text-xs font-semibold transition"
                                                         >
                                                             Setujui
                                                         </button>
                                                         <button 
-                                                            onClick={() => openConfirm('Tolak Pengajuan', `Yakin menolak perubahan simpanan sukarela untuk ${req.user?.name}?`, 'danger', 'Tolak', route('admin.voluntary_saving_requests.reject', req.id))}
+                                                            onClick={() => openConfirm('Tolak Pengajuan', `Yakin menolak ${req.type === 'tarik' ? 'penarikan' : 'perubahan'} simpanan sukarela untuk ${req.user?.name}?`, 'danger', 'Tolak', route('admin.voluntary_saving_requests.reject', req.id))}
                                                             className="text-white bg-red-600 hover:bg-red-700 px-3 py-1.5 rounded text-xs font-semibold transition"
                                                         >
                                                             Tolak

@@ -19,10 +19,13 @@ class ShuService
         $formulaBase = Setting::where('key', 'shu_formula_base')->value('value') ?? 'total_jasa_pinjaman';
         $shuPeriod = \App\Models\ShuPeriod::where('year', $year)->first();
 
-        // Default percentages if no period is set yet (PRD default: 70% for anggota, split 40/60)
-        // 40% of 70% = 28% (0.28), 60% of 70% = 42% (0.42)
-        $persenSimpanan = $shuPeriod ? ($shuPeriod->persen_shu_simpanan / 100) : 0.28;
-        $persenJasa = $shuPeriod ? ($shuPeriod->persen_shu_jasa / 100) : 0.42;
+        // PRD default: Dana Sosial (5%), THR (5%), Simpanan (40%), Jasa (40%), Modal (10%)
+        $persenDanaSosial = $shuPeriod ? ($shuPeriod->persen_dana_sosial / 100) : 0.05;
+        $persenThrPengurus = $shuPeriod ? ($shuPeriod->persen_thr_pengurus / 100) : 0.05;
+        $persenSimpanan = $shuPeriod ? ($shuPeriod->persen_shu_simpanan / 100) : 0.40;
+        $persenJasa = $shuPeriod ? ($shuPeriod->persen_shu_jasa / 100) : 0.40;
+        $persenModal = $shuPeriod ? ($shuPeriod->persen_modal / 100) : 0.10;
+
         $persenTotalAnggota = $persenSimpanan + $persenJasa; // For display purposes
 
         // Global Totals
@@ -36,6 +39,10 @@ class ShuService
         // Asumsi Profit: Keuntungan koperasi adalah total jasa pinjaman yang terkumpul
         $globalProfit = $shuPeriod ? $shuPeriod->total_jasa_income : $totalGlobalJasa;
         
+        $nominalDanaSosial = $globalProfit * $persenDanaSosial;
+        $nominalThrPengurus = $globalProfit * $persenThrPengurus;
+        $nominalModal = $globalProfit * $persenModal;
+
         $totalShuDibagikan = $globalProfit * $persenTotalAnggota;
 
         $porsiSimpananPool = $globalProfit * $persenSimpanan;
@@ -84,6 +91,15 @@ class ShuService
             'total_shu_dibagikan' => $totalShuDibagikan,
             'total_global_jasa' => $totalGlobalJasa,
             'total_global_simpanan' => $totalGlobalSimpanan,
+            'global_profit' => $globalProfit,
+            'nominal_dana_sosial' => $nominalDanaSosial,
+            'nominal_thr_pengurus' => $nominalThrPengurus,
+            'nominal_modal' => $nominalModal,
+            'persen_dana_sosial' => $persenDanaSosial * 100,
+            'persen_thr_pengurus' => $persenThrPengurus * 100,
+            'persen_shu_simpanan' => $persenSimpanan * 100,
+            'persen_shu_jasa' => $persenJasa * 100,
+            'persen_modal' => $persenModal * 100,
             'member_proportions' => $proportions,
         ];
     }

@@ -52,24 +52,29 @@ class LoanController extends Controller
             'activeLoan' => $activeLoan,
             'defaultFee' => (float) $defaultFee,
             'availableLimit' => max(0, $availableLimit),
+            'hasFailedDebit' => (bool) $user->has_failed_debit,
         ]);
     }
 
     public function store(Request $request)
     {
         $user = auth()->user();
+
+        // PRD Bagian 5.2: Blokir pengajuan jika anggota gagal debit
+        if ($user->has_failed_debit) {
+            return back()->withErrors(['principal_amount' => 'Anda tidak dapat mengajukan pinjaman karena memiliki status gagal debit aktif. Silakan hubungi Admin.']);
+        }
         
         $request->validate([
             'principal_amount' => 'required|numeric|min:100000',
-            'tenor_type' => 'required|in:standar,custom',
-            'tenor_months' => 'required|integer|min:1',
+            'tenor_years' => 'nullable|integer|in:1,2,3',
+            'tenor_months' => 'nullable|integer|min:1',
             'purpose' => 'nullable|string|max:1000',
-        ], [
-            'tenor_type.required' => 'Tenor wajib diisi (tahun atau bulan).',
+            'document_file' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:5120',
         ]);
 
-        if ($request->tenor_type === 'standar' && !in_array($request->tenor_months, [10, 20, 30])) {
-            return back()->withErrors(['tenor_months' => 'Pilihan tenor standar tidak valid.']);
+        if (!$request->tenor_years && !$request->tenor_months) {
+            return back()->withErrors(['tenor_years' => 'Pilih lama pinjaman (tahun atau bulan).']);
         }
 
         $now = now();
@@ -83,8 +88,8 @@ class LoanController extends Controller
         }
 
         $principal = $request->principal_amount;
-        $tenorYears = null;
-        $tenorMonths = $request->tenor_months;
+        $tenorYears = $request->tenor_years ?: null;
+        $tenorMonths = $request->tenor_months ?: null;
         $purpose = $request->purpose;
         $feePercentage = \App\Models\Setting::where('key', 'loan_interest_rate')->value('value') ?? 1.5;
         
@@ -114,6 +119,10 @@ class LoanController extends Controller
             return back()->withErrors(['principal_amount' => 'Total pinjaman (termasuk sisa lama) melebihi batas maksimal Rp 50.000.000.']);
         }
 
+        if ($principal >= 40000000 && !$request->hasFile('document_file')) {
+            return back()->withErrors(['document_file' => 'Dokumen bermaterai wajib diunggah untuk pinjaman >= Rp 40.000.000.']);
+        }
+
         // Simulasi untuk mendapatkan cicilan tahun pertama
         $simulation = $this->loanService->calculateSimulation($principal, $tenorYears, $tenorMonths, (float)$feePercentage);
         $firstYearMonthly = $simulation['yearly_breakdown'][0]['monthly_total'];
@@ -123,7 +132,12 @@ class LoanController extends Controller
             return back()->withErrors(['principal_amount' => 'Cicilan bulan pertama (Rp ' . number_format($firstYearMonthly, 0, ',', '.') . ') melebihi sisa plafon gaji Anda.']);
         }
         
-        $this->loanService->createLoan($user, $principal, $tenorYears, $tenorMonths, $purpose, null, $mergedFromLoanId, $mergedOldRemaining);
+        $loan = $this->loanService->createLoan($user, $principal, $tenorYears, $tenorMonths, $purpose, null, $mergedFromLoanId, $mergedOldRemaining);
+
+        if ($request->hasFile('document_file')) {
+            $path = $request->file('document_file')->store('loan_documents', 'public');
+            $loan->update(['document_path' => $path]);
+        }
 
         return redirect()->route('member.loans.index')->with('success', 'Pengajuan pinjaman berhasil dibuat dan menunggu verifikasi.');
     }

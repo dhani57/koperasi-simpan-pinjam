@@ -4,7 +4,14 @@ import AdminLayout from '@/Layouts/AdminLayout';
 import ConfirmModal from '@/Components/ConfirmModal';
 
 export default function Index({ auth, year, shuData, filters, isDistributed, hasDraft }) {
-    const { post, processing } = useForm();
+    const { data, setData, post, processing, errors } = useForm({
+        total_jasa_income: shuData.global_profit || 0,
+        persen_dana_sosial: shuData.persen_dana_sosial || 5,
+        persen_thr_pengurus: shuData.persen_thr_pengurus || 5,
+        persen_shu_simpanan: shuData.persen_shu_simpanan || 40,
+        persen_shu_jasa: shuData.persen_shu_jasa || 40,
+        persen_modal: shuData.persen_modal || 10,
+    });
     const [currentPage, setCurrentPage] = useState(1);
     const itemsPerPage = 10;
 
@@ -28,6 +35,19 @@ export default function Index({ auth, year, shuData, filters, isDistributed, has
 
         return () => clearTimeout(debounceTimer);
     }, [search, yearFilter]);
+
+    useEffect(() => {
+        if (!initialRender.current) {
+            setData({
+                total_jasa_income: shuData.global_profit || 0,
+                persen_dana_sosial: shuData.persen_dana_sosial || 5,
+                persen_thr_pengurus: shuData.persen_thr_pengurus || 5,
+                persen_shu_simpanan: shuData.persen_shu_simpanan || 40,
+                persen_shu_jasa: shuData.persen_shu_jasa || 40,
+                persen_modal: shuData.persen_modal || 10,
+            });
+        }
+    }, [shuData]);
 
     const handleYearChange = (e) => {
         setCurrentPage(1);
@@ -117,21 +137,49 @@ export default function Index({ auth, year, shuData, filters, isDistributed, has
                     </div>
                 </div>
 
-                {/* Summary Card */}
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '24px' }}>
+                {/* Calculator Card */}
+                {isBendahara && !isDistributed && (
                     <div style={{ backgroundColor: 'white', borderRadius: 'var(--rounded-xl)', padding: '24px', border: '1px solid var(--color-hairline)' }}>
-                        <div style={{ fontSize: '13px', color: 'var(--color-muted)', fontWeight: 600, marginBottom: '8px' }}>Total Pendapatan Jasa</div>
-                        <div className="number-display" style={{ fontSize: '24px', fontWeight: 'bold', color: 'var(--color-primary)' }}>
-                            {formatRp(shuData.total_score)}
+                        <h3 className="ds-title-md mb-4">Pengaturan Persentase SHU</h3>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label className="block text-sm font-semibold mb-2">Total Keuntungan Bersih (Rp)</label>
+                                <input 
+                                    type="number" 
+                                    className="ds-input w-full" 
+                                    value={data.total_jasa_income} 
+                                    onChange={e => setData('total_jasa_income', parseFloat(e.target.value) || 0)} 
+                                />
+                            </div>
+                            <div className="flex items-end">
+                                <div className={`text-sm font-bold ${data.persen_dana_sosial + data.persen_thr_pengurus + data.persen_shu_simpanan + data.persen_shu_jasa + data.persen_modal !== 100 ? 'text-red-500' : 'text-green-600'}`}>
+                                    Total: {data.persen_dana_sosial + data.persen_thr_pengurus + data.persen_shu_simpanan + data.persen_shu_jasa + data.persen_modal}%
+                                </div>
+                            </div>
+
+                            <div>
+                                <label className="block text-sm font-semibold mb-2">Dana Sosial (%) - {formatRp(data.total_jasa_income * data.persen_dana_sosial / 100)}</label>
+                                <input type="number" className="ds-input w-full" value={data.persen_dana_sosial} onChange={e => setData('persen_dana_sosial', parseFloat(e.target.value) || 0)} />
+                            </div>
+                            <div>
+                                <label className="block text-sm font-semibold mb-2">THR Pengurus (%) - {formatRp(data.total_jasa_income * data.persen_thr_pengurus / 100)}</label>
+                                <input type="number" className="ds-input w-full" value={data.persen_thr_pengurus} onChange={e => setData('persen_thr_pengurus', parseFloat(e.target.value) || 0)} />
+                            </div>
+                            <div>
+                                <label className="block text-sm font-semibold mb-2">SHU Simpanan (%) - {formatRp(data.total_jasa_income * data.persen_shu_simpanan / 100)}</label>
+                                <input type="number" className="ds-input w-full" value={data.persen_shu_simpanan} onChange={e => setData('persen_shu_simpanan', parseFloat(e.target.value) || 0)} />
+                            </div>
+                            <div>
+                                <label className="block text-sm font-semibold mb-2">SHU Jasa (%) - {formatRp(data.total_jasa_income * data.persen_shu_jasa / 100)}</label>
+                                <input type="number" className="ds-input w-full" value={data.persen_shu_jasa} onChange={e => setData('persen_shu_jasa', parseFloat(e.target.value) || 0)} />
+                            </div>
+                            <div>
+                                <label className="block text-sm font-semibold mb-2">Modal Koperasi (%) - {formatRp(data.total_jasa_income * data.persen_modal / 100)}</label>
+                                <input type="number" className="ds-input w-full" value={data.persen_modal} onChange={e => setData('persen_modal', parseFloat(e.target.value) || 0)} />
+                            </div>
                         </div>
                     </div>
-                    <div style={{ backgroundColor: 'white', borderRadius: 'var(--rounded-xl)', padding: '24px', border: '1px solid var(--color-hairline)' }}>
-                        <div style={{ fontSize: '13px', color: 'var(--color-muted)', fontWeight: 600, marginBottom: '8px' }}>Dasar Perhitungan</div>
-                        <div style={{ fontSize: '18px', fontWeight: 600, textTransform: 'capitalize' }}>
-                            {shuData.formula_base.replace(/_/g, ' ')}
-                        </div>
-                    </div>
-                </div>
+                )}
 
                 {/* Details Table */}
                 <div style={{ backgroundColor: 'white', borderRadius: 'var(--rounded-xl)', padding: '24px', border: '1px solid var(--color-hairline)', overflowX: 'auto' }}>
@@ -246,12 +294,13 @@ export default function Index({ auth, year, shuData, filters, isDistributed, has
                                     <form onSubmit={submit}>
                                         <button 
                                             type="submit" 
-                                            disabled={processing || shuData.member_proportions.length === 0 || hasDraft}
+                                            disabled={processing || shuData.member_proportions.length === 0 || hasDraft || (data.persen_dana_sosial + data.persen_thr_pengurus + data.persen_shu_simpanan + data.persen_shu_jasa + data.persen_modal !== 100)}
                                             className="ds-button-primary"
-                                            style={{ padding: '12px 24px', fontSize: '14px', backgroundColor: 'var(--color-primary)', border: 'none', cursor: (processing || shuData.member_proportions.length === 0 || hasDraft) ? 'not-allowed' : 'pointer' }}
+                                            style={{ padding: '12px 24px', fontSize: '14px', backgroundColor: 'var(--color-primary)', border: 'none', cursor: (processing || shuData.member_proportions.length === 0 || hasDraft || (data.persen_dana_sosial + data.persen_thr_pengurus + data.persen_shu_simpanan + data.persen_shu_jasa + data.persen_modal !== 100)) ? 'not-allowed' : 'pointer' }}
                                         >
-                                            {processing ? 'Memproses...' : (hasDraft ? 'Draf Telah Dikirim' : 'Kirim Draf SHU ke Ketua')}
+                                            {processing ? 'Memproses...' : (hasDraft ? 'Draf Telah Dikirim' : 'Simpan & Kirim Draf SHU')}
                                         </button>
+                                        {errors && Object.values(errors).map(err => <p className="text-red-500 mt-2 text-sm" key={err}>{err}</p>)}
                                     </form>
                                 )}
                             </>

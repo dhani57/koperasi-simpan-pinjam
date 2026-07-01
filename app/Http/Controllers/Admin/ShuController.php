@@ -40,8 +40,23 @@ class ShuController extends Controller
     {
         $year = $request->input('year', now()->year);
         $totalJasaIncome = $request->input('total_jasa_income', 0);
+        $persenDanaSosial = $request->input('persen_dana_sosial', 5);
+        $persenThrPengurus = $request->input('persen_thr_pengurus', 5);
         $persenSimpanan = $request->input('persen_shu_simpanan', 40);
-        $persenJasa = $request->input('persen_shu_jasa', 60);
+        $persenJasa = $request->input('persen_shu_jasa', 40);
+        $persenModal = $request->input('persen_modal', 10);
+
+        // Validation for total percentage = 100
+        $totalPersen = $persenDanaSosial + $persenThrPengurus + $persenSimpanan + $persenJasa + $persenModal;
+        if ($totalPersen !== 100) {
+            return redirect()->back()->with('error', 'Total persentase harus tepat 100%. Saat ini: ' . $totalPersen . '%');
+        }
+
+        $nominalDanaSosial = $totalJasaIncome * ($persenDanaSosial / 100);
+        $nominalThrPengurus = $totalJasaIncome * ($persenThrPengurus / 100);
+        $nominalSimpanan = $totalJasaIncome * ($persenSimpanan / 100);
+        $nominalJasa = $totalJasaIncome * ($persenJasa / 100);
+        $nominalModal = $totalJasaIncome * ($persenModal / 100);
 
         $shuPeriod = \App\Models\ShuPeriod::where('year', $year)->first();
 
@@ -53,15 +68,31 @@ class ShuController extends Controller
             $shuPeriod = \App\Models\ShuPeriod::create([
                 'year' => $year,
                 'total_jasa_income' => $totalJasaIncome,
+                'persen_dana_sosial' => $persenDanaSosial,
+                'persen_thr_pengurus' => $persenThrPengurus,
                 'persen_shu_simpanan' => $persenSimpanan,
                 'persen_shu_jasa' => $persenJasa,
+                'persen_modal' => $persenModal,
+                'nominal_dana_sosial' => $nominalDanaSosial,
+                'nominal_thr' => $nominalThrPengurus,
+                'nominal_shu_simpanan' => $nominalSimpanan,
+                'nominal_shu_jasa' => $nominalJasa,
+                'nominal_modal' => $nominalModal,
                 'status' => 'draf',
             ]);
         } else {
             $shuPeriod->update([
                 'total_jasa_income' => $totalJasaIncome,
+                'persen_dana_sosial' => $persenDanaSosial,
+                'persen_thr_pengurus' => $persenThrPengurus,
                 'persen_shu_simpanan' => $persenSimpanan,
                 'persen_shu_jasa' => $persenJasa,
+                'persen_modal' => $persenModal,
+                'nominal_dana_sosial' => $nominalDanaSosial,
+                'nominal_thr' => $nominalThrPengurus,
+                'nominal_shu_simpanan' => $nominalSimpanan,
+                'nominal_shu_jasa' => $nominalJasa,
+                'nominal_modal' => $nominalModal,
                 'status' => 'draf',
             ]);
         }

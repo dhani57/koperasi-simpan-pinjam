@@ -57,7 +57,7 @@ class LoanService
             $remainingPrincipal -= ($monthlyPrincipal * $monthsInThisYear);
         }
 
-        $adminFee = $adminFeeOverride !== null ? $adminFeeOverride : min($principal * 0.01, 250000);
+        $adminFee = $adminFeeOverride !== null ? $adminFeeOverride : ($principal * 0.01);
 
         return [
             'principal' => $principal,

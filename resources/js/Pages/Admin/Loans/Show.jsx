@@ -1,4 +1,4 @@
-import { Head, Link, router } from '@inertiajs/react';
+import { Head, Link, router, useForm } from '@inertiajs/react';
 import React, { useState } from 'react';
 import AdminLayout from '@/Layouts/AdminLayout';
 import ConfirmModal from '@/Components/ConfirmModal';
@@ -7,9 +7,15 @@ export default function Show({ auth, loan, limitInfo }) {
     const isBendahara = auth.user.role === 'bendahara';
     const isKetua = auth.user.role === 'ketua';
     const isPengurus = auth.user.role === 'pengurus';
+    const canOverride = isBendahara || isKetua;
 
     const formatRp = (num) => new Intl.NumberFormat('id-ID').format(num);
     const formatDate = (dateString) => new Intl.DateTimeFormat('id-ID', { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' }).format(new Date(dateString));
+
+    // Override state
+    const [adminFeeOverride, setAdminFeeOverride] = useState(loan.admin_fee_amount?.toString() || '0');
+    const [feePercentageOverride, setFeePercentageOverride] = useState(loan.cooperative_fee_percentage?.toString() || '1.5');
+    const [showOverrideForm, setShowOverrideForm] = useState(false);
 
     const [confirmConfig, setConfirmConfig] = useState({
         show: false,
@@ -18,24 +24,56 @@ export default function Show({ auth, loan, limitInfo }) {
         type: 'primary',
         confirmText: 'Setujui',
         actionUrl: null,
+        actionData: {},
     });
 
-    const openConfirm = (title, message, type, confirmText, actionUrl) => {
+    const openConfirm = (title, message, type, confirmText, actionUrl, actionData = {}) => {
         setConfirmConfig({
             show: true,
             title,
             message,
             type,
             confirmText,
-            actionUrl
+            actionUrl,
+            actionData,
         });
     };
 
     const handleConfirm = () => {
         if (confirmConfig.actionUrl) {
-            router.post(confirmConfig.actionUrl);
+            router.post(confirmConfig.actionUrl, confirmConfig.actionData);
         }
         setConfirmConfig({ ...confirmConfig, show: false });
+    };
+
+    const canApprove = (
+        (isBendahara && ['diajukan', 'diverifikasi', 'menunggu_bendahara'].includes(loan.status)) ||
+        (isKetua && ['diajukan', 'diverifikasi', 'menunggu_ketua'].includes(loan.status))
+    );
+
+    const handleApprove = () => {
+        const data = {};
+        if (showOverrideForm) {
+            if (adminFeeOverride !== '' && parseFloat(adminFeeOverride) !== loan.admin_fee_amount) {
+                data.admin_fee_override = parseFloat(adminFeeOverride);
+            }
+            if (feePercentageOverride !== '' && parseFloat(feePercentageOverride) !== loan.cooperative_fee_percentage) {
+                data.fee_percentage_override = parseFloat(feePercentageOverride);
+            }
+        }
+
+        let message = 'Anda yakin ingin menyetujui pengajuan ini?';
+        if (data.admin_fee_override !== undefined || data.fee_percentage_override !== undefined) {
+            message = 'Anda yakin ingin menyetujui dengan perubahan biaya berikut?\n';
+            if (data.admin_fee_override !== undefined) {
+                message += `• Biaya Admin: Rp ${formatRp(data.admin_fee_override)}\n`;
+            }
+            if (data.fee_percentage_override !== undefined) {
+                message += `• Jasa: ${data.fee_percentage_override}%\n`;
+            }
+        }
+
+        openConfirm('Setujui Pengajuan', message, 'primary', 'Setujui Pengajuan', route('admin.loans.approve', loan.id), data);
     };
 
     return (
@@ -79,8 +117,18 @@ export default function Show({ auth, loan, limitInfo }) {
                             </div>
 
                             <div>
-                                <div style={{ fontSize: '13px', color: 'var(--color-muted)', marginBottom: '4px' }}>Biaya Admin (Dipotong Saat Pencairan)</div>
-                                <div style={{ fontSize: '14px', fontFamily: 'var(--font-mono)', fontWeight: 500 }}>Rp {formatRp(loan.admin_fee_amount || 0)}</div>
+                                <div style={{ fontSize: '13px', color: 'var(--color-muted)', marginBottom: '4px' }}>Biaya Admin (1% sekali bayar)</div>
+                                <div style={{ fontSize: '14px', fontFamily: 'var(--font-mono)', fontWeight: 500 }}>
+                                    Rp {formatRp(loan.admin_fee_amount || 0)}
+                                    {loan.admin_fee_overridden && (
+                                        <span style={{ marginLeft: '8px', fontSize: '11px', color: '#d97706', fontWeight: 600, backgroundColor: '#fef3c7', padding: '2px 8px', borderRadius: '4px' }}>DIUBAH</span>
+                                    )}
+                                </div>
+                            </div>
+
+                            <div>
+                                <div style={{ fontSize: '13px', color: 'var(--color-muted)', marginBottom: '4px' }}>Jasa Pinjaman</div>
+                                <div style={{ fontSize: '14px', fontFamily: 'var(--font-mono)', fontWeight: 500 }}>{loan.cooperative_fee_percentage}% / bulan</div>
                             </div>
 
                             <div>
@@ -120,21 +168,88 @@ export default function Show({ auth, loan, limitInfo }) {
                         <div style={{ backgroundColor: 'white', borderRadius: 'var(--rounded-xl)', padding: '32px', border: '1px solid var(--color-hairline)' }}>
                             <h3 style={{ fontSize: '16px', fontWeight: 600, marginBottom: '24px', paddingBottom: '16px', borderBottom: '1px solid var(--color-hairline)' }}>Aksi Persetujuan</h3>
                             
-                            {(
-                                (isBendahara && ['diajukan', 'diverifikasi', 'menunggu_bendahara'].includes(loan.status)) ||
-                                (isKetua && ['diajukan', 'diverifikasi', 'menunggu_ketua'].includes(loan.status))
-                            ) ? (
-                                <div className="flex flex-col sm:flex-row gap-3">
-                                    <button 
-                                        onClick={() => openConfirm('Setujui Pengajuan', 'Anda yakin ingin menyetujui pengajuan ini?', 'primary', 'Setujui Pengajuan', route('admin.loans.approve', loan.id))}
-                                        className="ds-button-primary" style={{ flex: 1, padding: '12px' }}
-                                    >Setujui Pengajuan</button>
-                                    
-                                    <button 
-                                        onClick={() => openConfirm('Tolak Pengajuan', 'Anda yakin ingin menolak pengajuan ini?', 'danger', 'Tolak', route('admin.loans.reject', loan.id))}
-                                        className="ds-button-primary" style={{ flex: 1, padding: '12px', backgroundColor: '#ef4444', color: 'white', border: 'none' }}
-                                    >Tolak</button>
-                                </div>
+                            {canApprove ? (
+                                <>
+                                    {/* Override Section for Ketua/Bendahara */}
+                                    {canOverride && (
+                                        <div style={{ marginBottom: '20px' }}>
+                                            <button
+                                                type="button"
+                                                onClick={() => setShowOverrideForm(!showOverrideForm)}
+                                                style={{ 
+                                                    display: 'flex', alignItems: 'center', gap: '8px',
+                                                    fontSize: '13px', fontWeight: 600, color: '#d97706',
+                                                    background: 'none', border: 'none', cursor: 'pointer',
+                                                    padding: '8px 0'
+                                                }}
+                                            >
+                                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                                    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                                                    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                                                </svg>
+                                                {showOverrideForm ? 'Sembunyikan Override Biaya' : 'Override Biaya Admin & Jasa'}
+                                            </button>
+
+                                            {showOverrideForm && (
+                                                <div style={{ 
+                                                    marginTop: '12px', padding: '16px', 
+                                                    backgroundColor: '#fffbeb', border: '1px solid #fde68a', 
+                                                    borderRadius: '12px'
+                                                }}>
+                                                    <div style={{ fontSize: '12px', color: '#92400e', marginBottom: '12px', lineHeight: 1.5 }}>
+                                                        Anda dapat mengubah biaya administrasi dan jasa menjadi Rp 0 / 0% untuk kasus khusus (pinjaman kecil, kebijakan pengurus).
+                                                    </div>
+                                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                                                        <div>
+                                                            <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, marginBottom: '4px', color: '#78350f' }}>Biaya Administrasi (Rp)</label>
+                                                            <input
+                                                                type="number"
+                                                                value={adminFeeOverride}
+                                                                onChange={e => setAdminFeeOverride(e.target.value)}
+                                                                min="0"
+                                                                style={{ 
+                                                                    width: '100%', padding: '10px 12px', 
+                                                                    borderRadius: '8px', border: '1px solid #fde68a',
+                                                                    fontFamily: 'var(--font-mono)', fontSize: '14px',
+                                                                    outline: 'none', backgroundColor: '#fff'
+                                                                }}
+                                                            />
+                                                        </div>
+                                                        <div>
+                                                            <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, marginBottom: '4px', color: '#78350f' }}>Jasa Pinjaman (%/bulan)</label>
+                                                            <input
+                                                                type="number"
+                                                                value={feePercentageOverride}
+                                                                onChange={e => setFeePercentageOverride(e.target.value)}
+                                                                min="0"
+                                                                max="100"
+                                                                step="0.1"
+                                                                style={{ 
+                                                                    width: '100%', padding: '10px 12px', 
+                                                                    borderRadius: '8px', border: '1px solid #fde68a',
+                                                                    fontFamily: 'var(--font-mono)', fontSize: '14px',
+                                                                    outline: 'none', backgroundColor: '#fff'
+                                                                }}
+                                                            />
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            )}
+                                        </div>
+                                    )}
+
+                                    <div className="flex flex-col sm:flex-row gap-3">
+                                        <button 
+                                            onClick={handleApprove}
+                                            className="ds-button-primary" style={{ flex: 1, padding: '12px' }}
+                                        >Setujui Pengajuan</button>
+                                        
+                                        <button 
+                                            onClick={() => openConfirm('Tolak Pengajuan', 'Anda yakin ingin menolak pengajuan ini?', 'danger', 'Tolak', route('admin.loans.reject', loan.id))}
+                                            className="ds-button-primary" style={{ flex: 1, padding: '12px', backgroundColor: '#ef4444', color: 'white', border: 'none' }}
+                                        >Tolak</button>
+                                    </div>
+                                </>
                             ) : isBendahara && loan.status === 'disetujui' ? (
                                 <div className="flex flex-col sm:flex-row gap-3">
                                     <button 

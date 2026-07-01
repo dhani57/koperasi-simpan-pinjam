@@ -9,6 +9,7 @@ export default function Create({ auth, hasPendingLoan, activeLoan, defaultFee, a
         tenor_months: '',
         purpose: '',
         is_custom_tenor: false,
+        document_file: null,
     });
 
     const [simulation, setSimulation] = useState(null);
@@ -153,7 +154,7 @@ export default function Create({ auth, hasPendingLoan, activeLoan, defaultFee, a
                                                 backgroundColor: (!data.is_custom_tenor && data.tenor_years === years) ? 'var(--color-surface-soft)' : 'white'
                                             }}
                                         >
-                                            <div style={{ fontWeight: 600, color: (!data.is_custom_tenor && data.tenor_years === years) ? 'var(--color-primary)' : 'var(--color-ink)', marginBottom: '4px' }}>{years} Tahun</div>
+                                            <div style={{ fontWeight: 600, color: (!data.is_custom_tenor && data.tenor_years === years) ? 'var(--color-primary)' : 'var(--color-ink)', marginBottom: '4px' }}>{years * 10} Bulan</div>
                                             <div style={{ fontSize: '11px', color: 'var(--color-muted)' }}>Biaya Layanan {defaultFee}% / bln</div>
                                         </div>
                                     ))}
@@ -201,6 +202,33 @@ export default function Create({ auth, hasPendingLoan, activeLoan, defaultFee, a
                                     </div>
                                 )}
                             </div>
+
+                            {simulation && simulation.totalPrincipal >= 40000000 && (
+                                <div style={{ marginTop: 'var(--spacing-xl)', backgroundColor: '#fffbeb', padding: '16px', borderRadius: '8px', border: '1px solid #fef3c7' }}>
+                                    <label style={{ display: 'block', fontWeight: 600, fontSize: '13px', marginBottom: '8px', color: '#92400e' }}>Upload Dokumen Bermaterai (Wajib untuk pinjaman ≥ Rp 40 Juta)</label>
+                                    <p style={{ fontSize: '12px', color: '#b45309', marginBottom: '12px' }}>
+                                        Sesuai peraturan, pinjaman dalam jumlah besar memerlukan dokumen persetujuan bermaterai.
+                                        <br/>
+                                        <a href="/template-pinjaman.pdf" target="_blank" style={{ color: '#d97706', textDecoration: 'underline' }}>Download Template Dokumen</a>
+                                    </p>
+                                    <input
+                                        type="file"
+                                        accept=".pdf,image/*"
+                                        onChange={e => setData('document_file', e.target.files[0])}
+                                        required={simulation.totalPrincipal >= 40000000}
+                                        style={{ 
+                                            width: '100%', 
+                                            fontSize: '14px', 
+                                            padding: '8px', 
+                                            borderRadius: 'var(--rounded-md)', 
+                                            border: '1px dashed #d97706',
+                                            outline: 'none',
+                                            backgroundColor: 'white'
+                                        }}
+                                    />
+                                    {errors.document_file && <div style={{ color: 'var(--color-semantic-down)', fontSize: '12px', marginTop: '4px' }}>{errors.document_file}</div>}
+                                </div>
+                            )}
 
                             <div style={{ marginTop: 'var(--spacing-xl)' }}>
                                 <label style={{ display: 'block', fontWeight: 600, fontSize: '13px', marginBottom: '8px' }}>Keterangan / Keperluan Pinjaman (Opsional)</label>

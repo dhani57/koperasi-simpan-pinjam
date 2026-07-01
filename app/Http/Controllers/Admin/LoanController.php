@@ -129,7 +129,7 @@ class LoanController extends Controller
         return redirect()->back()->with('success', 'Pinjaman berhasil ditolak.');
     }
 
-    public function approve(Loan $loan)
+    public function approve(Request $request, Loan $loan)
     {
         Gate::authorize('approve', $loan);
 
@@ -138,7 +138,30 @@ class LoanController extends Controller
             return redirect()->back()->with('error', 'Pinjaman tidak valid untuk disetujui.');
         }
 
+        // Validate override inputs (Ketua & Bendahara can override admin fee & service fee)
+        $validated = $request->validate([
+            'admin_fee_override' => 'nullable|numeric|min:0',
+            'fee_percentage_override' => 'nullable|numeric|min:0|max:100',
+        ]);
+
         $user = auth()->user();
+
+        // Apply admin fee override if provided
+        if (isset($validated['admin_fee_override'])) {
+            $loan->admin_fee_amount = $validated['admin_fee_override'];
+            $loan->admin_fee_overridden = true;
+        }
+
+        // Apply service fee percentage override if provided
+        if (isset($validated['fee_percentage_override'])) {
+            $oldPercentage = $loan->cooperative_fee_percentage;
+            $newPercentage = $validated['fee_percentage_override'];
+            $loan->cooperative_fee_percentage = $newPercentage;
+
+            // Recalculate current_year_monthly_fee based on new percentage
+            $loan->current_year_monthly_fee = $loan->current_remaining_principal * ($newPercentage / 100);
+        }
+
         if ($user->role === 'bendahara') {
             $loan->bendahara_approved_at = now();
             $loan->bendahara_approved_by = $user->id;
@@ -157,10 +180,18 @@ class LoanController extends Controller
 
         $loan->save();
 
+        $overrideNote = '';
+        if (isset($validated['admin_fee_override'])) {
+            $overrideNote .= " Biaya admin di-override menjadi Rp " . number_format($validated['admin_fee_override'], 0, ',', '.') . ".";
+        }
+        if (isset($validated['fee_percentage_override'])) {
+            $overrideNote .= " Jasa di-override menjadi {$validated['fee_percentage_override']}%.";
+        }
+
         app(\App\Services\AuditLogService::class)->log(
             auth()->user(),
             'loan_approved',
-            "Menyetujui pinjaman #{$loan->id} (Status baru: {$loan->status})"
+            "Menyetujui pinjaman #{$loan->id} (Status baru: {$loan->status}).{$overrideNote}"
         );
 
         return redirect()->back()->with('success', 'Persetujuan pinjaman berhasil dicatat.');

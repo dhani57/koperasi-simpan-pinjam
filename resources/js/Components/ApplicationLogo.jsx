@@ -9,7 +9,7 @@ export default function ApplicationLogo({ theme = 'dark', className = '', style 
                 <span style={{ color: isDark ? 'var(--color-primary)' : 'var(--color-canvas)', fontWeight: 'bold', fontSize: '14px' }}>K</span>
             </div>
             <span style={{ color: isDark ? 'var(--color-on-dark)' : 'var(--color-ink)', fontSize: '16px', fontWeight: '600', letterSpacing: '0.5px', fontFamily: 'var(--font-sans)', whiteSpace: 'nowrap' }}>
-                Koperasi Institusi
+                Koperasi FT Unila
             </span>
         </div>
     );

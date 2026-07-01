@@ -6,17 +6,49 @@ use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
 Route::get('/', function () {
-    // Cari kontak admin (Pengurus) untuk ditampilkan di landing page
-    $adminContact = \App\Models\User::whereIn('role', ['pengurus', 'ketua'])
-        ->whereNotNull('phone')
-        ->where('phone', '!=', '')
-        ->first();
-        
-    $adminPhone = $adminContact ? $adminContact->phone : null;
+    // Statistik Agregat Koperasi (data publik, non-individual)
+    $totalMembers = \App\Models\User::where('is_anggota', true)->count();
+    $totalSavings = \App\Models\User::selectRaw('COALESCE(SUM(simpanan_pokok_balance + simpanan_wajib_balance + simpanan_sukarela_balance), 0) as total')->value('total');
+    $totalActiveLoans = \App\Models\Loan::whereIn('status', ['aktif', 'disetujui'])->sum('current_remaining_principal');
+
+    // Distribusi Anggota per Fakultas/Unit
+    $departmentDistribution = \App\Models\User::where('is_anggota', true)
+        ->whereNotNull('department')
+        ->where('department', '!=', '')
+        ->selectRaw('department, COUNT(*) as total')
+        ->groupBy('department')
+        ->orderByDesc('total')
+        ->get();
+
+    // Data Pengurus (Ketua, Bendahara, Sekretaris/Pengurus)
+    $boardMembers = \App\Models\User::whereIn('role', ['ketua', 'bendahara', 'pengurus'])
+        ->select('name', 'role', 'department', 'profile_photo_path', 'job_title')
+        ->orderByRaw("CASE role WHEN 'ketua' THEN 1 WHEN 'bendahara' THEN 2 WHEN 'pengurus' THEN 3 ELSE 4 END")
+        ->get()
+        ->map(function ($user) {
+            $roleLabels = [
+                'ketua' => 'Ketua',
+                'bendahara' => 'Bendahara',
+                'pengurus' => 'Sekretaris / Admin',
+            ];
+            return [
+                'name' => $user->name,
+                'role' => $user->role,
+                'role_label' => $roleLabels[$user->role] ?? ucfirst($user->role),
+                'department' => $user->department,
+                'job_title' => $user->job_title,
+            ];
+        });
 
     return Inertia::render('Welcome', [
         'canLogin' => Route::has('login'),
-        'adminPhone' => $adminPhone,
+        'stats' => [
+            'totalMembers' => (int) $totalMembers,
+            'totalSavings' => (float) $totalSavings,
+            'totalActiveLoans' => (float) $totalActiveLoans,
+        ],
+        'departmentDistribution' => $departmentDistribution,
+        'boardMembers' => $boardMembers,
     ]);
 });
 
@@ -80,7 +112,13 @@ Route::middleware(['auth', 'verified', 'admin'])->prefix('admin')->name('admin.'
     Route::post('deductions', [DeductionController::class, 'store'])->name('deductions.store')->middleware('role:bendahara');
     Route::post('deductions/{deduction}/approve', [DeductionController::class, 'approve'])->name('deductions.approve')->middleware('role:ketua');
     Route::patch('deductions/{deduction}/selesai', [DeductionController::class, 'markAsSelesai'])->name('deductions.selesai')->middleware('role:bendahara');
-    Route::get('deductions/{deduction}/export', [DeductionController::class, 'export'])->name('deductions.export')->middleware('role:bendahara');
+    Route::get('deductions/{deduction}/export', [DeductionController::class, 'export'])->name('deductions.export')->middleware('role:bendahara,pengawas');
+    Route::get('deductions/{deduction}/export-failed', [DeductionController::class, 'exportFailedDebit'])->name('deductions.export-failed')->middleware('role:bendahara,pengawas');
+    
+    // Gagal Debit Routes (PRD Bagian 2.3 & 5.2)
+    Route::patch('deductions/{deduction}/details/{detail}/fail', [DeductionController::class, 'markFailed'])->name('deductions.detail.fail')->middleware('role:pengurus');
+    Route::patch('deductions/{deduction}/details/{detail}/unfail', [DeductionController::class, 'markUnfailed'])->name('deductions.detail.unfail')->middleware('role:pengurus');
+    Route::post('deductions/{deduction}/confirm', [DeductionController::class, 'confirm'])->name('deductions.confirm')->middleware('role:bendahara');
     
     // Log Mutasi Routes
     Route::get('mutations', [\App\Http\Controllers\Admin\MutationController::class, 'index'])->name('mutations.index');
