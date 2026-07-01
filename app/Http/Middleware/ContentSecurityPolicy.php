@@ -17,7 +17,7 @@ class ContentSecurityPolicy
     {
         $response = $next($request);
 
-        $viteDevServer = app()->environment('local') ? 'http://localhost:5173 ws://localhost:5173' : '';
+        $viteDevServer = app()->environment('local') ? 'http://localhost:5173 ws://localhost:5173 http://localhost:5174 ws://localhost:5174 http://0.0.0.0:5173 ws://0.0.0.0:5173 http://0.0.0.0:5174 ws://0.0.0.0:5174' : '';
 
         // Required headers from mandatory-secure-web-skills
         $csp = "default-src 'self' $viteDevServer; ";
