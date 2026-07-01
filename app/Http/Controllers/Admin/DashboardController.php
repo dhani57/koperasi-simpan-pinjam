@@ -14,7 +14,7 @@ class DashboardController extends Controller
         $data = []; 
         
         $totalMembers = \App\Models\User::where('role', 'anggota')->count();
-        $totalSavings = \App\Models\User::sum('total_saving_balance');
+        $totalSavings = \App\Models\User::sum(\Illuminate\Support\Facades\DB::raw('simpanan_pokok_balance + simpanan_wajib_balance + simpanan_sukarela_balance'));
         $totalActiveLoans = \App\Models\Loan::whereIn('status', ['aktif', 'disetujui'])->sum('current_remaining_principal');
         
         if ($role === 'pengurus') {
@@ -110,7 +110,7 @@ class DashboardController extends Controller
             $data['savings_vs_loans'] = $savVsLoan;
             
             // Top Anggota
-            $data['top_members'] = \App\Models\User::where('role', 'anggota')->orderBy('total_saving_balance', 'desc')->take(5)->get();
+            $data['top_members'] = \App\Models\User::where('role', 'anggota')->orderByRaw('(simpanan_pokok_balance + simpanan_wajib_balance + simpanan_sukarela_balance) desc')->take(5)->get();
             
             // Approval Tingkat Eksekutif
             $data['executive_approvals'] = \App\Models\Loan::with('user')->whereIn('status', ['diajukan', 'diverifikasi', 'menunggu_ketua'])->take(5)->get();
