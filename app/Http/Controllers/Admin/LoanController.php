@@ -57,7 +57,7 @@ class LoanController extends Controller
         }
         
         $userLimit = $loan->user->max_salary_deduction_limit;
-        $monthlySaving = $loan->user->monthly_saving_nominal;
+        $monthlySaving = $loan->user->monthly_simpanan_wajib;
         
         $currentMonthlyInstallment = $loan->monthly_principal_installment + $loan->current_year_monthly_fee;
         
@@ -78,7 +78,8 @@ class LoanController extends Controller
                 'totalInstallments' => $totalLoanInstallments,
                 'usedLimit' => $usedLimit,
                 'usedPercentage' => $usedPercentage,
-                'currentLoanInstallment' => $currentMonthlyInstallment
+                'currentLoanInstallment' => $currentMonthlyInstallment,
+                'adminFee' => $loan->admin_fee_amount,
             ]
         ]);
     }

@@ -1,9 +1,9 @@
 import { Head, Link } from '@inertiajs/react';
 import MemberLayout from '@/Layouts/MemberLayout';
 
-export default function Dashboard({ auth, totalSimpanan, simpananRutin, plafonTersedia, activeLoans, recentMutations, lastShu }) {
+export default function Dashboard({ auth, totalSimpanan, simpananWajib, simpananSukarela, plafonTersedia, activeLoans, recentMutations, lastShu }) {
     // Kalkulasi untuk "Estimasi Potongan Gaji"
-    const estimasiPotongan = simpananRutin + activeLoans.reduce((acc, loan) => acc + parseFloat(loan.monthly_installment), 0);
+    const estimasiPotongan = simpananWajib + simpananSukarela + activeLoans.reduce((acc, loan) => acc + parseFloat(loan.monthly_installment), 0);
     
     // Kalkulasi untuk "Sisa Utang Pinjaman"
     const totalPokokPinjamanAktif = activeLoans.reduce((acc, loan) => acc + parseFloat(loan.principal_amount), 0);
@@ -45,11 +45,21 @@ export default function Dashboard({ auth, totalSimpanan, simpananRutin, plafonTe
                 </div>
 
                 {/* Cards Grid */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                {/* Cards Grid */}
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
                     <div style={{ backgroundColor: 'white', borderRadius: 'var(--rounded-lg)', padding: 'var(--spacing-lg)', border: '1px solid var(--color-hairline)' }}>
-                        <div style={{ fontSize: '13px', color: 'var(--color-muted)', marginBottom: '8px' }}>Total Tabungan Saya</div>
+                        <div style={{ fontSize: '13px', color: 'var(--color-muted)', marginBottom: '8px' }}>Total Tabungan</div>
                         <div style={{ fontFamily: 'var(--font-mono)', fontSize: '24px', fontWeight: 600 }}>
                             Rp {new Intl.NumberFormat('id-ID').format(totalSimpanan)}
+                        </div>
+                    </div>
+                    <div style={{ backgroundColor: 'white', borderRadius: 'var(--rounded-lg)', padding: 'var(--spacing-lg)', border: '1px solid var(--color-hairline)' }}>
+                        <div style={{ fontSize: '13px', color: 'var(--color-muted)', marginBottom: '8px', display: 'flex', justifyContent: 'space-between' }}>
+                            <span>Simpanan Sukarela</span>
+                            <Link href={route('member.voluntary-saving-requests.index')} className="text-primary text-xs hover:underline">Ubah</Link>
+                        </div>
+                        <div style={{ fontFamily: 'var(--font-mono)', fontSize: '24px', fontWeight: 600 }}>
+                            Rp {new Intl.NumberFormat('id-ID').format(simpananSukarela)}<span className="text-sm font-normal text-gray-500">/bln</span>
                         </div>
                     </div>
                     <div style={{ backgroundColor: 'white', borderRadius: 'var(--rounded-lg)', padding: 'var(--spacing-lg)', border: '1px solid var(--color-hairline)' }}>

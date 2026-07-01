@@ -71,6 +71,16 @@ export default function Show({ auth, loan, limitInfo }) {
                             <div>
                                 <div style={{ fontSize: '13px', color: 'var(--color-muted)', marginBottom: '4px' }}>Jumlah Pinjaman</div>
                                 <div style={{ fontSize: '20px', fontFamily: 'var(--font-mono)', fontWeight: 600, color: 'var(--color-primary)' }}>Rp {formatRp(loan.principal_amount)}</div>
+                                {loan.merged_from_loan_id && (
+                                    <div className="mt-2 text-sm text-blue-700 bg-blue-50 p-2 rounded-lg border border-blue-100">
+                                        <strong>Top Up Pinjaman:</strong> Termasuk sisa pinjaman lama sebesar Rp {formatRp(loan.merged_old_remaining)}.
+                                    </div>
+                                )}
+                            </div>
+
+                            <div>
+                                <div style={{ fontSize: '13px', color: 'var(--color-muted)', marginBottom: '4px' }}>Biaya Admin (Dipotong Saat Pencairan)</div>
+                                <div style={{ fontSize: '14px', fontFamily: 'var(--font-mono)', fontWeight: 500 }}>Rp {formatRp(loan.admin_fee_amount || 0)}</div>
                             </div>
 
                             <div>

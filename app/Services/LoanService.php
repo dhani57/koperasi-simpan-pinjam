@@ -27,7 +27,7 @@ class LoanService
      * Actually, if a user inputs 3 years, the tenor_months should be 3 * active_months.
      * Let's accept $tenorYears.
      */
-    public function calculateSimulation(float $principal, ?int $tenorYears, ?int $customTenorMonths, float $feePercentage): array
+    public function calculateSimulation(float $principal, ?int $tenorYears, ?int $customTenorMonths, float $feePercentage, ?float $adminFeeOverride = null): array
     {
         $activeMonthsPerYear = $this->getActiveMonthsPerYear();
         
@@ -57,8 +57,11 @@ class LoanService
             $remainingPrincipal -= ($monthlyPrincipal * $monthsInThisYear);
         }
 
+        $adminFee = $adminFeeOverride !== null ? $adminFeeOverride : min($principal * 0.01, 250000);
+
         return [
             'principal' => $principal,
+            'admin_fee' => $adminFee,
             'tenor_years' => $computedTenorYears,
             'total_tenor_months' => $totalTenorMonths,
             'yearly_breakdown' => $simulation
@@ -71,24 +74,35 @@ class LoanService
     public function validateLimit(User $user, float $firstYearMonthlyInstallment): bool
     {
         $activeLoans = Loan::where('user_id', $user->id)->whereIn('status', ['disetujui', 'aktif'])->get();
-        // Since installments differ by year, we take the current monthly installment they are paying
         $totalLoanInstallments = 0;
         foreach ($activeLoans as $loan) {
             $totalLoanInstallments += ($loan->monthly_principal_installment + $loan->current_year_monthly_fee);
         }
         
-        $availableLimit = $user->max_salary_deduction_limit - ($user->monthly_saving_nominal + $totalLoanInstallments);
+        $availableLimit = $user->max_salary_deduction_limit - ($user->monthly_simpanan_wajib + $totalLoanInstallments);
         
         return $firstYearMonthlyInstallment <= $availableLimit;
     }
 
     /**
+     * Check if requested principal is within the max limit (50.000.000)
+     */
+    public function validateMaxPrincipal(float $principal): bool
+    {
+        return $principal <= 50000000;
+    }
+
+    /**
      * Create a new loan with its first year service record
      */
-    public function createLoan(User $user, float $principal, ?int $tenorYears, ?int $customTenorMonths = null, ?string $purpose = null): Loan
+    public function createLoan(User $user, float $principal, ?int $tenorYears, ?int $customTenorMonths = null, ?string $purpose = null, ?float $adminFeeOverride = null, ?int $mergedFromLoanId = null, ?float $mergedOldRemaining = 0): Loan
     {
+        if (!$this->validateMaxPrincipal($principal)) {
+            throw new \Exception('Pinjaman melebihi batas maksimal Rp 50.000.000');
+        }
+
         $feePercentage = Setting::where('key', 'loan_interest_rate')->value('value') ?? 1.5;
-        $simulation = $this->calculateSimulation($principal, $tenorYears, $customTenorMonths, (float)$feePercentage);
+        $simulation = $this->calculateSimulation($principal, $tenorYears, $customTenorMonths, (float)$feePercentage, $adminFeeOverride);
         
         $firstYear = $simulation['yearly_breakdown'][0];
         
@@ -97,12 +111,16 @@ class LoanService
             'principal_amount' => $principal,
             'purpose' => $purpose,
             'cooperative_fee_percentage' => $feePercentage,
+            'admin_fee_amount' => $simulation['admin_fee'],
+            'admin_fee_overridden' => $adminFeeOverride !== null,
             'tenor_months' => $simulation['total_tenor_months'],
             'tenor_years' => $simulation['tenor_years'],
             'monthly_principal_installment' => $firstYear['monthly_principal'],
             'current_remaining_principal' => $principal,
             'current_year_monthly_fee' => $firstYear['monthly_fee'],
-            'status' => 'diajukan'
+            'status' => 'diajukan',
+            'merged_from_loan_id' => $mergedFromLoanId,
+            'merged_old_remaining' => $mergedOldRemaining
         ]);
 
         // Create first year annual service record

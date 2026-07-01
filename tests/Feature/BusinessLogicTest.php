@@ -16,11 +16,11 @@ class BusinessLogicTest extends TestCase
         // BIZ-01: Perhitungan jasa menurun tahunan
         Setting::updateOrCreate(['key' => 'loan_service_percentage'], ['value' => '1.5']);
         Setting::updateOrCreate(['key' => 'loan_max_tenor_months'], ['value' => '36']);
-        Setting::updateOrCreate(['key' => 'inactive_months'], ['value' => json_encode([])]);
+        Setting::updateOrCreate(['key' => 'inactive_months'], ['value' => json_encode([6, 12])]);
 
         $anggota = User::factory()->create([
             'role' => 'anggota',
-            'monthly_saving_nominal' => 100000,
+            'monthly_simpanan_wajib' => 100000,
             'max_salary_deduction_limit' => 5000000
         ]);
         $this->actingAs($anggota);
@@ -29,7 +29,8 @@ class BusinessLogicTest extends TestCase
         $response = $this->post('/member/loans', [
             'user_id' => $anggota->id,
             'principal_amount' => 15000000,
-            'tenor_months' => 36,
+            'tenor_type' => 'standar',
+            'tenor_months' => 30,
             'tenor_years' => 3,
         ]);
 
@@ -59,7 +60,7 @@ class BusinessLogicTest extends TestCase
         $loan->refresh();
         
         // Tahun 3: Sisa pokok 5.000.000, Jasa = 1.5% * 5.000.000 = 75.000
-        $this->assertEquals(75000, $loan->current_year_monthly_fee);
+        $this->assertEqualsWithDelta(75000, $loan->current_year_monthly_fee, 0.01);
     }
 
     public function test_salary_deduction_limit_validation()
@@ -70,7 +71,7 @@ class BusinessLogicTest extends TestCase
 
         $anggota = User::factory()->create([
             'role' => 'anggota',
-            'monthly_saving_nominal' => 100000,
+            'monthly_simpanan_wajib' => 100000,
             'max_salary_deduction_limit' => 500000
         ]);
         $this->actingAs($anggota);
@@ -81,7 +82,8 @@ class BusinessLogicTest extends TestCase
         $response = $this->post('/member/loans', [
             'user_id' => $anggota->id,
             'principal_amount' => 15000000,
-            'tenor_months' => 12,
+            'tenor_type' => 'standar',
+            'tenor_months' => 10,
             'tenor_years' => 1,
         ]);
 
@@ -98,13 +100,13 @@ class BusinessLogicTest extends TestCase
         $year = now()->year;
 
         // Buat 2 anggota dengan saldo simpanan awal
-        $anggotaA = User::factory()->create(['role' => 'anggota', 'total_saving_balance' => 2000000]);
-        $anggotaB = User::factory()->create(['role' => 'anggota', 'total_saving_balance' => 500000]);
+        $anggotaA = User::factory()->create(['role' => 'anggota', 'simpanan_sukarela_balance' => 2000000]);
+        $anggotaB = User::factory()->create(['role' => 'anggota', 'simpanan_sukarela_balance' => 500000]);
 
         // Anggota A: Simpanan besar (2jt), Jasa Pinjaman kecil (0)
         \App\Models\Mutation::create([
             'user_id' => $anggotaA->id,
-            'type' => 'simpanan_rutin',
+            'type' => 'simpanan_wajib',
             'amount' => 2000000,
             'balance_after' => 2000000,
             'description' => 'Simpanan',
@@ -114,7 +116,7 @@ class BusinessLogicTest extends TestCase
         // Anggota B: Simpanan kecil (500rb), Jasa Pinjaman besar (1jt)
         \App\Models\Mutation::create([
             'user_id' => $anggotaB->id,
-            'type' => 'simpanan_rutin',
+            'type' => 'simpanan_wajib',
             'amount' => 500000,
             'balance_after' => 500000,
             'description' => 'Simpanan',
@@ -148,18 +150,28 @@ class BusinessLogicTest extends TestCase
         // Jasa: (1jt / 1jt) * 420k = 420,000
         // Total B = 476,000
 
+        // Buat periode SHU yang sudah disetujui ketua
+        \App\Models\ShuPeriod::create([
+            'year' => $year,
+            'status' => 'disetujui_ketua',
+            'persen_shu_simpanan' => 40,
+            'persen_shu_jasa' => 60,
+            'total_jasa_income' => 1000000,
+        ]);
+
         $service = new \App\Services\ShuService();
         $result = $service->calculateEstimatedShu($year);
 
         $memberA_Shu = collect($result['member_proportions'])->firstWhere('user.id', $anggotaA->id);
         $memberB_Shu = collect($result['member_proportions'])->firstWhere('user.id', $anggotaB->id);
 
-        $this->assertEquals(224000, $memberA_Shu['nominal_shu']);
-        $this->assertEquals(476000, $memberB_Shu['nominal_shu']);
+        $this->assertEqualsWithDelta(320000, $memberA_Shu['nominal_shu'], 0.01);
+        $this->assertEqualsWithDelta(680000, $memberB_Shu['nominal_shu'], 0.01);
+
 
         // Uji eksekusi riil Distribusi (Mutasi terbuat)
-        $ketua = User::factory()->create(['role' => 'ketua']);
-        $this->actingAs($ketua);
+        $bendahara = User::factory()->create(['role' => 'bendahara']);
+        $this->actingAs($bendahara);
 
         $response = $this->post("/admin/shu/approve?year={$year}");
         $response->assertRedirect();
@@ -169,10 +181,10 @@ class BusinessLogicTest extends TestCase
             ->where('type', 'shu_distribution')
             ->first();
         $this->assertNotNull($mutasiA);
-        $this->assertEquals(224000, $mutasiA->amount);
+        $this->assertEqualsWithDelta(320000, $mutasiA->amount, 0.01);
 
         // Verifikasi saldo anggota bertambah
         $anggotaA->refresh();
-        $this->assertEquals(2000000 + 224000, $anggotaA->total_saving_balance);
+        $this->assertEqualsWithDelta(2000000 + 320000, $anggotaA->simpanan_sukarela_balance, 0.01);
     }
 }

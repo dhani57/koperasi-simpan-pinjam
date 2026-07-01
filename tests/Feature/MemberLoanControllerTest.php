@@ -24,7 +24,7 @@ class MemberLoanControllerTest extends TestCase
         $this->anggota = User::factory()->create([
             'role' => 'anggota',
             'is_anggota' => true,
-            'monthly_saving_nominal' => 100000,
+            'monthly_simpanan_wajib' => 100000,
             'max_salary_deduction_limit' => 5000000,
         ]);
     }
@@ -45,7 +45,8 @@ class MemberLoanControllerTest extends TestCase
     {
         $response = $this->actingAs($this->anggota)->post(route('member.loans.store'), [
             'principal_amount' => 5000000,
-            'tenor_years' => 1,
+            'tenor_type' => 'standar',
+            'tenor_months' => 10,
             'purpose' => 'Kebutuhan pendidikan',
         ]);
 
@@ -59,7 +60,7 @@ class MemberLoanControllerTest extends TestCase
         ]);
     }
 
-    public function test_rejected_if_has_active_loan()
+    public function test_member_can_top_up_active_loan()
     {
         // Buat pinjaman aktif terlebih dahulu
         Loan::create([
@@ -76,11 +77,15 @@ class MemberLoanControllerTest extends TestCase
 
         $response = $this->actingAs($this->anggota)->post(route('member.loans.store'), [
             'principal_amount' => 2000000,
-            'tenor_years' => 1,
+            'tenor_type' => 'standar',
+            'tenor_months' => 10,
+            'purpose' => 'Top up pinjaman',
         ]);
 
-        $response->assertSessionHasErrors('principal_amount');
-        $this->assertEquals(1, Loan::where('user_id', $this->anggota->id)->count());
+        $response->assertSessionHas('success');
+        $this->assertEquals(2, Loan::where('user_id', $this->anggota->id)->count());
+        $newLoan = Loan::where('user_id', $this->anggota->id)->where('status', 'diajukan')->first();
+        $this->assertEquals(5000000, $newLoan->principal_amount);
     }
 
     public function test_rejected_if_has_pending_loan()
@@ -100,7 +105,8 @@ class MemberLoanControllerTest extends TestCase
 
         $response = $this->actingAs($this->anggota)->post(route('member.loans.store'), [
             'principal_amount' => 2000000,
-            'tenor_years' => 1,
+            'tenor_type' => 'standar',
+            'tenor_months' => 10,
         ]);
 
         $response->assertSessionHasErrors('principal_amount');
@@ -113,14 +119,15 @@ class MemberLoanControllerTest extends TestCase
             // tenor_years dan tenor_months tidak diisi
         ]);
 
-        $response->assertSessionHasErrors('tenor_years');
+        $response->assertSessionHasErrors('tenor_type');
     }
 
     public function test_validation_fails_for_too_small_principal()
     {
         $response = $this->actingAs($this->anggota)->post(route('member.loans.store'), [
             'principal_amount' => 50000, // Di bawah minimum 100.000
-            'tenor_years' => 1,
+            'tenor_type' => 'standar',
+            'tenor_months' => 10,
         ]);
 
         $response->assertSessionHasErrors('principal_amount');
@@ -131,13 +138,14 @@ class MemberLoanControllerTest extends TestCase
         $memberLowLimit = User::factory()->create([
             'role' => 'anggota',
             'is_anggota' => true,
-            'monthly_saving_nominal' => 100000,
+            'monthly_simpanan_wajib' => 100000,
             'max_salary_deduction_limit' => 200000, // Limit sangat rendah
         ]);
 
         $response = $this->actingAs($memberLowLimit)->post(route('member.loans.store'), [
             'principal_amount' => 15000000,
-            'tenor_years' => 1,
+            'tenor_type' => 'standar',
+            'tenor_months' => 10,
         ]);
 
         $response->assertSessionHasErrors('principal_amount');

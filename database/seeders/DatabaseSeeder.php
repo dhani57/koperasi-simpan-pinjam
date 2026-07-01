@@ -37,9 +37,9 @@ class DatabaseSeeder extends Seeder
                 'password' => bcrypt('password'),
                 'role' => 'pengurus',
                 'is_anggota' => false,
-                'monthly_saving_nominal' => 0,
+                'monthly_simpanan_wajib' => 50000,
                 'max_salary_deduction_limit' => 0,
-                'total_saving_balance' => 0,
+                'simpanan_wajib_balance' => 0,
             ],
             [
                 'name' => 'Bapak Ketua',
@@ -48,9 +48,9 @@ class DatabaseSeeder extends Seeder
                 'password' => bcrypt('password'),
                 'role' => 'ketua',
                 'is_anggota' => false,
-                'monthly_saving_nominal' => 0,
+                'monthly_simpanan_wajib' => 50000,
                 'max_salary_deduction_limit' => 0,
-                'total_saving_balance' => 0,
+                'simpanan_wajib_balance' => 0,
             ],
             [
                 'name' => 'Ibu Bendahara',
@@ -59,9 +59,9 @@ class DatabaseSeeder extends Seeder
                 'password' => bcrypt('password'),
                 'role' => 'bendahara',
                 'is_anggota' => false,
-                'monthly_saving_nominal' => 0,
+                'monthly_simpanan_wajib' => 50000,
                 'max_salary_deduction_limit' => 0,
-                'total_saving_balance' => 0,
+                'simpanan_wajib_balance' => 0,
             ],
             [
                 'name' => 'Bapak Pengawas',
@@ -70,9 +70,9 @@ class DatabaseSeeder extends Seeder
                 'password' => bcrypt('password'),
                 'role' => 'pengawas',
                 'is_anggota' => false,
-                'monthly_saving_nominal' => 0,
+                'monthly_simpanan_wajib' => 50000,
                 'max_salary_deduction_limit' => 0,
-                'total_saving_balance' => 0,
+                'simpanan_wajib_balance' => 0,
             ]
         ];
 
@@ -90,9 +90,9 @@ class DatabaseSeeder extends Seeder
             'role' => 'anggota',
             'is_anggota' => true,
             'joined_at' => $startDate,
-            'monthly_saving_nominal' => 100000,
+            'monthly_simpanan_wajib' => 100000,
             'max_salary_deduction_limit' => 2000000,
-            'total_saving_balance' => 0,
+            'simpanan_wajib_balance' => 0,
         ]);
 
         // Generate 199 more members
@@ -105,9 +105,9 @@ class DatabaseSeeder extends Seeder
                 'role' => 'anggota',
                 'is_anggota' => true,
                 'joined_at' => $startDate,
-                'monthly_saving_nominal' => fake()->randomElement([50000, 100000, 150000, 200000]),
+                'monthly_simpanan_wajib' => fake()->randomElement([50000, 100000, 150000, 200000]),
                 'max_salary_deduction_limit' => fake()->randomElement([1500000, 2000000, 2500000, 3000000]),
-                'total_saving_balance' => 0,
+                'simpanan_wajib_balance' => 0,
             ]);
         }
 
@@ -182,12 +182,13 @@ class DatabaseSeeder extends Seeder
                 $isInactiveMonth = in_array($periodDate->month, [11, 12]);
                 
                 // Simpanan Wajib is every month
-                $savingAmount = $member->monthly_saving_nominal;
+                $savingAmount = $member->monthly_simpanan_wajib;
                 $balance += $savingAmount;
 
                 Mutation::create([
                     'user_id' => $member->id,
                     'type' => 'simpanan',
+                    'saving_type' => 'wajib',
                     'amount' => $savingAmount,
                     'balance_after' => $balance,
                     'description' => 'Simpanan wajib bulanan ' . $periodDate->format('F Y'),
@@ -234,7 +235,7 @@ class DatabaseSeeder extends Seeder
                     'deduction_period_id' => $p->id,
                     'user_id' => $member->id,
                     'loan_id' => $loan && $loan->status === 'aktif' ? $loan->id : null,
-                    'routine_saving_amount' => $savingAmount,
+                    'simpanan_wajib_amount' => $savingAmount,
                     'loan_principal_amount' => $loanPrincipal,
                     'loan_fee_amount' => $loanFee,
                     'status' => 'berhasil',
@@ -243,7 +244,7 @@ class DatabaseSeeder extends Seeder
                 $periodDate->addMonth();
             }
 
-            $member->update(['total_saving_balance' => $balance]);
+            $member->update(['simpanan_wajib_balance' => $balance]);
 
             // Some members also make a new pending loan in June 2026
             if (rand(1, 100) <= 15) { // 15% chance

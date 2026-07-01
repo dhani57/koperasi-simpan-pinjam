@@ -43,15 +43,30 @@ class UserController extends Controller
             'phone' => 'nullable|string|max:20',
             'roles' => ['required', 'array', 'min:1', 'max:2'],
             'roles.*' => [Rule::in(['anggota', 'bendahara', 'pengurus', 'ketua', 'pengawas'])],
-            'monthly_saving_nominal' => 'required|numeric|min:0',
+            'monthly_simpanan_wajib' => 'required|numeric|min:0',
+            'monthly_simpanan_sukarela' => 'nullable|numeric|min:0',
             'max_salary_deduction_limit' => 'required|numeric|min:0',
-            'total_saving_balance' => 'nullable|numeric|min:0',
+            'simpanan_pokok_balance' => 'nullable|numeric|min:0',
+            'simpanan_wajib_balance' => 'nullable|numeric|min:0',
+            'simpanan_sukarela_balance' => 'nullable|numeric|min:0',
+            'bank_account_number' => 'nullable|string|max:50',
+            'retirement_month' => 'nullable|integer|min:1|max:12',
+            'retirement_year' => 'nullable|integer|min:2020',
+            'department' => 'nullable|string|max:100',
+            'job_title' => 'nullable|string|max:100',
+            'job_start_date' => 'nullable|date',
+            'job_end_date' => 'nullable|date',
             'joined_at' => 'nullable|date',
             'password' => 'required|string|min:8|confirmed',
         ]);
 
-        $initialBalance = $validated['total_saving_balance'] ?? 0;
-        $validated['total_saving_balance'] = $initialBalance;
+        $initialPokok = $validated['simpanan_pokok_balance'] ?? 0;
+        $initialWajib = $validated['simpanan_wajib_balance'] ?? 0;
+        $initialSukarela = $validated['simpanan_sukarela_balance'] ?? 0;
+        
+        $validated['simpanan_pokok_balance'] = $initialPokok;
+        $validated['simpanan_wajib_balance'] = $initialWajib;
+        $validated['simpanan_sukarela_balance'] = $initialSukarela;
 
         $roles = $validated['roles'];
         if (count($roles) === 2 && !in_array('anggota', $roles)) {
@@ -63,16 +78,37 @@ class UserController extends Controller
         $validated['role'] = count($adminRoles) > 0 ? array_values($adminRoles)[0] : 'anggota';
         unset($validated['roles']);
 
-        \Illuminate\Support\Facades\DB::transaction(function () use ($validated, $initialBalance) {
+        \Illuminate\Support\Facades\DB::transaction(function () use ($validated, $initialPokok, $initialWajib, $initialSukarela) {
             $user = User::create($validated);
 
-            if ($initialBalance > 0) {
+            if ($initialPokok > 0) {
                 \App\Models\Mutation::create([
                     'user_id' => $user->id,
-                    'type' => 'simpanan',
-                    'amount' => $initialBalance,
-                    'balance_after' => $initialBalance,
-                    'description' => 'Migrasi Saldo Simpanan Sebelumnya'
+                    'type' => 'simpanan_pokok',
+                    'saving_type' => 'pokok',
+                    'amount' => $initialPokok,
+                    'balance_after' => $initialPokok,
+                    'description' => 'Migrasi Saldo Pokok Sebelumnya'
+                ]);
+            }
+            if ($initialWajib > 0) {
+                \App\Models\Mutation::create([
+                    'user_id' => $user->id,
+                    'type' => 'simpanan_wajib',
+                    'saving_type' => 'wajib',
+                    'amount' => $initialWajib,
+                    'balance_after' => $initialWajib,
+                    'description' => 'Migrasi Saldo Wajib Sebelumnya'
+                ]);
+            }
+            if ($initialSukarela > 0) {
+                \App\Models\Mutation::create([
+                    'user_id' => $user->id,
+                    'type' => 'simpanan_sukarela',
+                    'saving_type' => 'sukarela',
+                    'amount' => $initialSukarela,
+                    'balance_after' => $initialSukarela,
+                    'description' => 'Migrasi Saldo Sukarela Sebelumnya'
                 ]);
             }
         });
@@ -100,8 +136,16 @@ class UserController extends Controller
             'phone' => 'nullable|string|max:20',
             'roles' => ['required', 'array', 'min:1', 'max:2'],
             'roles.*' => [Rule::in(['anggota', 'bendahara', 'pengurus', 'ketua', 'pengawas'])],
-            'monthly_saving_nominal' => 'required|numeric|min:0',
+            'monthly_simpanan_wajib' => 'required|numeric|min:0',
+            'monthly_simpanan_sukarela' => 'nullable|numeric|min:0',
             'max_salary_deduction_limit' => 'required|numeric|min:0',
+            'bank_account_number' => 'nullable|string|max:50',
+            'retirement_month' => 'nullable|integer|min:1|max:12',
+            'retirement_year' => 'nullable|integer|min:2020',
+            'department' => 'nullable|string|max:100',
+            'job_title' => 'nullable|string|max:100',
+            'job_start_date' => 'nullable|date',
+            'job_end_date' => 'nullable|date',
             'joined_at' => 'nullable|date',
             'password' => 'nullable|string|min:8|confirmed',
         ]);
@@ -142,5 +186,55 @@ class UserController extends Controller
             "Menghapus data anggota/user dengan email: {$email}"
         );
         return redirect()->route('admin.users.index')->with('success', 'Anggota berhasil dihapus.');
+    }
+
+    public function import(Request $request)
+    {
+        $request->validate([
+            'file' => 'required|mimes:xlsx,xls,csv|max:10240'
+        ]);
+
+        try {
+            \Maatwebsite\Excel\Facades\Excel::import(new \App\Imports\UsersImport, $request->file('file'));
+            
+            app(\App\Services\AuditLogService::class)->log(
+                auth()->user(),
+                'user_imported',
+                "Mengimport data anggota dari file Excel"
+            );
+
+            return back()->with('success', 'Data anggota berhasil diimport.');
+        } catch (\Exception $e) {
+            return back()->with('error', 'Gagal import data: ' . $e->getMessage());
+        }
+    }
+
+    public function downloadTemplate()
+    {
+        $headers = [
+            'nama', 'email', 'nik', 'no_telepon', 'departemen', 'jabatan',
+            'tanggal_mulai_kerja', 'tanggal_selesai_kerja', 'no_rekening_bank',
+            'bulan_pensiun', 'tahun_pensiun', 'simpanan_wajib_per_bulan',
+            'simpanan_sukarela_per_bulan', 'saldo_simpanan_pokok', 
+            'saldo_simpanan_wajib', 'saldo_simpanan_sukarela', 
+            'batas_potongan_gaji', 'password'
+        ];
+        
+        $export = new class($headers) implements \Maatwebsite\Excel\Concerns\FromArray, \Maatwebsite\Excel\Concerns\WithHeadings {
+            private $headers;
+            public function __construct($headers) { $this->headers = $headers; }
+            public function array(): array {
+                return [
+                    [
+                        'John Doe', 'john@example.com', '1234567890123456', '081234567890', 
+                        'IT', 'Staff', '2020-01-01', '', '1234567890', 
+                        '12', '2040', '100000', '50000', '100000', '500000', '0', '2000000', 'password123'
+                    ]
+                ];
+            }
+            public function headings(): array { return $this->headers; }
+        };
+
+        return \Maatwebsite\Excel\Facades\Excel::download($export, 'import_users_template.xlsx');
     }
 }

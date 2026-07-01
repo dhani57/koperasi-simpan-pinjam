@@ -10,35 +10,57 @@ return new class extends Migration
      */
     public function up(): void
     {
-        // Trigger untuk UPDATE
-        DB::unprepared("
-            CREATE OR REPLACE FUNCTION prevent_mutation_update()
-            RETURNS trigger AS $$
-            BEGIN
-                RAISE EXCEPTION 'Mutations table is immutable. Updates are not allowed.';
-            END;
-            $$ LANGUAGE plpgsql;
+        $driver = DB::connection()->getDriverName();
 
-            CREATE TRIGGER prevent_mutation_update_trigger
-            BEFORE UPDATE ON mutations
-            FOR EACH ROW
-            EXECUTE FUNCTION prevent_mutation_update();
-        ");
+        if ($driver === 'pgsql') {
+            // Trigger untuk UPDATE PostgreSQL
+            DB::unprepared("
+                CREATE OR REPLACE FUNCTION prevent_mutation_update()
+                RETURNS trigger AS $$
+                BEGIN
+                    RAISE EXCEPTION 'Mutations table is immutable. Updates are not allowed.';
+                END;
+                $$ LANGUAGE plpgsql;
 
-        // Trigger untuk DELETE
-        DB::unprepared("
-            CREATE OR REPLACE FUNCTION prevent_mutation_delete()
-            RETURNS trigger AS $$
-            BEGIN
-                RAISE EXCEPTION 'Mutations table is immutable. Deletes are not allowed.';
-            END;
-            $$ LANGUAGE plpgsql;
+                CREATE TRIGGER prevent_mutation_update_trigger
+                BEFORE UPDATE ON mutations
+                FOR EACH ROW
+                EXECUTE FUNCTION prevent_mutation_update();
+            ");
 
-            CREATE TRIGGER prevent_mutation_delete_trigger
-            BEFORE DELETE ON mutations
-            FOR EACH ROW
-            EXECUTE FUNCTION prevent_mutation_delete();
-        ");
+            // Trigger untuk DELETE PostgreSQL
+            DB::unprepared("
+                CREATE OR REPLACE FUNCTION prevent_mutation_delete()
+                RETURNS trigger AS $$
+                BEGIN
+                    RAISE EXCEPTION 'Mutations table is immutable. Deletes are not allowed.';
+                END;
+                $$ LANGUAGE plpgsql;
+
+                CREATE TRIGGER prevent_mutation_delete_trigger
+                BEFORE DELETE ON mutations
+                FOR EACH ROW
+                EXECUTE FUNCTION prevent_mutation_delete();
+            ");
+        } elseif ($driver === 'sqlite') {
+            // Trigger untuk UPDATE SQLite
+            DB::unprepared("
+                CREATE TRIGGER prevent_mutation_update_trigger
+                BEFORE UPDATE ON mutations
+                BEGIN
+                    SELECT RAISE(ABORT, 'Mutations table is immutable. Updates are not allowed.');
+                END;
+            ");
+
+            // Trigger untuk DELETE SQLite
+            DB::unprepared("
+                CREATE TRIGGER prevent_mutation_delete_trigger
+                BEFORE DELETE ON mutations
+                BEGIN
+                    SELECT RAISE(ABORT, 'Mutations table is immutable. Deletes are not allowed.');
+                END;
+            ");
+        }
     }
 
     /**
@@ -46,12 +68,19 @@ return new class extends Migration
      */
     public function down(): void
     {
-        DB::unprepared("
-            DROP TRIGGER IF EXISTS prevent_mutation_update_trigger ON mutations;
-            DROP FUNCTION IF EXISTS prevent_mutation_update();
-            
-            DROP TRIGGER IF EXISTS prevent_mutation_delete_trigger ON mutations;
-            DROP FUNCTION IF EXISTS prevent_mutation_delete();
-        ");
+        $driver = DB::connection()->getDriverName();
+
+        if ($driver === 'pgsql') {
+            DB::unprepared("
+                DROP TRIGGER IF EXISTS prevent_mutation_update_trigger ON mutations;
+                DROP FUNCTION IF EXISTS prevent_mutation_update();
+                
+                DROP TRIGGER IF EXISTS prevent_mutation_delete_trigger ON mutations;
+                DROP FUNCTION IF EXISTS prevent_mutation_delete();
+            ");
+        } elseif ($driver === 'sqlite') {
+            DB::unprepared("DROP TRIGGER IF EXISTS prevent_mutation_update_trigger;");
+            DB::unprepared("DROP TRIGGER IF EXISTS prevent_mutation_delete_trigger;");
+        }
     }
 };

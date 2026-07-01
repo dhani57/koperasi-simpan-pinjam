@@ -78,7 +78,7 @@ class DeductionController extends Controller
 
         // Calculate totals for the entire period
         $totals = \App\Models\DeductionDetail::where('deduction_period_id', $deduction->id)
-            ->selectRaw('SUM(routine_saving_amount) as total_saving, SUM(loan_principal_amount) as total_loan_principal, SUM(loan_fee_amount) as total_loan_fee')
+            ->selectRaw('SUM(simpanan_wajib_amount + simpanan_sukarela_amount) as total_saving, SUM(loan_principal_amount) as total_loan_principal, SUM(loan_fee_amount) as total_loan_fee, SUM(admin_fee_amount) as total_admin_fee')
             ->first();
 
         $details = \App\Models\DeductionDetail::with('user')
@@ -126,17 +126,33 @@ class DeductionController extends Controller
                 
                 $user = User::find($detail->user_id);
 
-                // Handle Routine Saving
-                if ($detail->routine_saving_amount > 0) {
-                    $user->total_saving_balance += $detail->routine_saving_amount;
+                // Handle Wajib Saving
+                if ($detail->simpanan_wajib_amount > 0) {
+                    $user->simpanan_wajib_balance += $detail->simpanan_wajib_amount;
                     $user->save();
 
                     \App\Models\Mutation::create([
                         'user_id' => $user->id,
-                        'type' => 'simpanan_rutin',
-                        'amount' => $detail->routine_saving_amount,
-                        'balance_after' => $user->total_saving_balance,
-                        'description' => "Potongan simpanan rutin bulan {$monthName} tahun {$deduction->year}",
+                        'type' => 'simpanan_wajib',
+                        'saving_type' => 'wajib',
+                        'amount' => $detail->simpanan_wajib_amount,
+                        'balance_after' => $user->simpanan_wajib_balance,
+                        'description' => "Potongan simpanan wajib bulan {$monthName} tahun {$deduction->year}",
+                    ]);
+                }
+
+                // Handle Sukarela Saving
+                if ($detail->simpanan_sukarela_amount > 0) {
+                    $user->simpanan_sukarela_balance += $detail->simpanan_sukarela_amount;
+                    $user->save();
+
+                    \App\Models\Mutation::create([
+                        'user_id' => $user->id,
+                        'type' => 'simpanan_sukarela',
+                        'saving_type' => 'sukarela',
+                        'amount' => $detail->simpanan_sukarela_amount,
+                        'balance_after' => $user->simpanan_sukarela_balance,
+                        'description' => "Potongan simpanan sukarela bulan {$monthName} tahun {$deduction->year}",
                     ]);
                 }
 
@@ -167,6 +183,17 @@ class DeductionController extends Controller
                                 'amount' => $detail->loan_fee_amount,
                                 'balance_after' => $user->total_saving_balance,
                                 'description' => "Pembayaran jasa pinjaman bulan {$monthName} tahun {$deduction->year}",
+                            ]);
+                        }
+
+                        // Handle Admin Fee (if any)
+                        if ($detail->admin_fee_amount > 0) {
+                            \App\Models\Mutation::create([
+                                'user_id' => $user->id,
+                                'type' => 'admin_fee',
+                                'amount' => $detail->admin_fee_amount,
+                                'balance_after' => $user->total_saving_balance,
+                                'description' => "Biaya admin pinjaman bulan {$monthName} tahun {$deduction->year}",
                             ]);
                         }
                     }
@@ -214,14 +241,15 @@ class DeductionController extends Controller
             
             $no = 1;
             foreach ($details as $row) {
-                $loanTotal = $row->loan_principal_amount + $row->loan_fee_amount;
-                $total = $row->routine_saving_amount + $loanTotal;
+                $loanTotal = $row->loan_principal_amount + $row->loan_fee_amount + $row->admin_fee_amount;
+                $savingTotal = $row->simpanan_wajib_amount + $row->simpanan_sukarela_amount;
+                $total = $savingTotal + $loanTotal;
                 
                 echo "<tr>";
                 echo "<td style='padding: 8px; text-align: center;'>{$no}</td>";
                 echo "<td style='padding: 8px; text-align: center; mso-number-format: \"\\@\";'>" . $row->user->identity_number . "</td>";
                 echo "<td style='padding: 8px;'>" . $row->user->name . "</td>";
-                echo "<td style='padding: 8px; text-align: right;'>Rp " . number_format($row->routine_saving_amount, 0, ',', '.') . "</td>";
+                echo "<td style='padding: 8px; text-align: right;'>Rp " . number_format($savingTotal, 0, ',', '.') . "</td>";
                 echo "<td style='padding: 8px; text-align: right;'>Rp " . number_format($loanTotal, 0, ',', '.') . "</td>";
                 echo "<td style='padding: 8px; text-align: right;'>Rp " . number_format($total, 0, ',', '.') . "</td>";
                 echo "</tr>";
@@ -231,5 +259,30 @@ class DeductionController extends Controller
         };
 
         return response()->stream($callback, 200, $headers);
+    }
+
+    public function approve(DeductionPeriod $deduction)
+    {
+        if (auth()->user()->role !== 'ketua') {
+            abort(403, 'Unauthorized action.');
+        }
+
+        if ($deduction->status !== 'draf') {
+            return redirect()->back()->with('error', 'Tagihan ini bukan draf atau sudah disetujui.');
+        }
+
+        $deduction->update([
+            'status' => 'disetujui_ketua',
+            'confirmed_by' => auth()->id(),
+            'confirmed_at' => now(),
+        ]);
+
+        app(\App\Services\AuditLogService::class)->log(
+            auth()->user(),
+            'deduction_approved',
+            "Menyetujui daftar tagihan potongan bulanan periode {$deduction->month}/{$deduction->year}"
+        );
+
+        return redirect()->back()->with('success', 'Tagihan bulanan berhasil disetujui.');
     }
 }

@@ -33,8 +33,8 @@ class DeductionWorkflowTest extends TestCase
         $this->anggota = User::factory()->create([
             'role' => 'anggota',
             'is_anggota' => true,
-            'monthly_saving_nominal' => 100000,
-            'total_saving_balance' => 0,
+            'monthly_simpanan_wajib' => 100000,
+            'simpanan_sukarela_balance' => 0,
         ]);
     }
 
@@ -127,7 +127,8 @@ class DeductionWorkflowTest extends TestCase
             'deduction_period_id' => $period->id,
             'user_id' => $this->anggota->id,
             'loan_id' => $loan->id,
-            'routine_saving_amount' => 100000,
+            'simpanan_wajib_amount' => 100000,
+            'simpanan_sukarela_amount' => 0,
             'loan_principal_amount' => 100000,
             'loan_fee_amount' => 15000,
             'status' => 'menunggu',
@@ -145,13 +146,13 @@ class DeductionWorkflowTest extends TestCase
         $detail = DeductionDetail::where('deduction_period_id', $period->id)->first();
         $this->assertEquals('berhasil', $detail->status);
 
-        // Saldo user bertambah 100.000 (simpanan rutin)
-        $this->assertEquals(100000, $this->anggota->fresh()->total_saving_balance);
+        // Saldo user bertambah 100.000 (simpanan wajib)
+        $this->assertEquals(100000, $this->anggota->fresh()->simpanan_wajib_balance);
 
-        // 3 mutasi tercatat: simpanan_rutin, angsuran_pokok, angsuran_jasa
+        // 3 mutasi tercatat: simpanan_wajib, angsuran_pokok, angsuran_jasa
         $this->assertDatabaseHas('mutations', [
             'user_id' => $this->anggota->id,
-            'type' => 'simpanan_rutin',
+            'type' => 'simpanan_wajib',
             'amount' => 100000,
         ]);
         $this->assertDatabaseHas('mutations', [
@@ -232,7 +233,8 @@ class DeductionWorkflowTest extends TestCase
             'deduction_period_id' => $period->id,
             'user_id' => $this->anggota->id,
             'loan_id' => null,
-            'routine_saving_amount' => 100000,
+            'simpanan_wajib_amount' => 100000,
+            'simpanan_sukarela_amount' => 0,
             'loan_principal_amount' => 0,
             'loan_fee_amount' => 0,
             'status' => 'menunggu',
@@ -244,13 +246,13 @@ class DeductionWorkflowTest extends TestCase
         $response->assertSessionHas('success');
 
         // Saldo user bertambah
-        $this->assertEquals(100000, $this->anggota->fresh()->total_saving_balance);
+        $this->assertEquals(100000, $this->anggota->fresh()->simpanan_wajib_balance);
 
-        // Hanya 1 mutasi (simpanan_rutin), tidak ada angsuran
+        // Hanya 1 mutasi (simpanan_wajib), tidak ada angsuran
         $this->assertEquals(1, Mutation::where('user_id', $this->anggota->id)->count());
         $this->assertDatabaseHas('mutations', [
             'user_id' => $this->anggota->id,
-            'type' => 'simpanan_rutin',
+            'type' => 'simpanan_wajib',
         ]);
     }
 }

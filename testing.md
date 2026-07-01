@@ -26,6 +26,22 @@ Sistem memastikan bahwa semua logika kritikal bisnis seperti autentikasi, manaje
 - **Feature Tests**: Mengamankan `MonthlyDeductionJob` memastikan bahwa saat tanggal tertentu, pemotongan berjalan berdasarkan tagihan bulanan (pinjaman + simpanan wajib) tanpa melebihi batas gaji anggota.
   - Berkas: `tests/Feature/MonthlyDeductionJobTest.php`
 
+### 5. Simpanan Wajib & Sukarela
+- **Feature Tests**: Memastikan anggota bisa mengubah nilai simpanan sukarela, membutuhkan persetujuan bendahara, dan mutasi saldo di-update secara akurat.
+  - Berkas: `tests/Feature/VoluntarySavingTest.php`
+
+### 6. Top Up Pinjaman
+- **Feature Tests**: Memastikan bahwa anggota yang mengajukan pinjaman saat memiliki pinjaman aktif, pinjaman lama akan digabung menjadi pokok baru, disertai dengan potongan biaya admin (Top Up).
+  - Berkas: `tests/Feature/TopUpLoanTest.php`
+
+### 7. Distribusi Sisa Hasil Usaha (SHU)
+- **Feature Tests**: Memvalidasi proses draft SHU oleh bendahara, persetujuan oleh ketua, dan pendistribusian proporsional yang dimasukkan secara otomatis ke dalam saldo simpanan sukarela anggota.
+  - Berkas: `tests/Feature/ShuDistributionTest.php`
+
+### 8. Fitur Import & Export Anggota
+- **Feature Tests**: Memastikan sistem dapat menerima format `.xlsx` (Excel) dan membuat akun pengguna secara massal beserta kredensial (NIP/NIM) untuk efisiensi admin.
+  - Berkas: `tests/Feature/UserImportTest.php`
+
 ## Cara Menjalankan Tes
 
 Karena proyek berjalan dalam lingkungan **Laravel Sail (Docker)**, pastikan *container* Anda aktif dan gunakan sintaks di bawah ini.
@@ -42,3 +58,16 @@ Karena proyek berjalan dalam lingkungan **Laravel Sail (Docker)**, pastikan *con
 ```
 
 Setiap kode baru yang didorong (*push*) ke siklus hidup repositori *wajib* berhasil melewati semua modul pengujian di atas guna menjamin integritas. 
+
+## Pembaruan Test (Berdasarkan changes_PRD.md)
+Sistem ini telah diperbarui sesuai perubahan dari stakeholder dengan penambahan/perubahan tes otomasi berikut:
+1. **BusinessLogicTest**: Penambahan pengujian untuk alur perhitungan progresif SHU dengan komposisi baru (memasukkan komponen `simpanan_wajib`), serta pembaruan validasi perhitungan Jasa Menurun berdasar `active_months` (10 atau 12 bulan) dan pemilihan tenor _standar_ vs _custom_.
+2. **DeductionWorkflowTest**: Pembaruan assertion terkait potongan bulanan untuk menyertakan porsi `simpanan_wajib` menggantikan simpanan rutin yang lama, serta pengujian status `selesai` pada saat Bendahara menyetujui pemotongan tagihan.
+3. **MemberLoanControllerTest**: Penambahan pengujian (Top Up) untuk menangani kasus anggota meminjam saat masih ada pinjaman aktif, serta validasi bahwa form bermaterai dan masa pensiun dipatuhi sistem.
+
+## Pengujian Manual (Manual Testing)
+Walaupun sebagian besar logika inti bisnis sudah dicakup oleh pengujian otomatis (119 test cases passed), beberapa aspek berikut **tetap memerlukan pengujian manual**:
+1. **UI/UX Tampilan Landing Page**: Validasi visual terhadap perubahan komponen landing page (tidak ada registrasi, statistik dihilangkan untuk anonim, dan daftar fakultas).
+2. **Eksport Excel & PDF (Tagihan, Gagal Debit, Laporan)**: Harus diuji secara manual untuk memastikan tata letak dokumen (*layout*, presisi desimal rupiah, orientasi halaman) benar-benar sesuai standar cetak yang biasa dipakai oleh Bendahara Koperasi FT Unila.
+3. **Notifikasi Gagal Debit**: Pengujian manual diperlukan untuk memverifikasi apakah notifikasi (in-app, email, WA) terkirim secara *real-time* kepada anggota bersangkutan ketika Admin mengubah status dari bank.
+4. **Alur Import Massal (Excel)**: Validasi pengalaman pengguna (*User Experience*) saat mengunggah *file* berukuran besar yang berisi lebih dari 500 anggota lama untuk memeriksa apakah *feedback error* dari UI (baris Excel mana yang salah input) dimunculkan dengan jelas.

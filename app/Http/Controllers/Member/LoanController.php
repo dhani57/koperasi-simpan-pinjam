@@ -30,11 +30,12 @@ class LoanController extends Controller
     {
         $user = auth()->user();
         
-        // Cek apakah ada pinjaman yang masih diajukan atau aktif
-        $hasActiveLoan = \App\Models\Loan::where('user_id', $user->id)
-            ->whereIn('status', ['diajukan', 'disetujui', 'aktif'])
+        // Cek apakah ada pinjaman yang masih diajukan (pending)
+        $hasPendingLoan = \App\Models\Loan::where('user_id', $user->id)
+            ->whereIn('status', ['diajukan', 'disetujui', 'menunggu_bendahara', 'menunggu_ketua', 'menunggu_pencairan'])
             ->exists();
             
+        $activeLoan = \App\Models\Loan::where('user_id', $user->id)->where('status', 'aktif')->first();
         // Ambil default fee (contoh: 1.5)
         $defaultFee = \App\Models\Setting::where('key', 'loan_interest_rate')->value('value') ?? 1.5;
 
@@ -44,10 +45,11 @@ class LoanController extends Controller
         foreach ($activeLoans as $loan) {
             $totalLoanInstallments += ($loan->monthly_principal_installment + $loan->current_year_monthly_fee);
         }
-        $availableLimit = $user->max_salary_deduction_limit - ($user->monthly_saving_nominal + $totalLoanInstallments);
+        $availableLimit = $user->max_salary_deduction_limit - ($user->monthly_simpanan_wajib + $totalLoanInstallments);
 
         return inertia('Member/Loans/Create', [
-            'hasActiveLoan' => $hasActiveLoan,
+            'hasPendingLoan' => $hasPendingLoan,
+            'activeLoan' => $activeLoan,
             'defaultFee' => (float) $defaultFee,
             'availableLimit' => max(0, $availableLimit),
         ]);
@@ -59,28 +61,57 @@ class LoanController extends Controller
         
         $request->validate([
             'principal_amount' => 'required|numeric|min:100000',
-            'tenor_years' => 'nullable|integer|min:1|max:5',
-            'tenor_months' => 'nullable|integer|min:1|max:60',
+            'tenor_type' => 'required|in:standar,custom',
+            'tenor_months' => 'required|integer|min:1',
             'purpose' => 'nullable|string|max:1000',
+        ], [
+            'tenor_type.required' => 'Tenor wajib diisi (tahun atau bulan).',
         ]);
 
-        if (!$request->tenor_years && !$request->tenor_months) {
-            return back()->withErrors(['tenor_years' => 'Tenor wajib diisi (tahun atau bulan).']);
+        if ($request->tenor_type === 'standar' && !in_array($request->tenor_months, [10, 20, 30])) {
+            return back()->withErrors(['tenor_months' => 'Pilihan tenor standar tidak valid.']);
+        }
+
+        $now = now();
+        $retirementYear = $user->retirement_year;
+        $retirementMonth = $user->retirement_month;
+        if ($retirementYear && $retirementMonth) {
+            $monthsRemaining = (($retirementYear - $now->year) * 12) + ($retirementMonth - $now->month);
+            if ($request->tenor_months > $monthsRemaining) {
+                return back()->withErrors(['tenor_months' => 'Tenor melebihi sisa masa bakti Anda.']);
+            }
         }
 
         $principal = $request->principal_amount;
-        $tenorYears = $request->tenor_years;
+        $tenorYears = null;
         $tenorMonths = $request->tenor_months;
         $purpose = $request->purpose;
         $feePercentage = \App\Models\Setting::where('key', 'loan_interest_rate')->value('value') ?? 1.5;
         
-        // Cek lagi apakah ada pinjaman aktif
-        $hasActiveLoan = \App\Models\Loan::where('user_id', $user->id)
-            ->whereIn('status', ['diajukan', 'disetujui', 'aktif'])
+        // Cek pinjaman aktif untuk logika Top Up
+        $activeLoan = \App\Models\Loan::where('user_id', $user->id)
+            ->where('status', 'aktif')
+            ->first();
+            
+        $pendingLoan = \App\Models\Loan::where('user_id', $user->id)
+            ->whereIn('status', ['diajukan', 'disetujui', 'menunggu_bendahara', 'menunggu_ketua', 'menunggu_pencairan'])
             ->exists();
             
-        if ($hasActiveLoan) {
-            return back()->withErrors(['principal_amount' => 'Anda masih memiliki pinjaman aktif atau dalam proses pengajuan.']);
+        if ($pendingLoan) {
+            return back()->withErrors(['principal_amount' => 'Anda masih memiliki pinjaman dalam proses pengajuan.']);
+        }
+
+        $mergedFromLoanId = null;
+        $mergedOldRemaining = 0;
+        
+        if ($activeLoan) {
+            $mergedFromLoanId = $activeLoan->id;
+            $mergedOldRemaining = $activeLoan->current_remaining_principal;
+            $principal += $mergedOldRemaining; // Total pokok pinjaman baru = tambahan + sisa lama
+        }
+
+        if (!$this->loanService->validateMaxPrincipal($principal)) {
+            return back()->withErrors(['principal_amount' => 'Total pinjaman (termasuk sisa lama) melebihi batas maksimal Rp 50.000.000.']);
         }
 
         // Simulasi untuk mendapatkan cicilan tahun pertama
@@ -92,7 +123,7 @@ class LoanController extends Controller
             return back()->withErrors(['principal_amount' => 'Cicilan bulan pertama (Rp ' . number_format($firstYearMonthly, 0, ',', '.') . ') melebihi sisa plafon gaji Anda.']);
         }
         
-        $this->loanService->createLoan($user, $principal, $tenorYears, $tenorMonths, $purpose);
+        $this->loanService->createLoan($user, $principal, $tenorYears, $tenorMonths, $purpose, null, $mergedFromLoanId, $mergedOldRemaining);
 
         return redirect()->route('member.loans.index')->with('success', 'Pengajuan pinjaman berhasil dibuat dan menunggu verifikasi.');
     }

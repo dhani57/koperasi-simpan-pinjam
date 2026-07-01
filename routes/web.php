@@ -24,6 +24,7 @@ use App\Http\Controllers\Member\DashboardController as MemberDashboardController
 use App\Http\Controllers\Member\LoanController as MemberLoanController;
 use App\Http\Controllers\Member\MutationController as MemberMutationController;
 use App\Http\Controllers\Member\ShuController as MemberShuController;
+use App\Http\Controllers\Member\VoluntarySavingRequestController as MemberVoluntarySavingRequestController;
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/dashboard', [MemberDashboardController::class, 'index'])->name('dashboard');
@@ -34,6 +35,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('mutations/print', [MemberMutationController::class, 'print'])->name('mutations.print');
         Route::resource('mutations', MemberMutationController::class)->only(['index']);
         Route::get('shu', [MemberShuController::class, 'index'])->name('shu.index');
+        Route::resource('voluntary-saving-requests', MemberVoluntarySavingRequestController::class)->only(['index', 'create', 'store']);
     });
 });
 
@@ -49,6 +51,7 @@ use App\Http\Controllers\Admin\LoanController;
 use App\Http\Controllers\Admin\SettingController;
 use App\Http\Controllers\Admin\DeductionController;
 use App\Http\Controllers\Admin\ShuController;
+use App\Http\Controllers\Admin\VoluntarySavingRequestController as AdminVoluntarySavingRequestController;
 
 Route::middleware(['auth', 'verified', 'admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
@@ -59,6 +62,8 @@ Route::middleware(['auth', 'verified', 'admin'])->prefix('admin')->name('admin.'
     
     // Hanya pengurus yang mengelola pengguna dan settings (Create/Edit/Delete)
     Route::middleware('role:pengurus')->group(function () {
+        Route::post('users/import', [UserController::class, 'import'])->name('users.import');
+        Route::get('users/template', [UserController::class, 'downloadTemplate'])->name('users.template');
         Route::resource('users', UserController::class)->except(['index']);
         Route::post('settings', [SettingController::class, 'store'])->name('settings.store');
     });
@@ -73,6 +78,7 @@ Route::middleware(['auth', 'verified', 'admin'])->prefix('admin')->name('admin.'
     // Potongan Bulanan Routes
     Route::resource('deductions', DeductionController::class)->only(['index', 'show']);
     Route::post('deductions', [DeductionController::class, 'store'])->name('deductions.store')->middleware('role:bendahara');
+    Route::post('deductions/{deduction}/approve', [DeductionController::class, 'approve'])->name('deductions.approve')->middleware('role:ketua');
     Route::patch('deductions/{deduction}/selesai', [DeductionController::class, 'markAsSelesai'])->name('deductions.selesai')->middleware('role:bendahara');
     Route::get('deductions/{deduction}/export', [DeductionController::class, 'export'])->name('deductions.export')->middleware('role:bendahara');
     
@@ -82,7 +88,12 @@ Route::middleware(['auth', 'verified', 'admin'])->prefix('admin')->name('admin.'
     // SHU Routes
     Route::get('shu', [ShuController::class, 'index'])->name('shu.index')->middleware('role:bendahara,ketua,pengawas');
     Route::post('shu/generate', [ShuController::class, 'store'])->name('shu.store')->middleware('role:bendahara');
-    Route::post('shu/approve', [ShuController::class, 'approve'])->name('shu.approve')->middleware('role:ketua');
+    Route::post('shu/approve', [ShuController::class, 'approve'])->name('shu.approve')->middleware('role:ketua,bendahara');
+
+    // Voluntary Saving Request Routes
+    Route::get('voluntary-saving-requests', [AdminVoluntarySavingRequestController::class, 'index'])->name('voluntary_saving_requests.index')->middleware('role:bendahara,pengurus');
+    Route::post('voluntary-saving-requests/{voluntarySavingRequest}/approve', [AdminVoluntarySavingRequestController::class, 'approve'])->name('voluntary_saving_requests.approve')->middleware('role:bendahara,pengurus');
+    Route::post('voluntary-saving-requests/{voluntarySavingRequest}/reject', [AdminVoluntarySavingRequestController::class, 'reject'])->name('voluntary_saving_requests.reject')->middleware('role:bendahara,pengurus');
 
     // Audit Log Route
     Route::get('audit-logs', [\App\Http\Controllers\Admin\AuditLogController::class, 'index'])

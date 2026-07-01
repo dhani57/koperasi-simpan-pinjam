@@ -10,6 +10,7 @@ class Mutation extends Model
     protected $fillable = [
         'user_id',
         'type',
+        'saving_type',
         'amount',
         'balance_after',
         'description',

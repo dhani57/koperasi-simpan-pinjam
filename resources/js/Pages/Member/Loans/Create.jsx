@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Head, useForm, Link } from '@inertiajs/react';
 import MemberLayout from '@/Layouts/MemberLayout';
 
-export default function Create({ auth, hasActiveLoan, defaultFee, availableLimit }) {
+export default function Create({ auth, hasPendingLoan, activeLoan, defaultFee, availableLimit }) {
     const { data, setData, post, processing, errors } = useForm({
         principal_amount: '',
         tenor_years: 1,
@@ -15,7 +15,13 @@ export default function Create({ auth, hasActiveLoan, defaultFee, availableLimit
 
     useEffect(() => {
         if (data.principal_amount && (data.tenor_years || data.tenor_months)) {
-            const principal = parseFloat(data.principal_amount);
+            let principal = parseFloat(data.principal_amount);
+            
+            // Top up logic: add active loan remaining principal
+            if (activeLoan && activeLoan.current_remaining_principal) {
+                principal += parseFloat(activeLoan.current_remaining_principal);
+            }
+
             const activeMonths = 10; // Approx
 
             let totalTenorMonths = 0;
@@ -35,6 +41,7 @@ export default function Create({ auth, hasActiveLoan, defaultFee, availableLimit
                 const monthly = Math.ceil(pokokSebulan + jasaSebulan);
                 
                 setSimulation({
+                    totalPrincipal: principal,
                     monthly,
                     jasaSebulan,
                     pokokSebulan,
@@ -77,19 +84,29 @@ export default function Create({ auth, hasActiveLoan, defaultFee, availableLimit
                     </p>
                 </div>
 
-                {hasActiveLoan ? (
+                {hasPendingLoan ? (
                     <div style={{ backgroundColor: 'white', padding: 'var(--spacing-xl)', borderRadius: 'var(--rounded-lg)', textAlign: 'center', border: '1px solid var(--color-hairline)' }}>
-                        <h3 className="ds-title-md" style={{ marginBottom: '8px' }}>Pengajuan Terkunci</h3>
+                        <h3 className="ds-title-md" style={{ marginBottom: '8px' }}>Pengajuan Sedang Diproses</h3>
                         <p className="ds-body-sm" style={{ color: 'var(--color-muted)', maxWidth: '400px', margin: '0 auto' }}>
-                            Anda masih memiliki pinjaman aktif atau dalam proses pengajuan. Silakan lunasi pinjaman sebelumnya terlebih dahulu.
+                            Anda memiliki pinjaman yang sedang dalam proses pengajuan. Silakan tunggu hingga proses selesai.
                         </p>
                     </div>
                 ) : (
                     <form onSubmit={submit}>
+                        {activeLoan && (
+                            <div className="bg-blue-50 border border-blue-200 text-blue-800 rounded-lg p-4 mb-6">
+                                <h4 className="font-semibold text-sm mb-1">Info Top Up Pinjaman</h4>
+                                <p className="text-xs">
+                                    Anda memiliki pinjaman aktif dengan sisa utang pokok sebesar <strong>Rp {formatRp(activeLoan.current_remaining_principal)}</strong>.
+                                    Pengajuan pinjaman baru ini akan digabungkan dengan sisa pinjaman lama (Top Up). Biaya admin akan dikenakan sebesar 1% dari total pinjaman baru.
+                                </p>
+                            </div>
+                        )}
+
                         {/* Input Card */}
                         <div style={{ backgroundColor: 'white', borderRadius: 'var(--rounded-lg)', padding: 'var(--spacing-xl)', border: '1px solid var(--color-hairline)', marginBottom: 'var(--spacing-lg)' }}>
                             <div style={{ marginBottom: 'var(--spacing-xl)' }}>
-                                <label style={{ display: 'block', fontWeight: 600, fontSize: '13px', marginBottom: '8px' }}>Jumlah Pinjaman</label>
+                                <label style={{ display: 'block', fontWeight: 600, fontSize: '13px', marginBottom: '8px' }}>Jumlah Tambahan Pinjaman Baru</label>
                                 <div style={{ position: 'relative' }}>
                                     <span style={{ position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)', fontFamily: 'var(--font-mono)', fontSize: '18px', color: 'var(--color-muted)' }}>Rp</span>
                                     <input
@@ -211,16 +228,16 @@ export default function Create({ auth, hasActiveLoan, defaultFee, availableLimit
                             <div className="bg-[#1e293b] text-white rounded-xl p-6 sm:p-8 mb-8 shadow-lg border border-slate-700">
                                 <h3 className="text-lg font-semibold mb-4 text-white">Simulasi Transparansi</h3>
                                 <p className="text-sm text-white/70 mb-6 leading-relaxed">
-                                    Jika Anda meminjam <strong className="text-white">Rp {formatRp(data.principal_amount)}</strong> selama <strong className="text-white">{data.is_custom_tenor ? data.tenor_months + ' Bulan' : data.tenor_years + ' Tahun'}</strong>, berikut adalah estimasi total potongan gaji Anda di <strong className="text-white">Tahun Pertama</strong> (maksimal {simulation.computedTenorYears === 1 && data.is_custom_tenor ? Math.min(10, data.tenor_months) : 10} Bulan):
+                                    Total Pokok Pinjaman (Baru + Lama) adalah <strong className="text-white">Rp {formatRp(simulation.totalPrincipal)}</strong>. Dengan tenor <strong className="text-white">{data.is_custom_tenor ? data.tenor_months + ' Bulan' : data.tenor_years + ' Tahun'}</strong>, berikut adalah estimasi total potongan gaji Anda di <strong className="text-white">Tahun Pertama</strong>:
                                 </p>
 
                                 <div className="flex flex-col gap-4">
                                     <div className="flex justify-between items-start gap-4 text-sm text-white/80">
-                                        <span className="flex-1 leading-snug">Potongan Simpanan Wajib (Rutin)</span>
-                                        <span className="font-mono font-medium text-white whitespace-nowrap text-right">Rp {formatRp(auth.user.monthly_saving_nominal)}</span>
+                                        <span className="flex-1 leading-snug">Potongan Simpanan Wajib</span>
+                                        <span className="font-mono font-medium text-white whitespace-nowrap text-right">Rp {formatRp(auth.user.monthly_simpanan_wajib)}</span>
                                     </div>
                                     <div className="flex justify-between items-start gap-4 text-sm text-white/80">
-                                        <span className="flex-1 leading-snug">Cicilan Pinjaman Baru</span>
+                                        <span className="flex-1 leading-snug">Cicilan Pokok Pinjaman</span>
                                         <span className="font-mono font-medium text-white whitespace-nowrap text-right">Rp {formatRp(simulation.pokokSebulan)}</span>
                                     </div>
                                     <div className="flex justify-between items-start gap-4 text-sm text-white/80">
@@ -231,12 +248,17 @@ export default function Create({ auth, hasActiveLoan, defaultFee, availableLimit
 
                                 <div className="flex flex-col sm:flex-row sm:justify-between items-start sm:items-end gap-2 sm:gap-4 mt-6 pt-6 border-t border-white/10">
                                     <span className="text-base font-semibold leading-tight text-white">Total Potongan Gaji<br className="hidden sm:block" /> Bulan Depan</span>
-                                    <span className="font-mono text-3xl sm:text-4xl font-bold text-[#eab308] whitespace-nowrap">Rp {formatRp(simulation.monthly + Number(auth.user.monthly_saving_nominal))}</span>
+                                    <span className="font-mono text-3xl sm:text-4xl font-bold text-[#eab308] whitespace-nowrap">Rp {formatRp(simulation.monthly + Number(auth.user.monthly_simpanan_wajib))}</span>
                                 </div>
 
                                 {(simulation.monthly > availableLimit) && (
                                     <div style={{ marginTop: '16px', backgroundColor: 'var(--color-semantic-down)', padding: '12px', borderRadius: '8px', fontSize: '12px', textAlign: 'center' }}>
-                                        Peringatan: Total cicilan ({formatRp(simulation.monthly)}) melebihi sisa plafon potong gaji Anda ({formatRp(availableLimit)}).
+                                        Peringatan: Total cicilan pinjaman ({formatRp(simulation.monthly)}) melebihi sisa plafon potong gaji Anda ({formatRp(availableLimit)}).
+                                    </div>
+                                )}
+                                {(simulation.totalPrincipal > 50000000) && (
+                                    <div style={{ marginTop: '16px', backgroundColor: 'var(--color-semantic-down)', padding: '12px', borderRadius: '8px', fontSize: '12px', textAlign: 'center' }}>
+                                        Peringatan: Total pokok pinjaman ({formatRp(simulation.totalPrincipal)}) melebihi batas maksimal Rp 50.000.000.
                                     </div>
                                 )}
                             </div>
@@ -244,7 +266,7 @@ export default function Create({ auth, hasActiveLoan, defaultFee, availableLimit
 
                         <button 
                             type="submit" 
-                            disabled={processing || !simulation || (simulation && simulation.monthly > availableLimit)}
+                            disabled={processing || !simulation || (simulation && simulation.monthly > availableLimit) || (simulation && simulation.totalPrincipal > 50000000)}
                             style={{ 
                                 width: '100%', 
                                 padding: '16px', 
@@ -254,8 +276,8 @@ export default function Create({ auth, hasActiveLoan, defaultFee, availableLimit
                                 borderRadius: '100px',
                                 fontSize: '16px',
                                 fontWeight: 600,
-                                cursor: (processing || !simulation || (simulation && simulation.monthly > availableLimit)) ? 'not-allowed' : 'pointer',
-                                opacity: (processing || !simulation || (simulation && simulation.monthly > availableLimit)) ? 0.5 : 1
+                                cursor: (processing || !simulation || (simulation && simulation.monthly > availableLimit) || (simulation && simulation.totalPrincipal > 50000000)) ? 'not-allowed' : 'pointer',
+                                opacity: (processing || !simulation || (simulation && simulation.monthly > availableLimit) || (simulation && simulation.totalPrincipal > 50000000)) ? 0.5 : 1
                             }}
                         >
                             {processing ? 'Memproses...' : 'Ajukan Pinjaman & Setujui Potong Gaji'}

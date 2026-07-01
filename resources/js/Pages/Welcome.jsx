@@ -144,11 +144,11 @@ export default function Welcome({ auth, adminPhone }) {
                                     <div style={{ display: 'flex', gap: 'var(--spacing-base)' }}>
                                         <div className="ds-asset-icon-circular">S</div>
                                         <div>
-                                            <div className="ds-title-sm" style={{ color: 'var(--color-ink)' }}>Simpanan Wajib</div>
+                                            <div className="ds-title-sm" style={{ color: 'var(--color-ink)' }}>Simpanan Wajib & Sukarela</div>
                                             <div className="ds-body-sm" style={{ color: 'var(--color-muted)' }}>Potong otomatis tgl 25</div>
                                         </div>
                                     </div>
-                                    <div style={{ fontFamily: 'var(--font-mono)', fontSize: '16px', fontWeight: 500 }}>Rp 100.000</div>
+                                    <div style={{ fontFamily: 'var(--font-mono)', fontSize: '16px', fontWeight: 500 }}>Rp 150.000</div>
                                 </div>
                                 
                                 <div className="ds-asset-row" style={{ borderBottom: 'none', paddingBottom: 0 }}>

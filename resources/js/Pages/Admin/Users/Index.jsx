@@ -6,6 +6,9 @@ import Pagination from '@/Components/Pagination';
 import ConfirmModal from '@/Components/ConfirmModal';
 
 export default function Index({ auth, users, filters }) {
+    const { data, setData, post, processing, errors } = useForm({
+        file: null,
+    });
     const { delete: destroy } = useForm();
     const [search, setSearch] = useState(filters?.search || '');
     const initialRender = useRef(true);
@@ -64,6 +67,26 @@ export default function Index({ auth, users, filters }) {
         );
     };
 
+    const handleFileChange = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            setData('file', file);
+        }
+    };
+
+    const handleImport = (e) => {
+        e.preventDefault();
+        post(route('admin.users.import'), {
+            onSuccess: () => {
+                alert('Import berhasil');
+                setData('file', null);
+            },
+            onError: (err) => {
+                alert('Gagal import: ' + JSON.stringify(err));
+            }
+        });
+    };
+
     return (
         <AdminLayout auth={auth} title="Manajemen Anggota">
             <Head title="Manajemen Anggota" />
@@ -79,9 +102,28 @@ export default function Index({ auth, users, filters }) {
                 />
                 
                 {auth.user.role !== 'pengawas' && (
-                    <ButtonPrimary href={route('admin.users.create')} className="w-full md:w-auto text-center justify-center">
-                        + Tambah Anggota Baru
-                    </ButtonPrimary>
+                    <div className="flex flex-col md:flex-row gap-2 w-full md:w-auto">
+                        <a href={route('admin.users.template')} className="text-sm border border-gray-300 text-gray-700 px-4 py-2 rounded-lg text-center hover:bg-gray-50 flex items-center justify-center gap-2">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                            Unduh Template
+                        </a>
+                        <form onSubmit={handleImport} className="flex gap-2">
+                            <input 
+                                type="file" 
+                                accept=".xlsx,.xls" 
+                                onChange={handleFileChange} 
+                                className="block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+                            />
+                            {data.file && (
+                                <button type="submit" disabled={processing} className="bg-green-600 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-green-700 disabled:opacity-50">
+                                    {processing ? 'Loading...' : 'Upload'}
+                                </button>
+                            )}
+                        </form>
+                        <ButtonPrimary href={route('admin.users.create')} className="w-full md:w-auto text-center justify-center">
+                            + Tambah Anggota
+                        </ButtonPrimary>
+                    </div>
                 )}
             </div>
 

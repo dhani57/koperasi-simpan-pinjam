@@ -14,6 +14,8 @@ class Loan extends Model
         'principal_amount',
         'purpose',
         'cooperative_fee_percentage',
+        'admin_fee_amount',
+        'admin_fee_overridden',
         'tenor_months',
         'tenor_years',
         'monthly_principal_installment',
@@ -28,6 +30,9 @@ class Loan extends Model
         'bendahara_approved_by',
         'ketua_approved_at',
         'ketua_approved_by',
+        'document_path',
+        'merged_from_loan_id',
+        'merged_old_remaining',
     ];
 
     protected $casts = [
@@ -35,6 +40,7 @@ class Loan extends Model
         'admin_verified_at' => 'datetime',
         'bendahara_approved_at' => 'datetime',
         'ketua_approved_at' => 'datetime',
+        'admin_fee_overridden' => 'boolean',
     ];
 
     public function user()
@@ -50,5 +56,10 @@ class Loan extends Model
     public function verifiedBy()
     {
         return $this->belongsTo(User::class, 'admin_verified_by');
+    }
+
+    public function mergedFromLoan()
+    {
+        return $this->belongsTo(Loan::class, 'merged_from_loan_id');
     }
 }

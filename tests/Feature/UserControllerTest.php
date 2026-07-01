@@ -29,7 +29,7 @@ class UserControllerTest extends TestCase
             'email' => 'john@example.com',
             'password' => 'password',
             'password_confirmation' => 'password',
-            'monthly_saving_nominal' => 100000,
+            'monthly_simpanan_wajib' => 100000,
             'max_salary_deduction_limit' => 1000000,
             'roles' => ['anggota', 'ketua', 'bendahara'],
         ]);
@@ -46,7 +46,7 @@ class UserControllerTest extends TestCase
             'email' => 'jane@example.com',
             'password' => 'password',
             'password_confirmation' => 'password',
-            'monthly_saving_nominal' => 100000,
+            'monthly_simpanan_wajib' => 100000,
             'max_salary_deduction_limit' => 1000000,
             'roles' => ['ketua', 'bendahara'],
         ]);
@@ -64,7 +64,7 @@ class UserControllerTest extends TestCase
             'email' => 'dual@example.com',
             'password' => 'password',
             'password_confirmation' => 'password',
-            'monthly_saving_nominal' => 100000,
+            'monthly_simpanan_wajib' => 100000,
             'max_salary_deduction_limit' => 1000000,
             'roles' => ['bendahara', 'anggota'],
         ]);
@@ -83,7 +83,7 @@ class UserControllerTest extends TestCase
         $user = User::factory()->create([
             'role' => 'anggota',
             'is_anggota' => true,
-            'monthly_saving_nominal' => 100000,
+            'monthly_simpanan_wajib' => 100000,
             'max_salary_deduction_limit' => 1000000,
         ]);
 
@@ -91,7 +91,7 @@ class UserControllerTest extends TestCase
             'name' => 'Updated Name',
             'identity_number' => $user->identity_number,
             'email' => $user->email,
-            'monthly_saving_nominal' => 200000,
+            'monthly_simpanan_wajib' => 200000,
             'max_salary_deduction_limit' => 3000000,
             'roles' => ['anggota'],
         ]);
@@ -101,7 +101,7 @@ class UserControllerTest extends TestCase
 
         $user->refresh();
         $this->assertEquals('Updated Name', $user->name);
-        $this->assertEquals(200000, $user->monthly_saving_nominal);
+        $this->assertEquals(200000, $user->monthly_simpanan_wajib);
         $this->assertEquals(3000000, $user->max_salary_deduction_limit);
     }
 
@@ -110,7 +110,7 @@ class UserControllerTest extends TestCase
         $user = User::factory()->create([
             'role' => 'anggota',
             'is_anggota' => true,
-            'monthly_saving_nominal' => 100000,
+            'monthly_simpanan_wajib' => 100000,
             'max_salary_deduction_limit' => 1000000,
         ]);
 
@@ -119,7 +119,7 @@ class UserControllerTest extends TestCase
             'name' => $user->name,
             'identity_number' => $user->identity_number,
             'email' => $user->email,
-            'monthly_saving_nominal' => 100000,
+            'monthly_simpanan_wajib' => 100000,
             'max_salary_deduction_limit' => 1000000,
             'roles' => ['anggota'],
             'password' => '',
@@ -161,7 +161,7 @@ class UserControllerTest extends TestCase
             'email' => 'shouldfail@example.com',
             'password' => 'password',
             'password_confirmation' => 'password',
-            'monthly_saving_nominal' => 100000,
+            'monthly_simpanan_wajib' => 100000,
             'max_salary_deduction_limit' => 1000000,
             'roles' => ['anggota'],
         ]);

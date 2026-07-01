@@ -12,6 +12,8 @@ class ShuController extends Controller
         $year = request('year', now()->year);
         $search = request('search');
         
+        $shuPeriod = \App\Models\ShuPeriod::where('year', $year)->first();
+        
         $shuData = $shuService->calculateEstimatedShu($year);
 
         if ($search) {
@@ -21,8 +23,8 @@ class ShuController extends Controller
             $shuData['member_proportions'] = array_values($shuData['member_proportions']);
         }
 
-        $isDistributed = \App\Models\Setting::where('key', 'shu_distributed_' . $year)->exists();
-        $hasDraft = \App\Models\Setting::where('key', 'shu_draft_' . $year)->exists();
+        $isDistributed = $shuPeriod ? $shuPeriod->status === 'selesai' : false;
+        $hasDraft = $shuPeriod ? in_array($shuPeriod->status, ['draf', 'disetujui_ketua']) : false;
 
         // Just display a page to trigger SHU
         return inertia('Admin/Shu/Index', [
@@ -36,20 +38,33 @@ class ShuController extends Controller
 
     public function store(Request $request)
     {
-        $year = $request->query('year', now()->year);
+        $year = $request->input('year', now()->year);
+        $totalJasaIncome = $request->input('total_jasa_income', 0);
+        $persenSimpanan = $request->input('persen_shu_simpanan', 40);
+        $persenJasa = $request->input('persen_shu_jasa', 60);
 
-        if (\App\Models\Setting::where('key', 'shu_distributed_' . $year)->exists()) {
+        $shuPeriod = \App\Models\ShuPeriod::where('year', $year)->first();
+
+        if ($shuPeriod && $shuPeriod->status === 'selesai') {
             return redirect()->back()->with('error', "SHU tahun {$year} telah didistribusikan.");
         }
 
-        if (\App\Models\Setting::where('key', 'shu_draft_' . $year)->exists()) {
-            return redirect()->back()->with('error', "Draf SHU tahun {$year} sudah dikirim.");
+        if (!$shuPeriod) {
+            $shuPeriod = \App\Models\ShuPeriod::create([
+                'year' => $year,
+                'total_jasa_income' => $totalJasaIncome,
+                'persen_shu_simpanan' => $persenSimpanan,
+                'persen_shu_jasa' => $persenJasa,
+                'status' => 'draf',
+            ]);
+        } else {
+            $shuPeriod->update([
+                'total_jasa_income' => $totalJasaIncome,
+                'persen_shu_simpanan' => $persenSimpanan,
+                'persen_shu_jasa' => $persenJasa,
+                'status' => 'draf',
+            ]);
         }
-
-        \App\Models\Setting::updateOrCreate(
-            ['key' => 'shu_draft_' . $year],
-            ['value' => '1']
-        );
 
         app(\App\Services\AuditLogService::class)->log(
             auth()->user(),
@@ -63,12 +78,24 @@ class ShuController extends Controller
     public function approve(Request $request, \App\Services\ShuService $shuService)
     {
         $year = $request->query('year', now()->year);
+        $shuPeriod = \App\Models\ShuPeriod::where('year', $year)->first();
 
-        if (\App\Models\Setting::where('key', 'shu_distributed_' . $year)->exists()) {
-            return redirect()->back()->with('error', "SHU tahun {$year} telah didistribusikan.");
+        if (!$shuPeriod || $shuPeriod->status === 'selesai') {
+            return redirect()->back()->with('error', "SHU tahun {$year} belum draf atau telah didistribusikan.");
         }
 
-        \Illuminate\Support\Facades\DB::transaction(function () use ($year, $shuService) {
+        if (auth()->user()->role === 'ketua') {
+            if ($shuPeriod->status === 'draf') {
+                $shuPeriod->update([
+                    'status' => 'disetujui_ketua',
+                    'ketua_approved_at' => now(),
+                    'ketua_approved_by' => auth()->id()
+                ]);
+                return redirect()->back()->with('success', 'SHU disetujui Ketua. Menunggu distribusi.');
+            }
+        }
+
+        \Illuminate\Support\Facades\DB::transaction(function () use ($year, $shuService, $shuPeriod) {
             $shuData = $shuService->calculateEstimatedShu($year);
 
             foreach ($shuData['member_proportions'] as $memberData) {
@@ -79,20 +106,20 @@ class ShuController extends Controller
                     \App\Models\Mutation::create([
                         'user_id' => $user->id,
                         'type' => 'shu_distribution',
+                        'saving_type' => 'sukarela',
                         'amount' => $amount,
-                        'balance_after' => $user->total_saving_balance + $amount,
+                        'balance_after' => $user->simpanan_sukarela_balance + $amount,
                         'description' => "Pembagian SHU Tahun {$year}",
                     ]);
 
-                    $user->total_saving_balance += $amount;
+                    $user->simpanan_sukarela_balance += $amount;
                     $user->save();
                 }
             }
 
-            \App\Models\Setting::updateOrCreate(
-                ['key' => 'shu_distributed_' . $year],
-                ['value' => '1']
-            );
+            $shuPeriod->update([
+                'status' => 'selesai',
+            ]);
         });
 
         app(\App\Services\AuditLogService::class)->log(

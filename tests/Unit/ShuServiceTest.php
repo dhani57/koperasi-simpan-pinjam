@@ -24,8 +24,8 @@ class ShuServiceTest extends TestCase
     public function test_shu_distribution_proportional_calculation()
     {
         // Buat 2 anggota dengan transaksi berbeda
-        $memberA = User::factory()->create(['role' => 'anggota', 'total_saving_balance' => 500000]);
-        $memberB = User::factory()->create(['role' => 'anggota', 'total_saving_balance' => 300000]);
+        $memberA = User::factory()->create(['role' => 'anggota', 'simpanan_sukarela_balance' => 500000]);
+        $memberB = User::factory()->create(['role' => 'anggota', 'simpanan_sukarela_balance' => 300000]);
 
         $year = now()->year;
 

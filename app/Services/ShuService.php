@@ -17,24 +17,29 @@ class ShuService
     public function calculateEstimatedShu(string $year): array
     {
         $formulaBase = Setting::where('key', 'shu_formula_base')->value('value') ?? 'total_jasa_pinjaman';
+        $shuPeriod = \App\Models\ShuPeriod::where('year', $year)->first();
+
+        // Default percentages if no period is set yet (PRD default: 70% for anggota, split 40/60)
+        // 40% of 70% = 28% (0.28), 60% of 70% = 42% (0.42)
+        $persenSimpanan = $shuPeriod ? ($shuPeriod->persen_shu_simpanan / 100) : 0.28;
+        $persenJasa = $shuPeriod ? ($shuPeriod->persen_shu_jasa / 100) : 0.42;
+        $persenTotalAnggota = $persenSimpanan + $persenJasa; // For display purposes
 
         // Global Totals
         $totalGlobalJasa = Mutation::whereYear('created_at', $year)
             ->where('type', 'angsuran_jasa')
             ->sum('amount');
 
-        $totalGlobalSimpanan = Mutation::whereIn('type', ['simpanan_rutin', 'simpanan_pokok', 'simpanan_sukarela'])
+        $totalGlobalSimpanan = Mutation::whereIn('type', ['simpanan_rutin', 'simpanan_wajib', 'simpanan_pokok', 'simpanan_sukarela', 'simpanan'])
             ->sum('amount');
 
         // Asumsi Profit: Keuntungan koperasi adalah total jasa pinjaman yang terkumpul
-        $globalProfit = $totalGlobalJasa;
+        $globalProfit = $shuPeriod ? $shuPeriod->total_jasa_income : $totalGlobalJasa;
         
-        // Asumsi alokasi SHU untuk anggota adalah 70% dari profit
-        $totalShuDibagikan = $globalProfit * 0.7;
+        $totalShuDibagikan = $globalProfit * $persenTotalAnggota;
 
-        // Distribusi: 40% berdasarkan porsi simpanan, 60% berdasarkan porsi pinjaman
-        $porsiSimpananPool = $totalShuDibagikan * 0.4;
-        $porsiJasaPool = $totalShuDibagikan * 0.6;
+        $porsiSimpananPool = $globalProfit * $persenSimpanan;
+        $porsiJasaPool = $globalProfit * $persenJasa;
 
         $members = User::where('role', 'anggota')->get();
         $proportions = [];
@@ -42,7 +47,7 @@ class ShuService
 
         foreach ($members as $member) {
             $totalSimpananAkumulasi = Mutation::where('user_id', $member->id)
-                ->whereIn('type', ['simpanan_rutin', 'simpanan_pokok', 'simpanan_sukarela'])
+                ->whereIn('type', ['simpanan_rutin', 'simpanan_wajib', 'simpanan_pokok', 'simpanan_sukarela', 'simpanan'])
                 ->sum('amount');
 
             $totalJasaPinjaman = Mutation::where('user_id', $member->id)

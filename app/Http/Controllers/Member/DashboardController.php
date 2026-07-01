@@ -11,7 +11,7 @@ class DashboardController extends Controller
     {
         $user = auth()->user();
         
-        // Sisa plafon gaji: (max_salary_deduction_limit) - (monthly_saving_nominal + sum of active loan monthly_installments)
+        // Sisa plafon gaji: (max_salary_deduction_limit) - (monthly_simpanan_wajib + sum of active loan monthly_installments)
         $activeLoans = \App\Models\Loan::where('user_id', $user->id)
             ->whereIn('status', ['disetujui', 'aktif'])
             ->get();
@@ -19,7 +19,7 @@ class DashboardController extends Controller
         $totalLoanInstallments = $activeLoans->sum(function($loan) {
             return $loan->monthly_principal_installment + $loan->current_year_monthly_fee;
         });
-        $availableLimit = $user->max_salary_deduction_limit - ($user->monthly_saving_nominal + $totalLoanInstallments);
+        $availableLimit = $user->max_salary_deduction_limit - ($user->monthly_simpanan_wajib + $totalLoanInstallments);
         
         // Mutasi Terakhir
         $recentMutations = \App\Models\Mutation::where('user_id', $user->id)
@@ -35,7 +35,8 @@ class DashboardController extends Controller
 
         return inertia('Member/Dashboard', [
             'totalSimpanan' => $user->total_saving_balance,
-            'simpananRutin' => $user->monthly_saving_nominal,
+            'simpananWajib' => $user->monthly_simpanan_wajib,
+            'simpananSukarela' => $user->monthly_simpanan_sukarela,
             'plafonTersedia' => max(0, $availableLimit),
             'activeLoans' => $activeLoans,
             'recentMutations' => $recentMutations,

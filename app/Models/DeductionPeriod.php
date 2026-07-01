@@ -14,10 +14,13 @@ class DeductionPeriod extends Model
         'year',
         'status',
         'is_active',
+        'confirmed_by',
+        'confirmed_at',
     ];
 
     protected $casts = [
         'is_active' => 'boolean',
+        'confirmed_at' => 'datetime',
     ];
 
     public function deductionDetails()

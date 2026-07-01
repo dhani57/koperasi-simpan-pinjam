@@ -75,7 +75,7 @@ class LoanServiceTest extends TestCase
         $service = new LoanService();
         $user = User::factory()->create([
             'role' => 'anggota',
-            'monthly_saving_nominal' => 100000,
+            'monthly_simpanan_wajib' => 100000,
             'max_salary_deduction_limit' => 5000000,
         ]);
 
@@ -88,7 +88,7 @@ class LoanServiceTest extends TestCase
         $service = new LoanService();
         $user = User::factory()->create([
             'role' => 'anggota',
-            'monthly_saving_nominal' => 100000,
+            'monthly_simpanan_wajib' => 100000,
             'max_salary_deduction_limit' => 500000,
         ]);
 

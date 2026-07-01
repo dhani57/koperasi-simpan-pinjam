@@ -56,19 +56,30 @@ class ProcessMonthlyDeduction implements ShouldQueue
                 $detailsToInsert = [];
 
                 foreach ($members as $member) {
-                    $routineSavingAmount = $member->monthly_saving_nominal;
+                    $simpananWajibAmount = $member->monthly_simpanan_wajib;
+                    $simpananSukarelaAmount = $member->monthly_simpanan_sukarela;
+                    
+                    // Skip members who have retired or have failed debit (unless they manually fix it)
+                    if ($member->has_failed_debit) {
+                        continue;
+                    }
+                    if ($member->isRetiredByDate($this->period->month, $this->period->year)) {
+                        continue;
+                    }
                     
                     // Get active loans
                     $activeLoans = Loan::where('user_id', $member->id)->where('status', 'aktif')->get();
 
                     if ($activeLoans->isEmpty()) {
                         // If no loan, just insert savings
-                        if ($routineSavingAmount > 0) {
+                        if ($simpananWajibAmount > 0 || $simpananSukarelaAmount > 0) {
                             $detailsToInsert[] = [
                                 'deduction_period_id' => $this->period->id,
                                 'user_id' => $member->id,
                                 'loan_id' => null,
-                                'routine_saving_amount' => $routineSavingAmount,
+                                'simpanan_wajib_amount' => $simpananWajibAmount,
+                                'simpanan_sukarela_amount' => $simpananSukarelaAmount,
+                                'admin_fee_amount' => 0,
                                 'loan_principal_amount' => 0,
                                 'loan_fee_amount' => 0,
                                 'status' => 'menunggu',
@@ -80,13 +91,16 @@ class ProcessMonthlyDeduction implements ShouldQueue
                         // Insert a row for each active loan so it's traceable per loan
                         foreach ($activeLoans as $index => $loan) {
                             // Only first loan record carries the routine saving to avoid duplicate saving deduction
-                            $savingForThisRow = ($index === 0) ? $routineSavingAmount : 0;
+                            $wajibForThisRow = ($index === 0) ? $simpananWajibAmount : 0;
+                            $sukarelaForThisRow = ($index === 0) ? $simpananSukarelaAmount : 0;
                             
                             $detailsToInsert[] = [
                                 'deduction_period_id' => $this->period->id,
                                 'user_id' => $member->id,
                                 'loan_id' => $loan->id,
-                                'routine_saving_amount' => $savingForThisRow,
+                                'simpanan_wajib_amount' => $wajibForThisRow,
+                                'simpanan_sukarela_amount' => $sukarelaForThisRow,
+                                'admin_fee_amount' => 0,
                                 'loan_principal_amount' => $loan->monthly_principal_installment,
                                 'loan_fee_amount' => $loan->current_year_monthly_fee,
                                 'status' => 'menunggu',
