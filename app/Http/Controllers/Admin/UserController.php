@@ -36,6 +36,17 @@ class UserController extends Controller
 
     public function store(Request $request)
     {
+        $messages = [
+            'bank_account_number.numeric' => 'Nomor rekening bank hanya boleh berisi angka.',
+            'bank_account_number.digits_between' => 'Nomor rekening bank tidak valid (maksimal 50 digit angka).',
+            'retirement_month.max' => 'Bulan pensiun tidak boleh lebih dari 12.',
+            'retirement_month.min' => 'Bulan pensiun tidak boleh kurang dari 1.',
+            'retirement_month.integer' => 'Bulan pensiun harus berupa angka bulat.',
+            'monthly_simpanan_wajib.min' => 'Iuran simpanan wajib per bulan minimal Rp 50.000.',
+            'identity_number.unique' => 'NIP/NIM ini sudah terdaftar di sistem.',
+            'email.unique' => 'Email ini sudah terdaftar di sistem.',
+        ];
+
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'identity_number' => 'required|string|unique:users',
@@ -51,7 +62,7 @@ class UserController extends Controller
             'bank_account_number' => 'nullable|numeric|digits_between:1,50',
             'roles' => ['required', 'array', 'min:1', 'max:2'],
             'roles.*' => [Rule::in(['anggota', 'bendahara', 'pengurus', 'ketua', 'pengawas'])],
-        ]);
+        ], $messages);
 
         $initialPokok = $validated['simpanan_pokok_balance'] ?? 0;
         $initialWajib = $validated['simpanan_wajib_balance'] ?? 0;
@@ -124,6 +135,16 @@ class UserController extends Controller
 
     public function update(Request $request, User $user)
     {
+        $messages = [
+            'bank_account_number.numeric' => 'Nomor rekening bank hanya boleh berisi angka.',
+            'bank_account_number.digits_between' => 'Nomor rekening bank tidak valid (maksimal 50 digit angka).',
+            'retirement_month.max' => 'Bulan pensiun tidak boleh lebih dari 12.',
+            'retirement_month.min' => 'Bulan pensiun tidak boleh kurang dari 1.',
+            'retirement_month.integer' => 'Bulan pensiun harus berupa angka bulat.',
+            'identity_number.unique' => 'NIP/NIM ini sudah terdaftar di sistem.',
+            'email.unique' => 'Email ini sudah terdaftar di sistem.',
+        ];
+
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'identity_number' => ['required', 'string', Rule::unique('users')->ignore($user->id)],
@@ -143,7 +164,7 @@ class UserController extends Controller
             'job_end_date' => 'nullable|date',
             'joined_at' => 'nullable|date',
             'password' => 'nullable|string|min:8|confirmed',
-        ]);
+        ], $messages);
 
         if (empty($validated['password'])) {
             unset($validated['password']);
