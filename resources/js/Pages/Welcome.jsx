@@ -236,27 +236,38 @@ export default function Welcome({ auth, stats, departmentDistribution, boardMemb
                             <h2 className="ds-display-md">Informasi Pengurus & Anggota</h2>
                         </div>
 
-                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
+                        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12">
                             {/* Pengurus */}
-                            <div data-animate style={{ opacity: 0, transform: 'translateY(24px)', transition: 'all 0.8s cubic-bezier(0.16,1,0.3,1)' }}>
-                                <div className="ds-feature-card" style={{ padding: '32px' }}>
-                                    <div className="grid grid-cols-2 gap-y-8 gap-x-6">
-                                        {boardMembers && boardMembers.length > 0 ? (
-                                            boardMembers.map((member, i) => (
-                                                <div key={i} className="flex flex-col">
+                            <div data-animate style={{ opacity: 0, transform: 'translateY(24px)', transition: 'all 0.8s cubic-bezier(0.16,1,0.3,1)' }} className="lg:col-span-5 flex flex-col gap-4">
+                                {boardMembers && boardMembers.length > 0 ? (
+                                    boardMembers.map((member, i) => {
+                                        const avatarSrc = member.profile_photo_path
+                                            ? `/storage/${member.profile_photo_path}`
+                                            : `https://ui-avatars.com/api/?name=${encodeURIComponent(member.name)}&color=0F82E6&background=EBF4FF`;
+
+                                        return (
+                                            <div key={i} className="ds-feature-card flex items-center gap-4 hover:shadow-md transition-shadow duration-300" style={{ padding: '20px' }}>
+                                                <img
+                                                    src={avatarSrc}
+                                                    alt={member.name}
+                                                    className="w-12 h-12 rounded-full object-cover border border-slate-100/80 shadow-sm shrink-0"
+                                                />
+                                                <div className="flex flex-col">
                                                     <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">{member.role_label}</span>
-                                                    <span className="text-[16px] font-semibold text-slate-800 mt-1">{member.name}</span>
+                                                    <span className="text-[16px] font-semibold text-slate-800 mt-0.5">{member.name}</span>
                                                 </div>
-                                            ))
-                                        ) : (
-                                            <p className="ds-body-md text-slate-500 col-span-2">Data pengurus belum tersedia.</p>
-                                        )}
+                                            </div>
+                                        );
+                                    })
+                                ) : (
+                                    <div className="ds-feature-card" style={{ padding: '20px' }}>
+                                        <p className="ds-body-md text-slate-500">Data pengurus belum tersedia.</p>
                                     </div>
-                                </div>
+                                )}
                             </div>
 
                             {/* Distribusi Anggota */}
-                            <div data-animate style={{ opacity: 0, transform: 'translateY(24px)', transition: 'all 0.8s cubic-bezier(0.16,1,0.3,1) 0.1s' }}>
+                            <div data-animate style={{ opacity: 0, transform: 'translateY(24px)', transition: 'all 0.8s cubic-bezier(0.16,1,0.3,1) 0.1s' }} className="lg:col-span-7">
                                 <div className="ds-feature-card">
                                     <div className="flex justify-between items-baseline mb-6 pb-4 border-b border-slate-100">
                                         <span className="text-sm font-semibold text-slate-500 uppercase tracking-wider">Total Anggota</span>

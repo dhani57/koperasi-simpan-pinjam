@@ -42,6 +42,7 @@ Route::get('/', function () {
                 'role_label' => $roleLabels[$user->role] ?? ucfirst($user->role),
                 'department' => $user->department,
                 'job_title' => $user->job_title,
+                'profile_photo_path' => $user->profile_photo_path,
             ];
         });
 
