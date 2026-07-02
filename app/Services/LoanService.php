@@ -89,7 +89,7 @@ class LoanService
      */
     public function validateMaxPrincipal(float $principal): bool
     {
-        return $principal <= 50000000;
+        return true; // Limit is now dynamically checked via max salary deduction limit, no hard cap.
     }
 
     /**
@@ -97,10 +97,6 @@ class LoanService
      */
     public function createLoan(User $user, float $principal, ?int $tenorYears, ?int $customTenorMonths = null, ?string $purpose = null, ?float $adminFeeOverride = null, ?int $mergedFromLoanId = null, ?float $mergedOldRemaining = 0): Loan
     {
-        if (!$this->validateMaxPrincipal($principal)) {
-            throw new \Exception('Pinjaman melebihi batas maksimal Rp 50.000.000');
-        }
-
         $feePercentage = Setting::where('key', 'loan_interest_rate')->value('value') ?? 1.5;
         $simulation = $this->calculateSimulation($principal, $tenorYears, $customTenorMonths, (float)$feePercentage, $adminFeeOverride);
         

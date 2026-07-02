@@ -203,9 +203,9 @@ export default function Create({ auth, hasPendingLoan, activeLoan, defaultFee, a
                                 )}
                             </div>
 
-                            {simulation && simulation.totalPrincipal >= 40000000 && (
+                            {simulation && simulation.totalPrincipal > 50000000 && (
                                 <div style={{ marginTop: 'var(--spacing-xl)', backgroundColor: '#fffbeb', padding: '16px', borderRadius: '8px', border: '1px solid #fef3c7' }}>
-                                    <label style={{ display: 'block', fontWeight: 600, fontSize: '13px', marginBottom: '8px', color: '#92400e' }}>Upload Dokumen Bermaterai (Wajib untuk pinjaman ≥ Rp 40 Juta)</label>
+                                    <label style={{ display: 'block', fontWeight: 600, fontSize: '13px', marginBottom: '8px', color: '#92400e' }}>Upload Dokumen Bermaterai (Wajib untuk pinjaman &gt; Rp 50 Juta)</label>
                                     <p style={{ fontSize: '12px', color: '#b45309', marginBottom: '12px' }}>
                                         Sesuai peraturan, pinjaman dalam jumlah besar memerlukan dokumen persetujuan bermaterai.
                                         <br/>
@@ -215,7 +215,7 @@ export default function Create({ auth, hasPendingLoan, activeLoan, defaultFee, a
                                         type="file"
                                         accept=".pdf,image/*"
                                         onChange={e => setData('document_file', e.target.files[0])}
-                                        required={simulation.totalPrincipal >= 40000000}
+                                        required={simulation.totalPrincipal > 50000000}
                                         style={{ 
                                             width: '100%', 
                                             fontSize: '14px', 

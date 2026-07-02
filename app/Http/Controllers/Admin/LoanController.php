@@ -11,14 +11,21 @@ class LoanController extends Controller
 {
     public function index()
     {
-        if (auth()->user()->role === 'pengurus') {
-            abort(403, 'Unauthorized action.');
-        }
-
         $search = request('search');
         $status = request('status');
+        $isPengurus = auth()->user()->role === 'pengurus';
 
         $loans = Loan::with(['user', 'verifiedBy'])
+            ->when($isPengurus, function ($query) {
+                $query->where('principal_amount', '>', 50000000);
+            })
+            ->when(!$isPengurus, function ($query) {
+                $query->where(function ($q) {
+                    $q->where('principal_amount', '<=', 50000000)
+                      ->orWhereNotNull('admin_verified_at')
+                      ->orWhere('status', 'ditolak'); // Also show rejected loans if admin rejected them
+                });
+            })
             ->when($search, function ($query, $search) {
                 $query->whereHas('user', function ($q) use ($search) {
                     $q->whereRaw('lower(name) like lower(?)', ["%{$search}%"]);
@@ -43,8 +50,14 @@ class LoanController extends Controller
 
     public function show(Loan $loan)
     {
-        if (auth()->user()->role === 'pengurus') {
-            abort(403, 'Unauthorized action.');
+        $isPengurus = auth()->user()->role === 'pengurus';
+        
+        if ($isPengurus && $loan->principal_amount <= 50000000) {
+            abort(403, 'Unauthorized action. Pengurus hanya dapat memverifikasi pinjaman di atas Rp50 Juta.');
+        }
+
+        if (!$isPengurus && $loan->principal_amount > 50000000 && is_null($loan->admin_verified_at) && $loan->status !== 'ditolak') {
+            abort(403, 'Pinjaman ini masih menunggu verifikasi dokumen oleh Admin.');
         }
 
         $loan->load('user');

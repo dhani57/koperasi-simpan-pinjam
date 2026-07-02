@@ -140,15 +140,15 @@ export default function Index({ auth, loans, filters }) {
                                         </td>
                                         <td style={{ padding: '16px', textAlign: 'center' }}>
                                             <div style={{ display: 'flex', gap: '8px', justifyContent: 'center', alignItems: 'center' }}>
-                                                {/* Detail Button for Bendahara and Ketua */}
-                                                {(isBendahara || isKetua) && (
+                                                {/* Detail Button */}
+                                                {(isBendahara || isKetua || isPengurus) && (
                                                     <a href={route('admin.loans.show', loan.id)} className="ds-button-secondary" style={{ padding: '6px 12px', fontSize: '12px', textDecoration: 'none', color: 'var(--color-primary)', border: '1px solid var(--color-primary)' }}>
                                                         Detail
                                                     </a>
                                                 )}
 
                                                 {/* Admin Actions */}
-                                                {isPengurus && loan.status === 'diajukan' && (
+                                                {isPengurus && loan.status === 'diajukan' && !loan.admin_verified_at && (
                                                     <>
                                                         <button 
                                                             onClick={() => openConfirm('Verifikasi Pengajuan', 'Anda yakin ingin memverifikasi pengajuan ini?', 'primary', 'Verifikasi', route('admin.loans.verify', loan.id))}

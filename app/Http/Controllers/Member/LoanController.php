@@ -115,12 +115,13 @@ class LoanController extends Controller
             $principal += $mergedOldRemaining; // Total pokok pinjaman baru = tambahan + sisa lama
         }
 
-        if (!$this->loanService->validateMaxPrincipal($principal)) {
-            return back()->withErrors(['principal_amount' => 'Total pinjaman (termasuk sisa lama) melebihi batas maksimal Rp 50.000.000.']);
+        if ($principal > 50000000 && !$request->hasFile('document_file')) {
+            return back()->withErrors(['document_file' => 'Pinjaman di atas Rp 50 Juta wajib melampirkan dokumen persetujuan.']);
         }
 
-        if ($principal >= 40000000 && !$request->hasFile('document_file')) {
-            return back()->withErrors(['document_file' => 'Dokumen bermaterai wajib diunggah untuk pinjaman >= Rp 40.000.000.']);
+        // Limit is now based dynamically on salary deduction capacity, the hard 50jt cap is replaced by document validation.
+        if (!$this->loanService->validateMaxPrincipal($principal)) {
+            return back()->withErrors(['principal_amount' => 'Pinjaman ditolak oleh aturan limit layanan.']);
         }
 
         // Simulasi untuk mendapatkan cicilan tahun pertama

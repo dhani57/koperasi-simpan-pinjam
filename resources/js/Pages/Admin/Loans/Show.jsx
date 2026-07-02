@@ -50,6 +50,7 @@ export default function Show({ auth, loan, limitInfo }) {
         (isBendahara && ['diajukan', 'diverifikasi', 'menunggu_bendahara'].includes(loan.status)) ||
         (isKetua && ['diajukan', 'diverifikasi', 'menunggu_ketua'].includes(loan.status))
     );
+    const canVerifyAdmin = isPengurus && loan.status === 'diajukan' && !loan.admin_verified_at;
 
     const handleApprove = () => {
         const data = {};
@@ -168,7 +169,19 @@ export default function Show({ auth, loan, limitInfo }) {
                         <div style={{ backgroundColor: 'white', borderRadius: 'var(--rounded-xl)', padding: '32px', border: '1px solid var(--color-hairline)' }}>
                             <h3 style={{ fontSize: '16px', fontWeight: 600, marginBottom: '24px', paddingBottom: '16px', borderBottom: '1px solid var(--color-hairline)' }}>Aksi Persetujuan</h3>
                             
-                            {canApprove ? (
+                            {canVerifyAdmin ? (
+                                <div className="flex flex-col sm:flex-row gap-3">
+                                    <button 
+                                        onClick={() => openConfirm('Verifikasi Dokumen', 'Anda yakin ingin memverifikasi kelengkapan dokumen pengajuan ini?', 'primary', 'Verifikasi Dokumen', route('admin.loans.verify', loan.id))}
+                                        className="ds-button-primary" style={{ flex: 1, padding: '12px' }}
+                                    >Verifikasi Dokumen</button>
+                                    
+                                    <button 
+                                        onClick={() => openConfirm('Tolak Pengajuan', 'Anda yakin ingin menolak pengajuan ini?', 'danger', 'Tolak', route('admin.loans.reject', loan.id))}
+                                        className="ds-button-primary" style={{ flex: 1, padding: '12px', backgroundColor: '#ef4444', color: 'white', border: 'none' }}
+                                    >Tolak</button>
+                                </div>
+                            ) : canApprove ? (
                                 <>
                                     {/* Override Section for Ketua/Bendahara */}
                                     {canOverride && (
@@ -268,6 +281,16 @@ export default function Show({ auth, loan, limitInfo }) {
 
                             {/* Tracking Status */}
                             <div style={{ marginTop: '24px', display: 'flex', flexDirection: 'column', gap: '12px', fontSize: '13px' }}>
+                                {loan.principal_amount > 50000000 && (
+                                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                                        <span style={{ color: 'var(--color-muted)' }}>Verifikasi Kelengkapan Admin</span>
+                                        {(loan.admin_verified_at || ['diverifikasi', 'menunggu_bendahara', 'menunggu_ketua', 'disetujui', 'menunggu_pencairan', 'aktif', 'lunas'].includes(loan.status)) ? (
+                                            <span style={{ color: 'var(--color-semantic-up)' }}>Selesai ✓</span>
+                                        ) : (
+                                            <span>Menunggu</span>
+                                        )}
+                                    </div>
+                                )}
                                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                                     <span style={{ color: 'var(--color-muted)' }}>Persetujuan Bendahara</span>
                                     {(loan.bendahara_approved_at || ['disetujui', 'menunggu_pencairan', 'aktif', 'lunas', 'menunggu_ketua'].includes(loan.status)) ? (
