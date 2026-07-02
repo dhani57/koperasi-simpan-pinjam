@@ -62,78 +62,71 @@ export default function Welcome({ auth, stats, departmentDistribution, boardMemb
             <main style={{ flex: 1 }}>
                 {/* Hero Section */}
                 <HeroBandDark>
-                    <div ref={heroRef} className="ds-hero-container w-full px-4 md:px-8 py-12 md:py-24">
+                    <div ref={heroRef} className="ds-hero-container">
                         {/* Left Column: Copy */}
-                        <div className="text-left max-w-xl mx-auto md:mx-0 w-full mb-12 md:mb-0">
-                            <h1 data-animate className="ds-display-mega mb-6 opacity-0 translate-y-6 transition-all duration-700 ease-out">
+                        <div style={{ alignSelf: 'center', paddingRight: 'var(--spacing-xl)' }}>
+                            <h1 data-animate className="ds-display-mega" style={{ marginBottom: 'var(--spacing-md)', opacity: 0, transform: 'translateY(24px)', transition: 'all 0.8s cubic-bezier(0.16,1,0.3,1)' }}>
                                 Koperasi<br />Simpan Pinjam<br />FT Unila.
                             </h1>
-                            <p data-animate className="ds-body-md text-slate-300 mb-10 opacity-0 translate-y-6 transition-all duration-700 delay-100 ease-out max-w-md">
+                            <p data-animate className="ds-body-md" style={{ color: 'var(--color-on-dark-soft)', maxWidth: '480px', opacity: 0, transform: 'translateY(24px)', transition: 'all 0.8s cubic-bezier(0.16,1,0.3,1) 0.1s' }}>
                                 Sistem tertutup terintegrasi. Aman, transparan, dan tanpa repot. Khusus untuk ekosistem Fakultas Teknik Universitas Lampung.
                             </p>
-                            
-                            {!auth?.user ? (
-                                <div data-animate className="flex flex-wrap gap-4 opacity-0 translate-y-6 transition-all duration-700 delay-200 ease-out">
-                                    <Link href={route('login')} className="ds-button-primary">
-                                        Login Anggota
-                                    </Link>
-                                    <a href="#details" className="ds-button-secondary-dark">
-                                        Lihat Detail
-                                    </a>
-                                </div>
-                            ) : (
-                                <div data-animate className="flex flex-wrap gap-4 opacity-0 translate-y-6 transition-all duration-700 delay-200 ease-out">
-                                    <Link href={['pengurus', 'bendahara', 'ketua', 'pengawas'].includes(auth.user.role) ? route('admin.dashboard') : route('dashboard')} className="ds-button-primary">
-                                        Lihat Dashboard
-                                    </Link>
-                                </div>
-                            )}
                         </div>
                         
                         {/* Right Column: Layered Cards (Product UI Mockup) */}
-                        <div data-animate className="relative w-full max-w-md mx-auto opacity-0 translate-y-6 transition-all duration-700 delay-300 ease-out mt-8 md:mt-0">
+                        <div data-animate style={{ position: 'relative', width: '100%', maxWidth: '440px', justifySelf: 'end', opacity: 0, transform: 'translateY(24px)', transition: 'all 0.8s cubic-bezier(0.16,1,0.3,1) 0.3s' }}>
                             {/* Main Card */}
-                            <div className="ds-product-ui-card-light relative z-10 p-6 md:p-8">
-                                <div className="text-sm text-slate-500 mb-1">Total Dana Dikelola</div>
-                                <div className="font-mono text-2xl md:text-3xl font-bold text-slate-800 mb-8">
-                                    {formatRp((stats?.totalSavings || 0) + (stats?.totalActiveLoans || 0))}
+                            <div className="ds-product-ui-card-light" style={{ position: 'relative', zIndex: 10 }}>
+                                <div style={{ color: 'var(--color-muted)', fontSize: '13px', marginBottom: 'var(--spacing-xs)' }}>Total Dana Dikelola</div>
+                                <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px', marginBottom: 'var(--spacing-xl)' }}>
+                                    <span style={{ fontFamily: 'var(--font-mono)', fontSize: '20px', fontWeight: 600, color: 'var(--color-ink)' }}>Rp</span>
+                                    <span style={{ fontFamily: 'var(--font-mono)', fontSize: '28px', fontWeight: 600, color: 'var(--color-ink)' }}>
+                                        {new Intl.NumberFormat('id-ID').format((stats?.totalSavings || 0) + (stats?.totalActiveLoans || 0))}
+                                    </span>
                                 </div>
                                 
-                                <div className="space-y-6">
-                                    <div className="flex items-center gap-4">
-                                        <div className="w-8 h-8 rounded-full bg-[#0B5EA8] text-white flex items-center justify-center font-bold text-xs">S</div>
-                                        <div className="flex-1">
-                                            <div className="text-sm font-semibold text-slate-800">Total Simpanan</div>
-                                            <div className="text-xs text-slate-500">Pokok, Wajib, Sukarela</div>
+                                <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-lg)' }}>
+                                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-md)' }}>
+                                            <div style={{ width: '28px', height: '28px', flexShrink: 0, borderRadius: 'var(--rounded-full)', backgroundColor: 'var(--color-primary)', color: 'var(--color-on-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 600, fontSize: '12px' }}>S</div>
+                                            <div>
+                                                <div style={{ fontSize: '14px', fontWeight: 500, color: 'var(--color-ink)' }}>Total Simpanan</div>
+                                                <div style={{ fontSize: '12px', color: 'var(--color-muted)' }}>Pokok, Wajib, Sukarela</div>
+                                            </div>
                                         </div>
-                                        <div className="font-mono text-sm font-medium text-slate-600">
-                                            {formatRp(stats?.totalSavings || 0)}
+                                        <div style={{ fontFamily: 'var(--font-mono)', fontSize: '13px', color: 'var(--color-muted)', whiteSpace: 'nowrap' }}>
+                                            Rp {new Intl.NumberFormat('id-ID').format(stats?.totalSavings || 0)}
                                         </div>
                                     </div>
                                     
-                                    <div className="flex items-center gap-4">
-                                        <div className="w-8 h-8 rounded-full bg-slate-100 text-slate-600 flex items-center justify-center font-bold text-xs">P</div>
-                                        <div className="flex-1">
-                                            <div className="text-sm font-semibold text-slate-800">Total Pinjaman</div>
-                                            <div className="text-xs text-slate-500">Pinjaman Aktif</div>
+                                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-md)' }}>
+                                            <div style={{ width: '28px', height: '28px', flexShrink: 0, borderRadius: 'var(--rounded-full)', backgroundColor: 'var(--color-surface-strong)', color: 'var(--color-muted)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 600, fontSize: '12px' }}>P</div>
+                                            <div>
+                                                <div style={{ fontSize: '14px', fontWeight: 500, color: 'var(--color-ink)' }}>Total Pinjaman</div>
+                                                <div style={{ fontSize: '12px', color: 'var(--color-muted)' }}>Pinjaman Aktif</div>
+                                            </div>
                                         </div>
-                                        <div className="font-mono text-sm font-medium text-slate-600">
-                                            {formatRp(stats?.totalActiveLoans || 0)}
+                                        <div style={{ fontFamily: 'var(--font-mono)', fontSize: '13px', color: 'var(--color-muted)', whiteSpace: 'nowrap' }}>
+                                            Rp {new Intl.NumberFormat('id-ID').format(stats?.totalActiveLoans || 0)}
                                         </div>
                                     </div>
                                 </div>
                             </div>
                             
                             {/* Overlapping Small Card */}
-                            <div className="ds-product-ui-card-light absolute -bottom-10 md:-bottom-16 -right-4 md:-right-12 z-20 p-5 md:p-6 shadow-2xl w-64 md:w-72">
-                                <div className="flex justify-between items-center mb-2">
-                                    <div className="text-xs font-semibold text-slate-500">Total Anggota Aktif</div>
+                            <div className="ds-product-ui-card-light" style={{ position: 'absolute', bottom: '-24px', right: '-32px', zIndex: 20, width: '280px', padding: '24px', boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.15)' }}>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--spacing-sm)' }}>
+                                    <div style={{ fontSize: '12px', color: 'var(--color-muted)' }}>Total Anggota Aktif</div>
                                     <span className="ds-badge-pill">AKTIF</span>
                                 </div>
-                                <div className="font-mono text-xl md:text-2xl font-bold text-[#CA8306] mb-1">
-                                    {stats?.totalMembers || 0} <span className="text-sm">Orang</span>
+                                <div style={{ display: 'flex', alignItems: 'baseline', gap: '6px', marginBottom: 'var(--spacing-xs)' }}>
+                                    <span style={{ fontFamily: 'var(--font-mono)', fontSize: '24px', fontWeight: 600, color: 'var(--color-accent-yellow)' }}>
+                                        {stats?.totalMembers || 0}
+                                    </span>
+                                    <span style={{ fontSize: '13px', fontWeight: 600, color: 'var(--color-accent-yellow)' }}>Orang</span>
                                 </div>
-                                <div className="text-xs text-[#05b169] font-medium">
+                                <div style={{ fontSize: '12px', color: 'var(--color-semantic-up)', fontWeight: 500 }}>
                                     Tersebar di {departmentDistribution?.length || 0} Unit Kerja
                                 </div>
                             </div>
