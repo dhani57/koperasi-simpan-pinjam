@@ -79,7 +79,6 @@ export default function Welcome({ auth, stats, departmentDistribution, boardMemb
                         <div 
                             data-animate 
                             className="relative z-10 w-full bg-white text-slate-900 rounded-[24px] p-8 shadow-xl opacity-0 translate-y-6 transition-all duration-700 delay-300 ease-out"
-                            style={{ paddingBottom: '120px' }}
                         >
                             <div className="text-slate-400 text-[13px] font-semibold mb-2 uppercase tracking-wider">Total Dana Dikelola</div>
                             <div className="flex items-baseline gap-2 mb-8">
@@ -117,13 +116,30 @@ export default function Welcome({ auth, stats, departmentDistribution, boardMemb
                                         Rp {new Intl.NumberFormat('id-ID').format(stats?.totalActiveLoans || 0)}
                                     </div>
                                 </div>
+
+                                {/* Mobile Only: Total Anggota Aktif Row */}
+                                <div className="flex items-center justify-between w-full lg:hidden border-t border-slate-100 pt-5 mt-2">
+                                    <div className="flex items-center gap-4">
+                                        <div className="w-10 h-10 shrink-0 rounded-full bg-amber-50 text-amber-600 flex items-center justify-center font-bold text-sm border border-amber-200">A</div>
+                                        <div>
+                                            <div className="flex items-center gap-2">
+                                                <span className="text-[15px] font-semibold text-slate-900 leading-tight">Total Anggota Aktif</span>
+                                                <span className="bg-amber-100 text-amber-700 text-[9px] font-bold px-1.5 py-0.5 rounded-full">AKTIF</span>
+                                            </div>
+                                            <div className="text-[13px] text-slate-500 mt-0.5">Tersebar di {departmentDistribution?.length || 0} Unit Kerja</div>
+                                        </div>
+                                    </div>
+                                    <div className="font-mono text-sm font-bold text-amber-600 whitespace-nowrap pl-2">
+                                        {stats?.totalMembers || 0} Orang
+                                    </div>
+                                </div>
                             </div>
                         </div>
                         
-                        {/* Overlapping Small Card */}
+                        {/* Overlapping Small Card (Desktop Only) */}
                         <div 
                             data-animate 
-                            className="relative lg:absolute lg:bottom-[-32px] lg:right-[-32px] z-20 w-[290px] sm:w-[320px] bg-white text-slate-900 rounded-[24px] p-6 shadow-2xl opacity-0 translate-y-6 transition-all duration-700 delay-500 ease-out -mt-16 lg:mt-0 border border-slate-100/50"
+                            className="hidden lg:block absolute bottom-[-96px] right-[-48px] z-20 w-[320px] bg-white text-slate-900 rounded-[24px] p-6 shadow-2xl opacity-0 translate-y-6 transition-all duration-700 delay-500 ease-out border border-slate-100/50"
                         >
                             <div className="flex justify-between items-center mb-4">
                                 <div className="text-[13px] text-slate-500 font-semibold uppercase tracking-wider">Total Anggota Aktif</div>
@@ -131,7 +147,7 @@ export default function Welcome({ auth, stats, departmentDistribution, boardMemb
                             </div>
                             <div className="flex items-baseline gap-1.5 mb-2">
                                 <span className="font-mono text-3xl font-bold text-amber-600">
-                                        {stats?.totalMembers || 0}
+                                    {stats?.totalMembers || 0}
                                 </span>
                                 <span className="text-sm font-bold text-amber-600">Orang</span>
                             </div>
