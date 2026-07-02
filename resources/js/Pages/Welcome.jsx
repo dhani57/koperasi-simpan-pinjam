@@ -62,50 +62,44 @@ export default function Welcome({ auth, stats, departmentDistribution, boardMemb
             <main style={{ flex: 1 }}>
                 {/* Hero Section */}
                 <HeroBandDark>
-                    <div ref={heroRef} style={{ maxWidth: '800px', margin: '0 auto', textAlign: 'center' }}>
-                        <h1 data-animate className="ds-display-mega" style={{ marginBottom: 'var(--spacing-md)', opacity: 0, transform: 'translateY(24px)', transition: 'all 0.8s cubic-bezier(0.16,1,0.3,1)' }}>
-                            Koperasi Simpan Pinjam<br />Fakultas Teknik Unila
-                        </h1>
-                        <p data-animate className="ds-body-md" style={{ color: 'var(--color-on-dark-soft)', maxWidth: '600px', margin: '0 auto var(--spacing-xl)', opacity: 0, transform: 'translateY(24px)', transition: 'all 0.8s cubic-bezier(0.16,1,0.3,1) 0.1s' }}>
-                            Melayani kesejahteraan karyawan dan dosen Fakultas Teknik Universitas Lampung melalui program simpanan dan pinjaman yang transparan, aman, dan adil.
-                        </p>
-                        
-                        {/* Perubahan: Hanya tombol dari Header yang tersisa (di TopNavUnila). Tidak ada tombol di Hero sesuai permintaan. */}
-                    </div>
-                </HeroBandDark>
-
-                {/* Stats Section */}
-                <section style={{ padding: 'var(--spacing-section) var(--spacing-xl)', backgroundColor: 'var(--color-canvas)' }}>
-                    <div ref={statsRef} style={{ maxWidth: '1200px', margin: '0 auto' }}>
-                        <div data-animate style={{ marginBottom: 'var(--spacing-xl)', opacity: 0, transform: 'translateY(24px)', transition: 'all 0.8s cubic-bezier(0.16,1,0.3,1)' }}>
-                            <h2 className="ds-display-lg">Ringkasan Koperasi</h2>
+                    <div ref={heroRef} className="ds-hero-container">
+                        {/* Left Column: Copy */}
+                        <div style={{ textAlign: 'left' }}>
+                            <h1 data-animate className="ds-display-mega" style={{ marginBottom: 'var(--spacing-md)', opacity: 0, transform: 'translateY(24px)', transition: 'all 0.8s cubic-bezier(0.16,1,0.3,1)' }}>
+                                Koperasi<br />Simpan Pinjam<br />FT Unila
+                            </h1>
+                            <p data-animate className="ds-body-md" style={{ color: 'var(--color-on-dark-soft)', maxWidth: '480px', opacity: 0, transform: 'translateY(24px)', transition: 'all 0.8s cubic-bezier(0.16,1,0.3,1) 0.1s' }}>
+                                Melayani kesejahteraan karyawan dan dosen Fakultas Teknik Universitas Lampung melalui program simpanan dan pinjaman yang transparan, aman, dan adil.
+                            </p>
                         </div>
-
-                        <div className="ds-grid-3up">
-                            {[
-                                {
-                                    label: 'Total Dana Dikelola',
-                                    value: formatRp((stats?.totalSavings || 0) + (stats?.totalActiveLoans || 0))
-                                },
-                                {
-                                    label: 'Total Simpanan Anggota',
-                                    value: formatRp(stats?.totalSavings || 0)
-                                },
-                                {
-                                    label: 'Total Anggota Aktif',
-                                    value: `${stats?.totalMembers || 0}`
-                                }
-                            ].map((item, i) => (
-                                <div data-animate key={i} className="ds-feature-card" style={{ opacity: 0, transform: 'translateY(24px)', transition: `all 0.8s cubic-bezier(0.16,1,0.3,1) ${i * 0.1}s` }}>
-                                    <h3 className="ds-title-md" style={{ color: 'var(--color-muted)' }}>{item.label}</h3>
-                                    <div style={{ fontFamily: 'var(--font-mono)', fontSize: '32px', fontWeight: 500, color: 'var(--color-ink)' }}>
-                                        {item.value}
+                        
+                        {/* Right Column: Stats Card */}
+                        <div data-animate style={{ opacity: 0, transform: 'translateY(24px)', transition: 'all 0.8s cubic-bezier(0.16,1,0.3,1) 0.2s' }}>
+                            <div className="ds-product-ui-card-dark" style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-lg)' }}>
+                                <div>
+                                    <h3 className="ds-title-sm" style={{ color: 'var(--color-on-dark-soft)', marginBottom: 'var(--spacing-xxs)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Total Dana Dikelola</h3>
+                                    <div style={{ fontFamily: 'var(--font-mono)', fontSize: '32px', fontWeight: 600, color: 'var(--color-on-dark)' }}>
+                                        {formatRp((stats?.totalSavings || 0) + (stats?.totalActiveLoans || 0))}
                                     </div>
                                 </div>
-                            ))}
+                                
+                                <div>
+                                    <h3 className="ds-title-sm" style={{ color: 'var(--color-on-dark-soft)', marginBottom: 'var(--spacing-xxs)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Total Simpanan Anggota</h3>
+                                    <div style={{ fontFamily: 'var(--font-mono)', fontSize: '24px', fontWeight: 500, color: 'var(--color-on-dark)' }}>
+                                        {formatRp(stats?.totalSavings || 0)}
+                                    </div>
+                                </div>
+                                
+                                <div>
+                                    <h3 className="ds-title-sm" style={{ color: 'var(--color-on-dark-soft)', marginBottom: 'var(--spacing-xxs)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Total Anggota Aktif</h3>
+                                    <div style={{ fontFamily: 'var(--font-mono)', fontSize: '24px', fontWeight: 500, color: 'var(--color-on-dark)' }}>
+                                        {stats?.totalMembers || 0} <span className="ds-body-sm" style={{ color: 'var(--color-on-dark-soft)' }}>Orang</span>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                </section>
+                </HeroBandDark>
 
                 {/* Distribusi Anggota & Pengurus */}
                 <section style={{ padding: 'var(--spacing-section) var(--spacing-xl)', backgroundColor: 'var(--color-surface-soft)' }}>
