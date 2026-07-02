@@ -12,8 +12,14 @@ export default function Welcome({ auth, stats, departmentDistribution, boardMemb
 
     const formatRp = (num) => {
         if (!num) return 'Rp 0';
-        if (num >= 1000000000) return `Rp ${(num / 1000000000).toFixed(1)} M`;
-        if (num >= 1000000) return `Rp ${(num / 1000000).toFixed(0)} Jt`;
+        if (num >= 1000000000) {
+            const val = num / 1000000000;
+            return `Rp ${val % 1 === 0 ? val.toFixed(0) : val.toFixed(1)} M`;
+        }
+        if (num >= 1000000) {
+            const val = num / 1000000;
+            return `Rp ${val % 1 === 0 ? val.toFixed(0) : val.toFixed(1)} Jt`;
+        }
         return `Rp ${new Intl.NumberFormat('id-ID').format(num)}`;
     };
 
@@ -78,14 +84,23 @@ export default function Welcome({ auth, stats, departmentDistribution, boardMemb
                         {/* Main Card */}
                         <div 
                             data-animate 
-                            className="relative z-10 w-full bg-white text-slate-900 rounded-[24px] p-8 shadow-xl opacity-0 translate-y-6 transition-all duration-700 delay-300 ease-out"
+                            className="relative z-10 w-full bg-white text-slate-900 rounded-[24px] p-8 shadow-xl opacity-0 translate-y-6 transition-all duration-700 delay-300 ease-out text-left"
                         >
                             <div className="text-slate-400 text-[13px] font-semibold mb-2 uppercase tracking-wider">Total Dana Dikelola</div>
                             <div className="flex items-baseline gap-2 mb-8">
-                                <span className="font-mono text-xl font-bold text-slate-900">Rp</span>
-                                <span className="font-mono text-3xl sm:text-4xl font-bold text-slate-900 tracking-tight">
-                                    {new Intl.NumberFormat('id-ID').format((stats?.totalSavings || 0) + (stats?.totalActiveLoans || 0))}
-                                </span>
+                                {/* Desktop/Tablet view (Full numbers) */}
+                                <div className="hidden sm:flex items-baseline gap-2">
+                                    <span className="font-mono text-xl font-bold text-slate-900">Rp</span>
+                                    <span className="font-mono text-3xl sm:text-4xl font-bold text-slate-900 tracking-tight">
+                                        {new Intl.NumberFormat('id-ID').format((stats?.totalSavings || 0) + (stats?.totalActiveLoans || 0))}
+                                    </span>
+                                </div>
+                                {/* Mobile view (Abbreviated Jt/M) */}
+                                <div className="flex sm:hidden items-baseline gap-2">
+                                    <span className="font-mono text-3xl font-bold text-slate-900 tracking-tight">
+                                        {formatRp((stats?.totalSavings || 0) + (stats?.totalActiveLoans || 0))}
+                                    </span>
+                                </div>
                             </div>
                             
                             <div className="flex flex-col gap-6">
@@ -99,7 +114,8 @@ export default function Welcome({ auth, stats, departmentDistribution, boardMemb
                                         </div>
                                     </div>
                                     <div className="font-mono text-sm font-semibold text-slate-700 whitespace-nowrap pl-2">
-                                        Rp {new Intl.NumberFormat('id-ID').format(stats?.totalSavings || 0)}
+                                        <span className="hidden sm:inline">Rp {new Intl.NumberFormat('id-ID').format(stats?.totalSavings || 0)}</span>
+                                        <span className="inline sm:hidden">{formatRp(stats?.totalSavings || 0)}</span>
                                     </div>
                                 </div>
                                 
@@ -113,7 +129,8 @@ export default function Welcome({ auth, stats, departmentDistribution, boardMemb
                                         </div>
                                     </div>
                                     <div className="font-mono text-sm font-semibold text-slate-700 whitespace-nowrap pl-2">
-                                        Rp {new Intl.NumberFormat('id-ID').format(stats?.totalActiveLoans || 0)}
+                                        <span className="hidden sm:inline">Rp {new Intl.NumberFormat('id-ID').format(stats?.totalActiveLoans || 0)}</span>
+                                        <span className="inline sm:hidden">{formatRp(stats?.totalActiveLoans || 0)}</span>
                                     </div>
                                 </div>
 
