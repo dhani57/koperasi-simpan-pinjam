@@ -306,6 +306,76 @@ export default function Welcome({ auth, stats, departmentDistribution, boardMemb
 
                     </div>
                 </section>
+
+                {/* Cara Mendaftar Section */}
+                <section style={{ padding: 'var(--spacing-section) var(--spacing-xl)', backgroundColor: 'var(--color-canvas)' }}>
+                    <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
+                        <div className="text-center mb-16">
+                            <span className="ds-badge-pill" style={{ backgroundColor: 'var(--color-surface-strong)', color: 'var(--color-primary)' }}>Pendaftaran Anggota</span>
+                            <h2 className="ds-display-md mt-4">Cara Mendaftar Sebagai Anggota</h2>
+                            <p className="ds-body-md text-slate-500 max-w-2xl mx-auto mt-4">
+                                Pendaftaran akun anggota sepenuhnya dikelola secara terpusat oleh Admin Internal Koperasi untuk keamanan data Anda.
+                            </p>
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+                            {/* Langkah 1 */}
+                            <div className="ds-feature-card flex flex-col gap-4">
+                                <div className="w-10 h-10 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center font-bold text-sm">
+                                    01
+                                </div>
+                                <h3 className="font-bold text-slate-900 text-lg">Hubungi Admin</h3>
+                                <p className="text-slate-500 text-sm leading-relaxed">
+                                    Hubungi admin internal koperasi melalui kontak resmi dekanat Fakultas Teknik Unila untuk mengajukan pendaftaran.
+                                </p>
+                            </div>
+
+                            {/* Langkah 2 */}
+                            <div className="ds-feature-card flex flex-col gap-4">
+                                <div className="w-10 h-10 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center font-bold text-sm">
+                                    02
+                                </div>
+                                <h3 className="font-bold text-slate-900 text-lg">Serahkan Dokumen</h3>
+                                <p className="text-slate-500 text-sm leading-relaxed">
+                                    Lengkapi data administrasi dasar berupa NIP/NPM, identitas kependudukan, dan unit kerja Anda di Fakultas Teknik.
+                                </p>
+                            </div>
+
+                            {/* Langkah 3 */}
+                            <div className="ds-feature-card flex flex-col gap-4">
+                                <div className="w-10 h-10 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center font-bold text-sm">
+                                    03
+                                </div>
+                                <h3 className="font-bold text-slate-900 text-lg">Pembuatan Akun</h3>
+                                <p className="text-slate-500 text-sm leading-relaxed">
+                                    Admin memvalidasi data Anda, mengonfigurasi simpanan pokok, dan membuatkan akun anggota untuk masuk ke sistem.
+                                </p>
+                            </div>
+
+                            {/* Langkah 4 */}
+                            <div className="ds-feature-card flex flex-col gap-4">
+                                <div className="w-10 h-10 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center font-bold text-sm">
+                                    04
+                                </div>
+                                <h3 className="font-bold text-slate-900 text-lg">Mulai Layanan</h3>
+                                <p className="text-slate-500 text-sm leading-relaxed">
+                                    Gunakan akun Anda untuk masuk ke sistem Koperasi, memantau saldo simpanan secara langsung, dan mengajukan pinjaman.
+                                </p>
+                            </div>
+                        </div>
+
+                        {/* CTA Hubungi Admin */}
+                        <div className="text-center mt-16 bg-slate-50 rounded-[24px] p-8 border border-slate-100 max-w-xl mx-auto flex flex-col items-center gap-4">
+                            <h3 className="text-lg font-bold text-slate-900">Ingin menjadi anggota?</h3>
+                            <p className="text-slate-500 text-sm max-w-sm">
+                                Silakan hubungi admin kami untuk mendaftarkan akun koperasi Anda secara aman.
+                            </p>
+                            <a href="mailto:admin@koperasi.internal" className="ds-button-pill-cta mt-2 hover:shadow-lg transition-all duration-300">
+                                Hubungi Admin
+                            </a>
+                        </div>
+                    </div>
+                </section>
             </main>
 
             <FooterLight>
