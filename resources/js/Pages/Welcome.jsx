@@ -62,39 +62,79 @@ export default function Welcome({ auth, stats, departmentDistribution, boardMemb
             <main style={{ flex: 1 }}>
                 {/* Hero Section */}
                 <HeroBandDark>
-                    <div ref={heroRef} className="ds-hero-container">
+                    <div ref={heroRef} className="ds-hero-container w-full px-4 md:px-8 py-12 md:py-24">
                         {/* Left Column: Copy */}
-                        <div style={{ textAlign: 'left' }}>
-                            <h1 data-animate className="ds-display-mega" style={{ marginBottom: 'var(--spacing-md)', opacity: 0, transform: 'translateY(24px)', transition: 'all 0.8s cubic-bezier(0.16,1,0.3,1)' }}>
-                                Koperasi<br />Simpan Pinjam<br />FT Unila
+                        <div className="text-left max-w-xl mx-auto md:mx-0 w-full mb-12 md:mb-0">
+                            <h1 data-animate className="ds-display-mega mb-6 opacity-0 translate-y-6 transition-all duration-700 ease-out">
+                                Koperasi<br />Simpan Pinjam<br />FT Unila.
                             </h1>
-                            <p data-animate className="ds-body-md" style={{ color: 'var(--color-on-dark-soft)', maxWidth: '480px', opacity: 0, transform: 'translateY(24px)', transition: 'all 0.8s cubic-bezier(0.16,1,0.3,1) 0.1s' }}>
-                                Melayani kesejahteraan karyawan dan dosen Fakultas Teknik Universitas Lampung melalui program simpanan dan pinjaman yang transparan, aman, dan adil.
+                            <p data-animate className="ds-body-md text-slate-300 mb-10 opacity-0 translate-y-6 transition-all duration-700 delay-100 ease-out max-w-md">
+                                Sistem tertutup terintegrasi. Aman, transparan, dan tanpa repot. Khusus untuk ekosistem Fakultas Teknik Universitas Lampung.
                             </p>
+                            
+                            {!auth?.user ? (
+                                <div data-animate className="flex flex-wrap gap-4 opacity-0 translate-y-6 transition-all duration-700 delay-200 ease-out">
+                                    <Link href={route('login')} className="ds-button-primary">
+                                        Login Anggota
+                                    </Link>
+                                    <a href="#details" className="ds-button-secondary-dark">
+                                        Lihat Detail
+                                    </a>
+                                </div>
+                            ) : (
+                                <div data-animate className="flex flex-wrap gap-4 opacity-0 translate-y-6 transition-all duration-700 delay-200 ease-out">
+                                    <Link href={['pengurus', 'bendahara', 'ketua', 'pengawas'].includes(auth.user.role) ? route('admin.dashboard') : route('dashboard')} className="ds-button-primary">
+                                        Lihat Dashboard
+                                    </Link>
+                                </div>
+                            )}
                         </div>
                         
-                        {/* Right Column: Stats Card */}
-                        <div data-animate style={{ opacity: 0, transform: 'translateY(24px)', transition: 'all 0.8s cubic-bezier(0.16,1,0.3,1) 0.2s' }}>
-                            <div className="ds-product-ui-card-dark" style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-lg)' }}>
-                                <div>
-                                    <h3 className="ds-title-sm" style={{ color: 'var(--color-on-dark-soft)', marginBottom: 'var(--spacing-xxs)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Total Dana Dikelola</h3>
-                                    <div style={{ fontFamily: 'var(--font-mono)', fontSize: '32px', fontWeight: 600, color: 'var(--color-on-dark)' }}>
-                                        {formatRp((stats?.totalSavings || 0) + (stats?.totalActiveLoans || 0))}
-                                    </div>
+                        {/* Right Column: Layered Cards (Product UI Mockup) */}
+                        <div data-animate className="relative w-full max-w-md mx-auto opacity-0 translate-y-6 transition-all duration-700 delay-300 ease-out mt-8 md:mt-0">
+                            {/* Main Card */}
+                            <div className="ds-product-ui-card-light relative z-10 p-6 md:p-8">
+                                <div className="text-sm text-slate-500 mb-1">Total Dana Dikelola</div>
+                                <div className="font-mono text-2xl md:text-3xl font-bold text-slate-800 mb-8">
+                                    {formatRp((stats?.totalSavings || 0) + (stats?.totalActiveLoans || 0))}
                                 </div>
                                 
-                                <div>
-                                    <h3 className="ds-title-sm" style={{ color: 'var(--color-on-dark-soft)', marginBottom: 'var(--spacing-xxs)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Total Simpanan Anggota</h3>
-                                    <div style={{ fontFamily: 'var(--font-mono)', fontSize: '24px', fontWeight: 500, color: 'var(--color-on-dark)' }}>
-                                        {formatRp(stats?.totalSavings || 0)}
+                                <div className="space-y-6">
+                                    <div className="flex items-center gap-4">
+                                        <div className="w-8 h-8 rounded-full bg-[#0B5EA8] text-white flex items-center justify-center font-bold text-xs">S</div>
+                                        <div className="flex-1">
+                                            <div className="text-sm font-semibold text-slate-800">Total Simpanan</div>
+                                            <div className="text-xs text-slate-500">Pokok, Wajib, Sukarela</div>
+                                        </div>
+                                        <div className="font-mono text-sm font-medium text-slate-600">
+                                            {formatRp(stats?.totalSavings || 0)}
+                                        </div>
+                                    </div>
+                                    
+                                    <div className="flex items-center gap-4">
+                                        <div className="w-8 h-8 rounded-full bg-slate-100 text-slate-600 flex items-center justify-center font-bold text-xs">P</div>
+                                        <div className="flex-1">
+                                            <div className="text-sm font-semibold text-slate-800">Total Pinjaman</div>
+                                            <div className="text-xs text-slate-500">Pinjaman Aktif</div>
+                                        </div>
+                                        <div className="font-mono text-sm font-medium text-slate-600">
+                                            {formatRp(stats?.totalActiveLoans || 0)}
+                                        </div>
                                     </div>
                                 </div>
-                                
-                                <div>
-                                    <h3 className="ds-title-sm" style={{ color: 'var(--color-on-dark-soft)', marginBottom: 'var(--spacing-xxs)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Total Anggota Aktif</h3>
-                                    <div style={{ fontFamily: 'var(--font-mono)', fontSize: '24px', fontWeight: 500, color: 'var(--color-on-dark)' }}>
-                                        {stats?.totalMembers || 0} <span className="ds-body-sm" style={{ color: 'var(--color-on-dark-soft)' }}>Orang</span>
-                                    </div>
+                            </div>
+                            
+                            {/* Overlapping Small Card */}
+                            <div className="ds-product-ui-card-light absolute -bottom-10 md:-bottom-16 -right-4 md:-right-12 z-20 p-5 md:p-6 shadow-2xl w-64 md:w-72">
+                                <div className="flex justify-between items-center mb-2">
+                                    <div className="text-xs font-semibold text-slate-500">Total Anggota Aktif</div>
+                                    <span className="ds-badge-pill">AKTIF</span>
+                                </div>
+                                <div className="font-mono text-xl md:text-2xl font-bold text-[#CA8306] mb-1">
+                                    {stats?.totalMembers || 0} <span className="text-sm">Orang</span>
+                                </div>
+                                <div className="text-xs text-[#05b169] font-medium">
+                                    Tersebar di {departmentDistribution?.length || 0} Unit Kerja
                                 </div>
                             </div>
                         </div>
