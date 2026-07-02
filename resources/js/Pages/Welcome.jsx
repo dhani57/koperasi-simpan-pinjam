@@ -23,8 +23,17 @@ export default function Welcome({ auth, stats, departmentDistribution, boardMemb
         return `Rp ${new Intl.NumberFormat('id-ID').format(num)}`;
     };
 
-    const maxDist = departmentDistribution?.length > 0
-        ? Math.max(...departmentDistribution.map(d => d.total))
+    const faculties = ['FEB', 'FH', 'FKIP', 'FT', 'FK', 'FP', 'FMIPA', 'FISIP'];
+    const facultyDistribution = faculties.map(fac => {
+        const match = departmentDistribution?.find(d => d.department?.toUpperCase() === fac);
+        return {
+            faculty: fac,
+            total: match ? match.total : 0
+        };
+    });
+
+    const maxDist = facultyDistribution.length > 0
+        ? Math.max(...facultyDistribution.map(f => f.total), 1)
         : 1;
 
     useEffect(() => {
@@ -178,8 +187,8 @@ export default function Welcome({ auth, stats, departmentDistribution, boardMemb
                 {/* Visi & Misi Section */}
                 <section style={{ padding: 'var(--spacing-section) var(--spacing-xl)', backgroundColor: 'var(--color-canvas)' }}>
                     <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
-                        <div className="text-center mb-16">
-                            <h2 className="ds-display-lg">Visi & Misi Koperasi</h2>
+                        <div className="text-center mb-12">
+                            <h2 className="ds-display-md">Visi & Misi Koperasi</h2>
                         </div>
                         
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
@@ -221,65 +230,69 @@ export default function Welcome({ auth, stats, departmentDistribution, boardMemb
 
                 {/* Distribusi Anggota & Pengurus */}
                 <section style={{ padding: 'var(--spacing-section) var(--spacing-xl)', backgroundColor: 'var(--color-surface-soft)' }}>
-                    <div ref={distRef} style={{ maxWidth: '1200px', margin: '0 auto', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--spacing-xxl)' }} className="lg:grid-cols-2 grid-cols-1">
+                    <div ref={distRef} style={{ maxWidth: '1200px', margin: '0 auto' }}>
                         
-                        {/* Distribusi Anggota */}
-                        <div data-animate style={{ opacity: 0, transform: 'translateY(24px)', transition: 'all 0.8s cubic-bezier(0.16,1,0.3,1)' }}>
-                            <h2 className="ds-display-lg">Distribusi Anggota</h2>
-                            <div className="ds-feature-card" style={{ marginTop: 'var(--spacing-xl)' }}>
-                                {departmentDistribution && departmentDistribution.length > 0 ? (
+                        <div className="text-center mb-12">
+                            <h2 className="ds-display-md">Informasi Pengurus & Anggota</h2>
+                        </div>
+
+                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
+                            {/* Pengurus */}
+                            <div data-animate style={{ opacity: 0, transform: 'translateY(24px)', transition: 'all 0.8s cubic-bezier(0.16,1,0.3,1)' }}>
+                                <div className="ds-feature-card" style={{ padding: '32px' }}>
+                                    <div className="grid grid-cols-2 gap-y-8 gap-x-6">
+                                        {boardMembers && boardMembers.length > 0 ? (
+                                            boardMembers.map((member, i) => (
+                                                <div key={i} className="flex flex-col">
+                                                    <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">{member.role_label}</span>
+                                                    <span className="text-[16px] font-semibold text-slate-800 mt-1">{member.name}</span>
+                                                </div>
+                                            ))
+                                        ) : (
+                                            <p className="ds-body-md text-slate-500 col-span-2">Data pengurus belum tersedia.</p>
+                                        )}
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Distribusi Anggota */}
+                            <div data-animate style={{ opacity: 0, transform: 'translateY(24px)', transition: 'all 0.8s cubic-bezier(0.16,1,0.3,1) 0.1s' }}>
+                                <div className="ds-feature-card">
+                                    <div className="flex justify-between items-baseline mb-6 pb-4 border-b border-slate-100">
+                                        <span className="text-sm font-semibold text-slate-500 uppercase tracking-wider">Total Anggota</span>
+                                        <span className="font-mono text-2xl font-bold text-slate-900">{stats?.totalMembers || 0} Orang</span>
+                                    </div>
                                     <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-md)' }}>
-                                        {departmentDistribution.map((dept, i) => {
-                                            const pct = Math.round((dept.total / maxDist) * 100);
+                                        {facultyDistribution.map((item, i) => {
+                                            const pct = Math.round((item.total / maxDist) * 100);
+                                            const facultyColors = {
+                                                FEB: '#DC2626',   // Crimson
+                                                FH: '#E11D48',    // Rose
+                                                FKIP: '#8B5CF6',  // Purple
+                                                FT: '#0F82E6',    // Blue
+                                                FK: '#0D9488',    // Teal Green
+                                                FP: '#16A34A',    // Green
+                                                FMIPA: '#92400E', // Brown
+                                                FISIP: '#EA580C', // Orange
+                                            };
+                                            const barColor = facultyColors[item.faculty] || 'var(--color-primary)';
                                             return (
                                                 <div key={i}>
                                                     <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 'var(--spacing-xxs)' }}>
-                                                        <span className="ds-body-md" style={{ fontWeight: 600 }}>{dept.department}</span>
-                                                        <span style={{ fontFamily: 'var(--font-mono)', fontSize: '14px', fontWeight: 500 }}>{dept.total}</span>
+                                                        <span className="ds-body-md" style={{ fontWeight: 600 }}>{item.faculty}</span>
+                                                        <span style={{ fontFamily: 'var(--font-mono)', fontSize: '14px', fontWeight: 500 }}>{item.total} Orang</span>
                                                     </div>
-                                                    <div style={{ width: '100%', height: '8px', backgroundColor: 'var(--color-surface-strong)', borderRadius: 'var(--rounded-pill)' }}>
-                                                        <div style={{ height: '100%', width: `${pct}%`, backgroundColor: 'var(--color-primary)', borderRadius: 'var(--rounded-pill)' }}></div>
+                                                    <div style={{ width: '100%', height: '6px', backgroundColor: 'var(--color-surface-strong)', borderRadius: 'var(--rounded-pill)' }}>
+                                                        <div style={{ height: '100%', width: `${pct}%`, backgroundColor: barColor, borderRadius: 'var(--rounded-pill)', transition: 'width 0.8s ease-out' }}></div>
                                                     </div>
                                                 </div>
                                             );
                                         })}
                                     </div>
-                                ) : (
-                                    <p className="ds-body-md" style={{ color: 'var(--color-muted)' }}>Belum ada data distribusi anggota.</p>
-                                )}
+                                </div>
                             </div>
                         </div>
 
-                        {/* Pengurus */}
-                        <div data-animate style={{ opacity: 0, transform: 'translateY(24px)', transition: 'all 0.8s cubic-bezier(0.16,1,0.3,1) 0.1s' }}>
-                            <h2 className="ds-display-lg">Susunan Pengurus</h2>
-                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--spacing-md)', marginTop: 'var(--spacing-xl)' }}>
-                                {boardMembers && boardMembers.length > 0 ? (
-                                    boardMembers.map((member, i) => {
-                                        const initials = member.name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase();
-                                        const roleColor = roleColors[member.role] || roleColors.pengawas;
-                                        
-                                        return (
-                                            <div key={i} className="ds-feature-card" style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-sm)', padding: 'var(--spacing-md)' }}>
-                                                <div className="ds-asset-icon-circular" style={{ backgroundColor: roleColor.bg, color: roleColor.text }}>
-                                                    {initials}
-                                                </div>
-                                                <div>
-                                                    <div className="ds-title-sm" style={{ marginBottom: '2px' }}>{member.name}</div>
-                                                    <div style={{ fontFamily: 'var(--font-body)', fontSize: '12px', color: 'var(--color-muted)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-                                                        {member.role_label}
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        );
-                                    })
-                                ) : (
-                                    <div className="ds-feature-card" style={{ gridColumn: 'span 2' }}>
-                                        <p className="ds-body-md" style={{ color: 'var(--color-muted)' }}>Data pengurus belum tersedia.</p>
-                                    </div>
-                                )}
-                            </div>
-                        </div>
                     </div>
                 </section>
             </main>

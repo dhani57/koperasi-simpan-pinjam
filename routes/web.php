@@ -20,19 +20,24 @@ Route::get('/', function () {
         ->orderByDesc('total')
         ->get();
 
-    // Data Pengurus (Ketua, Bendahara, Sekretaris/Pengurus)
-    $boardMembers = \App\Models\User::whereIn('role', ['ketua', 'bendahara', 'pengurus'])
+    // Data Pengurus (Ketua, Bendahara, Pengawas, Admin)
+    $boardMembers = \App\Models\User::whereIn('role', ['ketua', 'bendahara', 'pengawas', 'pengurus'])
         ->select('name', 'role', 'department', 'profile_photo_path', 'job_title')
-        ->orderByRaw("CASE role WHEN 'ketua' THEN 1 WHEN 'bendahara' THEN 2 WHEN 'pengurus' THEN 3 ELSE 4 END")
+        ->orderByRaw("CASE role WHEN 'ketua' THEN 1 WHEN 'bendahara' THEN 2 WHEN 'pengawas' THEN 3 WHEN 'pengurus' THEN 4 ELSE 5 END")
         ->get()
         ->map(function ($user) {
             $roleLabels = [
                 'ketua' => 'Ketua',
                 'bendahara' => 'Bendahara',
-                'pengurus' => 'Sekretaris / Admin',
+                'pengawas' => 'Pengawas',
+                'pengurus' => 'Admin',
             ];
+            
+            // Clean Bapak/Ibu from names
+            $cleanName = preg_replace('/^(Bapak|Ibu)\s+/i', '', $user->name);
+
             return [
-                'name' => $user->name,
+                'name' => $cleanName,
                 'role' => $user->role,
                 'role_label' => $roleLabels[$user->role] ?? ucfirst($user->role),
                 'department' => $user->department,

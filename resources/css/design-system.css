@@ -254,6 +254,15 @@ body {
   margin-bottom: var(--spacing-base);
 }
 
+.ds-display-md {
+  font-family: var(--font-display);
+  font-size: 42px;
+  font-weight: 600;
+  line-height: 1.1;
+  letter-spacing: -1.0px;
+  margin-bottom: var(--spacing-base);
+}
+
 .ds-grid-3up {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -281,6 +290,9 @@ body {
   }
   .ds-display-lg {
     font-size: 36px;
+  }
+  .ds-display-md {
+    font-size: 30px;
   }
 }
 

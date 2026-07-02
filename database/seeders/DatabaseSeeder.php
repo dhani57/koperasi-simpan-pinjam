@@ -93,6 +93,7 @@ class DatabaseSeeder extends Seeder
             'monthly_simpanan_wajib' => 100000,
             'max_salary_deduction_limit' => 2000000,
             'simpanan_wajib_balance' => 0,
+            'department' => 'FT',
         ]);
 
         // Generate 199 more members
@@ -108,6 +109,7 @@ class DatabaseSeeder extends Seeder
                 'monthly_simpanan_wajib' => fake()->randomElement([50000, 100000, 150000, 200000]),
                 'max_salary_deduction_limit' => fake()->randomElement([1500000, 2000000, 2500000, 3000000]),
                 'simpanan_wajib_balance' => 0,
+                'department' => fake()->randomElement(['FEB', 'FH', 'FKIP', 'FT', 'FK', 'FP', 'FMIPA', 'FISIP']),
             ]);
         }
 
