@@ -178,15 +178,14 @@ export default function Welcome({ auth, stats, departmentDistribution, boardMemb
                 {/* Visi & Misi Section */}
                 <section style={{ padding: 'var(--spacing-section) var(--spacing-xl)', backgroundColor: 'var(--color-canvas)' }}>
                     <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
-                        <div className="text-center mb-12">
-                            <span className="ds-badge-pill" style={{ backgroundColor: 'var(--color-surface-strong)', color: 'var(--color-primary)' }}>Visi & Misi</span>
+                        <div className="text-center mb-16">
+                            <h2 className="ds-display-lg">Visi & Misi Koperasi</h2>
                         </div>
                         
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
                             {/* Visi (Kiri) */}
                             <div className="ds-feature-card hover:shadow-md transition-shadow duration-300">
-                                <h3 className="ds-title-md text-slate-900 mb-6 flex items-center gap-3">
-                                    <span className="w-8 h-8 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center font-bold text-sm">V</span>
+                                <h3 className="ds-title-md text-slate-900 mb-6">
                                     Visi Koperasi
                                 </h3>
                                 <ol className="flex flex-col gap-4 list-decimal pl-5 text-slate-600 text-sm leading-relaxed">
@@ -201,8 +200,7 @@ export default function Welcome({ auth, stats, departmentDistribution, boardMemb
                             
                             {/* Misi (Kanan) */}
                             <div className="ds-feature-card hover:shadow-md transition-shadow duration-300">
-                                <h3 className="ds-title-md text-slate-900 mb-6 flex items-center gap-3">
-                                    <span className="w-8 h-8 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold text-sm">M</span>
+                                <h3 className="ds-title-md text-slate-900 mb-6">
                                     Misi Koperasi
                                 </h3>
                                 <ol className="flex flex-col gap-4 list-decimal pl-5 text-slate-600 text-sm leading-relaxed">
