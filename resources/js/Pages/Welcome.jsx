@@ -156,7 +156,7 @@ export default function Welcome({ auth, stats, departmentDistribution, boardMemb
                         {/* Overlapping Small Card (Desktop Only) */}
                         <div 
                             data-animate 
-                            className="hidden lg:block absolute bottom-[-96px] right-[-48px] z-20 w-[320px] bg-white text-slate-900 rounded-[24px] p-6 shadow-2xl opacity-0 translate-y-6 transition-all duration-700 delay-500 ease-out border border-slate-100/50"
+                            className="hidden lg:block absolute lg:top-[calc(100%-24px)] lg:right-[-32px] z-20 w-[320px] bg-white text-slate-900 rounded-[24px] p-6 shadow-2xl opacity-0 translate-y-6 transition-all duration-700 delay-500 ease-out border border-slate-100/50"
                         >
                             <div className="flex justify-between items-center mb-4">
                                 <div className="text-[13px] text-slate-500 font-semibold uppercase tracking-wider">Total Anggota Aktif</div>
