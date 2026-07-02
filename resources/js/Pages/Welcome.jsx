@@ -68,66 +68,71 @@ export default function Welcome({ auth, stats, departmentDistribution, boardMemb
                             <h1 data-animate className="ds-display-mega" style={{ marginBottom: 'var(--spacing-md)', opacity: 0, transform: 'translateY(24px)', transition: 'all 0.8s cubic-bezier(0.16,1,0.3,1)' }}>
                                 Koperasi<br />Simpan Pinjam<br />FT Unila.
                             </h1>
-                            <p data-animate className="ds-body-md" style={{ color: 'var(--color-on-dark-soft)', maxWidth: '480px', opacity: 0, transform: 'translateY(24px)', transition: 'all 0.8s cubic-bezier(0.16,1,0.3,1) 0.1s' }}>
-                                Sistem tertutup terintegrasi. Aman, transparan, dan tanpa repot. Khusus untuk ekosistem Fakultas Teknik Universitas Lampung.
+                            <p data-animate className="ds-body-md" style={{ color: 'var(--color-on-dark-soft)', maxWidth: '440px', opacity: 0, transform: 'translateY(24px)', transition: 'all 0.8s cubic-bezier(0.16,1,0.3,1) 0.1s' }}>
+                                Melayani kesejahteraan karyawan dan dosen Fakultas Teknik Universitas Lampung melalui program simpanan dan pinjaman yang transparan, aman, dan adil.
                             </p>
                         </div>
                         
                         {/* Right Column: Layered Cards (Product UI Mockup) */}
-                        <div data-animate style={{ position: 'relative', width: '100%', maxWidth: '440px', justifySelf: 'end', opacity: 0, transform: 'translateY(24px)', transition: 'all 0.8s cubic-bezier(0.16,1,0.3,1) 0.3s' }}>
-                            {/* Main Card */}
-                            <div className="ds-product-ui-card-light" style={{ position: 'relative', zIndex: 10 }}>
-                                <div style={{ color: 'var(--color-muted)', fontSize: '13px', marginBottom: 'var(--spacing-xs)' }}>Total Dana Dikelola</div>
-                                <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px', marginBottom: 'var(--spacing-xl)' }}>
-                                    <span style={{ fontFamily: 'var(--font-mono)', fontSize: '20px', fontWeight: 600, color: 'var(--color-ink)' }}>Rp</span>
-                                    <span style={{ fontFamily: 'var(--font-mono)', fontSize: '28px', fontWeight: 600, color: 'var(--color-ink)' }}>
-                                        {new Intl.NumberFormat('id-ID').format((stats?.totalSavings || 0) + (stats?.totalActiveLoans || 0))}
-                                    </span>
-                                </div>
-                                
-                                <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-lg)' }}>
-                                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
-                                        <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-md)' }}>
-                                            <div style={{ width: '28px', height: '28px', flexShrink: 0, borderRadius: 'var(--rounded-full)', backgroundColor: 'var(--color-primary)', color: 'var(--color-on-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 600, fontSize: '12px' }}>S</div>
-                                            <div>
-                                                <div style={{ fontSize: '14px', fontWeight: 500, color: 'var(--color-ink)' }}>Total Simpanan</div>
-                                                <div style={{ fontSize: '12px', color: 'var(--color-muted)' }}>Pokok, Wajib, Sukarela</div>
+                        <div style={{ display: 'flex', justifyContent: 'flex-end', width: '100%' }}>
+                            <div data-animate style={{ position: 'relative', width: '100%', maxWidth: '440px', opacity: 0, transform: 'translateY(24px)', transition: 'all 0.8s cubic-bezier(0.16,1,0.3,1) 0.3s' }}>
+                                {/* Main Card */}
+                                <div className="ds-product-ui-card-light" style={{ position: 'relative', zIndex: 10, width: '100%', minWidth: '400px' }}>
+                                    <div style={{ color: 'var(--color-muted)', fontSize: '13px', marginBottom: 'var(--spacing-xs)', fontWeight: 500 }}>Total Dana Dikelola</div>
+                                    <div style={{ display: 'flex', alignItems: 'baseline', gap: '12px', marginBottom: 'var(--spacing-xl)' }}>
+                                        <span style={{ fontFamily: 'var(--font-mono)', fontSize: '24px', fontWeight: 600, color: 'var(--color-ink)' }}>Rp</span>
+                                        <span style={{ fontFamily: 'var(--font-mono)', fontSize: '32px', fontWeight: 600, color: 'var(--color-ink)', letterSpacing: '-0.5px' }}>
+                                            {new Intl.NumberFormat('id-ID').format((stats?.totalSavings || 0) + (stats?.totalActiveLoans || 0))}
+                                        </span>
+                                    </div>
+                                    
+                                    <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-lg)' }}>
+                                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
+                                            <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-md)' }}>
+                                                <div style={{ width: '32px', height: '32px', flexShrink: 0, borderRadius: 'var(--rounded-full)', backgroundColor: 'var(--color-primary)', color: 'var(--color-on-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 600, fontSize: '13px' }}>S</div>
+                                                <div style={{ whiteSpace: 'nowrap' }}>
+                                                    <div style={{ fontSize: '15px', fontWeight: 500, color: 'var(--color-ink)' }}>Total Simpanan</div>
+                                                    <div style={{ fontSize: '13px', color: 'var(--color-muted)' }}>Pokok, Wajib & Sukarela</div>
+                                                </div>
+                                            </div>
+                                            <div style={{ fontFamily: 'var(--font-mono)', fontSize: '14px', fontWeight: 500, color: 'var(--color-muted)', whiteSpace: 'nowrap', paddingLeft: 'var(--spacing-sm)' }}>
+                                                Rp {new Intl.NumberFormat('id-ID').format(stats?.totalSavings || 0)}
                                             </div>
                                         </div>
-                                        <div style={{ fontFamily: 'var(--font-mono)', fontSize: '13px', color: 'var(--color-muted)', whiteSpace: 'nowrap' }}>
-                                            Rp {new Intl.NumberFormat('id-ID').format(stats?.totalSavings || 0)}
+                                        
+                                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
+                                            <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-md)' }}>
+                                                <div style={{ width: '32px', height: '32px', flexShrink: 0, borderRadius: 'var(--rounded-full)', backgroundColor: 'var(--color-surface-strong)', color: 'var(--color-muted)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 600, fontSize: '13px' }}>P</div>
+                                                <div style={{ whiteSpace: 'nowrap' }}>
+                                                    <div style={{ fontSize: '15px', fontWeight: 500, color: 'var(--color-ink)' }}>Total Pinjaman</div>
+                                                    <div style={{ fontSize: '13px', color: 'var(--color-muted)' }}>Pinjaman Aktif Koperasi</div>
+                                                </div>
+                                            </div>
+                                            <div style={{ fontFamily: 'var(--font-mono)', fontSize: '14px', fontWeight: 500, color: 'var(--color-muted)', whiteSpace: 'nowrap', paddingLeft: 'var(--spacing-sm)' }}>
+                                                Rp {new Intl.NumberFormat('id-ID').format(stats?.totalActiveLoans || 0)}
+                                            </div>
                                         </div>
                                     </div>
                                     
-                                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
-                                        <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-md)' }}>
-                                            <div style={{ width: '28px', height: '28px', flexShrink: 0, borderRadius: 'var(--rounded-full)', backgroundColor: 'var(--color-surface-strong)', color: 'var(--color-muted)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 600, fontSize: '12px' }}>P</div>
-                                            <div>
-                                                <div style={{ fontSize: '14px', fontWeight: 500, color: 'var(--color-ink)' }}>Total Pinjaman</div>
-                                                <div style={{ fontSize: '12px', color: 'var(--color-muted)' }}>Pinjaman Aktif</div>
-                                            </div>
-                                        </div>
-                                        <div style={{ fontFamily: 'var(--font-mono)', fontSize: '13px', color: 'var(--color-muted)', whiteSpace: 'nowrap' }}>
-                                            Rp {new Intl.NumberFormat('id-ID').format(stats?.totalActiveLoans || 0)}
-                                        </div>
+                                    {/* Spacer yang sangat tebal untuk menjamin ruang kosong bagi overlapping card */}
+                                    <div style={{ height: '90px', width: '100%' }}></div>
+                                </div>
+                                
+                                {/* Overlapping Small Card */}
+                                <div className="ds-product-ui-card-light" style={{ position: 'absolute', bottom: '-40px', right: '-50px', zIndex: 20, width: '320px', padding: '24px', boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)' }}>
+                                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--spacing-md)' }}>
+                                        <div style={{ fontSize: '13px', color: 'var(--color-muted)', fontWeight: 500 }}>Total Anggota Aktif</div>
+                                        <span className="ds-badge-pill" style={{ backgroundColor: '#FEF3C7', color: '#D97706', fontSize: '11px', padding: '4px 10px' }}>AKTIF</span>
                                     </div>
-                                </div>
-                            </div>
-                            
-                            {/* Overlapping Small Card */}
-                            <div className="ds-product-ui-card-light" style={{ position: 'absolute', bottom: '-24px', right: '-32px', zIndex: 20, width: '280px', padding: '24px', boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.15)' }}>
-                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--spacing-sm)' }}>
-                                    <div style={{ fontSize: '12px', color: 'var(--color-muted)' }}>Total Anggota Aktif</div>
-                                    <span className="ds-badge-pill">AKTIF</span>
-                                </div>
-                                <div style={{ display: 'flex', alignItems: 'baseline', gap: '6px', marginBottom: 'var(--spacing-xs)' }}>
-                                    <span style={{ fontFamily: 'var(--font-mono)', fontSize: '24px', fontWeight: 600, color: 'var(--color-accent-yellow)' }}>
-                                        {stats?.totalMembers || 0}
-                                    </span>
-                                    <span style={{ fontSize: '13px', fontWeight: 600, color: 'var(--color-accent-yellow)' }}>Orang</span>
-                                </div>
-                                <div style={{ fontSize: '12px', color: 'var(--color-semantic-up)', fontWeight: 500 }}>
-                                    Tersebar di {departmentDistribution?.length || 0} Unit Kerja
+                                    <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px', marginBottom: 'var(--spacing-xs)' }}>
+                                        <span style={{ fontFamily: 'var(--font-mono)', fontSize: '28px', fontWeight: 600, color: '#D97706' }}>
+                                            {stats?.totalMembers || 0}
+                                        </span>
+                                        <span style={{ fontSize: '14px', fontWeight: 600, color: '#D97706' }}>Orang</span>
+                                    </div>
+                                    <div style={{ fontSize: '13px', color: 'var(--color-semantic-up)', fontWeight: 500 }}>
+                                        Tersebar di {departmentDistribution?.length || 0} Unit Kerja
+                                    </div>
                                 </div>
                             </div>
                         </div>
