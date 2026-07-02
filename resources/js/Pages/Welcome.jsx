@@ -11,10 +11,15 @@ export default function Welcome({ auth, stats, departmentDistribution, boardMemb
     const distRef = useRef(null);
 
     const formatRp = (num) => {
+        if (!num) return 'Rp 0';
         if (num >= 1000000000) return `Rp ${(num / 1000000000).toFixed(1)} M`;
         if (num >= 1000000) return `Rp ${(num / 1000000).toFixed(0)} Jt`;
         return `Rp ${new Intl.NumberFormat('id-ID').format(num)}`;
     };
+
+    const maxDist = departmentDistribution?.length > 0
+        ? Math.max(...departmentDistribution.map(d => d.total))
+        : 1;
 
     useEffect(() => {
         const observerOptions = { threshold: 0.15 };
@@ -40,121 +45,60 @@ export default function Welcome({ auth, stats, departmentDistribution, boardMemb
     }, []);
 
     const roleColors = {
-        ketua: { bg: '#4f46e5', text: '#fff' },
-        bendahara: { bg: '#0891b2', text: '#fff' },
-        pengurus: { bg: '#7c3aed', text: '#fff' },
+        ketua: { bg: 'var(--color-primary)', text: 'var(--color-on-primary)' },
+        bendahara: { bg: 'var(--color-surface-strong)', text: 'var(--color-ink)' },
+        pengawas: { bg: 'var(--color-surface-strong)', text: 'var(--color-ink)' },
     };
 
-    // Calculate max for distribution bar chart
-    const maxDist = departmentDistribution?.length > 0
-        ? Math.max(...departmentDistribution.map(d => d.total))
-        : 1;
-
     return (
-        <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', backgroundColor: 'var(--color-canvas)' }}>
-            <Head title="Koperasi FT Unila" />
+        <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', backgroundColor: 'var(--color-canvas)' }}>
+            <Head>
+                <title>Koperasi FT Unila</title>
+                <meta name="description" content="Melayani kesejahteraan karyawan dan dosen Fakultas Teknik Universitas Lampung melalui program simpanan dan pinjaman yang transparan, aman, dan adil." />
+            </Head>
 
-            <div style={{ backgroundColor: 'var(--color-surface-dark)' }}>
-                <TopNavUnila auth={auth} />
-            </div>
+            <TopNavUnila auth={auth} />
 
             <main style={{ flex: 1 }}>
-                {/* Hero — Profil Koperasi */}
+                {/* Hero Section */}
                 <HeroBandDark>
-                    <div ref={heroRef} style={{ textAlign: 'center', maxWidth: '720px', margin: '0 auto', padding: '24px 0' }}>
-                        <div data-animate style={{ opacity: 0, transform: 'translateY(24px)', transition: 'all 0.8s cubic-bezier(0.16,1,0.3,1)' }}>
-                            <div style={{ display: 'inline-flex', alignItems: 'center', gap: '12px', padding: '8px 20px', borderRadius: '100px', backgroundColor: 'rgba(255,255,255,0.08)', marginBottom: '24px', border: '1px solid rgba(255,255,255,0.1)' }}>
-                                <div style={{ width: '32px', height: '32px', borderRadius: '50%', background: 'linear-gradient(135deg, var(--color-primary), #60a5fa)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                                    <span style={{ color: '#fff', fontWeight: 700, fontSize: '16px' }}>K</span>
-                                </div>
-                                <span style={{ color: 'rgba(255,255,255,0.9)', fontSize: '14px', fontWeight: 600, letterSpacing: '0.5px' }}>Koperasi FT Unila</span>
-                            </div>
-                        </div>
-
-                        <h1 data-animate className="ds-display-mega" style={{ marginBottom: '16px', opacity: 0, transform: 'translateY(24px)', transition: 'all 0.8s cubic-bezier(0.16,1,0.3,1) 0.1s', lineHeight: 1.15 }}>
-                            Koperasi Simpan Pinjam<br />Fakultas Teknik Universitas Lampung
+                    <div ref={heroRef} style={{ maxWidth: '800px', margin: '0 auto', textAlign: 'center' }}>
+                        <h1 data-animate className="ds-display-mega" style={{ marginBottom: 'var(--spacing-md)', opacity: 0, transform: 'translateY(24px)', transition: 'all 0.8s cubic-bezier(0.16,1,0.3,1)' }}>
+                            Koperasi Simpan Pinjam<br />Fakultas Teknik Unila
                         </h1>
-
-                        <p data-animate className="ds-body-md" style={{ color: 'var(--color-on-dark-soft)', marginBottom: '32px', maxWidth: '520px', margin: '0 auto 32px', opacity: 0, transform: 'translateY(24px)', transition: 'all 0.8s cubic-bezier(0.16,1,0.3,1) 0.2s', lineHeight: 1.7 }}>
+                        <p data-animate className="ds-body-md" style={{ color: 'var(--color-on-dark-soft)', maxWidth: '600px', margin: '0 auto var(--spacing-xl)', opacity: 0, transform: 'translateY(24px)', transition: 'all 0.8s cubic-bezier(0.16,1,0.3,1) 0.1s' }}>
                             Melayani kesejahteraan karyawan dan dosen Fakultas Teknik Universitas Lampung melalui program simpanan dan pinjaman yang transparan, aman, dan adil.
                         </p>
-
-                        <div data-animate style={{ opacity: 0, transform: 'translateY(24px)', transition: 'all 0.8s cubic-bezier(0.16,1,0.3,1) 0.3s' }}>
-                            {auth?.user ? (
-                                <Link
-                                    href={['pengurus', 'bendahara', 'ketua', 'pengawas'].includes(auth.user.role) ? route('admin.dashboard') : route('dashboard')}
-                                    style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', padding: '14px 32px', borderRadius: '100px', backgroundColor: '#fff', color: 'var(--color-primary)', fontWeight: 600, fontSize: '15px', textDecoration: 'none', boxShadow: '0 4px 16px rgba(0,0,0,0.15)', transition: 'transform 0.2s' }}
-                                >
-                                    Buka Dashboard
-                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
-                                </Link>
-                            ) : (
-                                <Link
-                                    href={route('login')}
-                                    style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', padding: '14px 32px', borderRadius: '100px', backgroundColor: '#fff', color: 'var(--color-primary)', fontWeight: 600, fontSize: '15px', textDecoration: 'none', boxShadow: '0 4px 16px rgba(0,0,0,0.15)', transition: 'transform 0.2s' }}
-                                >
-                                    Login Anggota
-                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
-                                </Link>
-                            )}
-                        </div>
+                        
+                        {/* Perubahan: Hanya tombol dari Header yang tersisa (di TopNavUnila). Tidak ada tombol di Hero sesuai permintaan. */}
                     </div>
                 </HeroBandDark>
 
-                {/* Statistik Umum Koperasi */}
-                <section style={{ padding: '64px 24px', backgroundColor: 'var(--color-canvas)' }}>
-                    <div ref={statsRef} style={{ maxWidth: '1000px', margin: '0 auto' }}>
-                        <div data-animate style={{ textAlign: 'center', marginBottom: '40px', opacity: 0, transform: 'translateY(24px)', transition: 'all 0.7s cubic-bezier(0.16,1,0.3,1)' }}>
-                            <h2 className="ds-display-lg" style={{ marginBottom: '8px' }}>Ringkasan Koperasi</h2>
-                            <p className="ds-body-md" style={{ color: 'var(--color-muted)' }}>Data agregat keuangan koperasi saat ini</p>
+                {/* Stats Section */}
+                <section style={{ padding: 'var(--spacing-section) var(--spacing-xl)', backgroundColor: 'var(--color-canvas)' }}>
+                    <div ref={statsRef} style={{ maxWidth: '1200px', margin: '0 auto' }}>
+                        <div data-animate style={{ marginBottom: 'var(--spacing-xl)', opacity: 0, transform: 'translateY(24px)', transition: 'all 0.8s cubic-bezier(0.16,1,0.3,1)' }}>
+                            <h2 className="ds-display-lg">Ringkasan Koperasi</h2>
                         </div>
 
-                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '20px' }}>
+                        <div className="ds-grid-3up">
                             {[
                                 {
                                     label: 'Total Dana Dikelola',
-                                    value: formatRp((stats?.totalSavings || 0) + (stats?.totalActiveLoans || 0)),
-                                    icon: (
-                                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#4f46e5" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M2 10h20"/></svg>
-                                    ),
-                                    gradient: 'linear-gradient(135deg, #eef2ff, #e0e7ff)',
-                                    color: '#4338ca'
+                                    value: formatRp((stats?.totalSavings || 0) + (stats?.totalActiveLoans || 0))
                                 },
                                 {
                                     label: 'Total Simpanan Anggota',
-                                    value: formatRp(stats?.totalSavings || 0),
-                                    icon: (
-                                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#059669" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 5c-1.5 0-2.8 1.4-3 2-3.5-1.5-11-.3-11 5 0 1.8 0 3 2 4.5V20h4v-2h3v2h4v-4c1-0.5 1.7-1 2-2h2v-4h-2c0-1-.5-1.5-1-2"/><path d="M2 9.5a.5.5 0 1 0 1 0 .5.5 0 1 0-1 0"/></svg>
-                                    ),
-                                    gradient: 'linear-gradient(135deg, #ecfdf5, #d1fae5)',
-                                    color: '#047857'
+                                    value: formatRp(stats?.totalSavings || 0)
                                 },
                                 {
                                     label: 'Total Anggota Aktif',
-                                    value: `${stats?.totalMembers || 0} Orang`,
-                                    icon: (
-                                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#0891b2" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-                                    ),
-                                    gradient: 'linear-gradient(135deg, #ecfeff, #cffafe)',
-                                    color: '#0e7490'
-                                },
+                                    value: `${stats?.totalMembers || 0}`
+                                }
                             ].map((item, i) => (
-                                <div data-animate key={i} style={{
-                                    background: item.gradient,
-                                    borderRadius: 'var(--rounded-xl)',
-                                    padding: '28px',
-                                    border: '1px solid rgba(0,0,0,0.05)',
-                                    opacity: 0,
-                                    transform: 'translateY(24px)',
-                                    transition: `all 0.7s cubic-bezier(0.16,1,0.3,1) ${0.1 + i * 0.1}s`
-                                }}>
-                                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px' }}>
-                                        <div style={{ width: '44px', height: '44px', borderRadius: '12px', backgroundColor: 'rgba(255,255,255,0.7)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                                            {item.icon}
-                                        </div>
-                                    </div>
-                                    <div style={{ fontSize: '13px', color: 'var(--color-muted)', marginBottom: '6px', fontWeight: 500 }}>{item.label}</div>
-                                    <div style={{ fontSize: '28px', fontWeight: 700, fontFamily: 'var(--font-mono)', color: item.color, letterSpacing: '-0.5px' }}>
+                                <div data-animate key={i} className="ds-feature-card" style={{ opacity: 0, transform: 'translateY(24px)', transition: `all 0.8s cubic-bezier(0.16,1,0.3,1) ${i * 0.1}s` }}>
+                                    <h3 className="ds-title-md" style={{ color: 'var(--color-muted)' }}>{item.label}</h3>
+                                    <div style={{ fontFamily: 'var(--font-mono)', fontSize: '32px', fontWeight: 500, color: 'var(--color-ink)' }}>
                                         {item.value}
                                     </div>
                                 </div>
@@ -163,144 +107,101 @@ export default function Welcome({ auth, stats, departmentDistribution, boardMemb
                     </div>
                 </section>
 
-                {/* Profil Pengurus */}
-                <section style={{ padding: '64px 24px', backgroundColor: 'var(--color-surface-soft)' }}>
-                    <div ref={boardRef} style={{ maxWidth: '900px', margin: '0 auto' }}>
-                        <div data-animate style={{ textAlign: 'center', marginBottom: '40px', opacity: 0, transform: 'translateY(24px)', transition: 'all 0.7s cubic-bezier(0.16,1,0.3,1)' }}>
-                            <h2 className="ds-display-lg" style={{ marginBottom: '8px' }}>Pengurus Koperasi</h2>
-                            <p className="ds-body-md" style={{ color: 'var(--color-muted)' }}>Dipercaya mengelola keuangan anggota dengan integritas</p>
-                        </div>
-
-                        {boardMembers && boardMembers.length > 0 ? (
-                            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '24px', justifyItems: 'center' }}>
-                                {boardMembers.map((member, i) => {
-                                    const colors = roleColors[member.role] || { bg: '#6b7280', text: '#fff' };
-                                    const initials = member.name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase();
-                                    return (
-                                        <div data-animate key={i} style={{
-                                            backgroundColor: '#fff',
-                                            borderRadius: 'var(--rounded-xl)',
-                                            padding: '32px 24px',
-                                            textAlign: 'center',
-                                            border: '1px solid var(--color-hairline)',
-                                            width: '100%',
-                                            maxWidth: '280px',
-                                            opacity: 0,
-                                            transform: 'translateY(24px)',
-                                            transition: `all 0.7s cubic-bezier(0.16,1,0.3,1) ${0.1 + i * 0.12}s`
-                                        }}>
-                                            {/* Avatar with initials */}
-                                            <div style={{
-                                                width: '80px', height: '80px', borderRadius: '50%',
-                                                background: `linear-gradient(135deg, ${colors.bg}, ${colors.bg}cc)`,
-                                                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                                margin: '0 auto 16px',
-                                                boxShadow: `0 4px 16px ${colors.bg}30`,
-                                            }}>
-                                                <span style={{ color: colors.text, fontSize: '28px', fontWeight: 700 }}>{initials}</span>
-                                            </div>
-                                            <h3 style={{ fontSize: '16px', fontWeight: 600, color: 'var(--color-ink)', marginBottom: '6px' }}>{member.name}</h3>
-                                            <span style={{
-                                                display: 'inline-block',
-                                                padding: '4px 12px',
-                                                borderRadius: '100px',
-                                                fontSize: '12px',
-                                                fontWeight: 600,
-                                                backgroundColor: `${colors.bg}15`,
-                                                color: colors.bg,
-                                                marginBottom: '8px'
-                                            }}>
-                                                {member.role_label}
-                                            </span>
-                                            {member.department && (
-                                                <div style={{ fontSize: '12px', color: 'var(--color-muted)', marginTop: '4px' }}>{member.department}</div>
-                                            )}
-                                        </div>
-                                    );
-                                })}
-                            </div>
-                        ) : (
-                            <div style={{ textAlign: 'center', padding: '40px', color: 'var(--color-muted)', fontSize: '14px' }}>
-                                Data pengurus akan segera ditampilkan.
-                            </div>
-                        )}
-                    </div>
-                </section>
-
-                {/* Distribusi Anggota per Fakultas */}
-                <section style={{ padding: '64px 24px', backgroundColor: 'var(--color-canvas)' }}>
-                    <div ref={distRef} style={{ maxWidth: '700px', margin: '0 auto' }}>
-                        <div data-animate style={{ textAlign: 'center', marginBottom: '40px', opacity: 0, transform: 'translateY(24px)', transition: 'all 0.7s cubic-bezier(0.16,1,0.3,1)' }}>
-                            <h2 className="ds-display-lg" style={{ marginBottom: '8px' }}>Distribusi Anggota</h2>
-                            <p className="ds-body-md" style={{ color: 'var(--color-muted)' }}>Jumlah anggota berdasarkan Fakultas / Unit Kerja</p>
-                        </div>
-
-                        {departmentDistribution && departmentDistribution.length > 0 ? (
-                            <div style={{ backgroundColor: '#fff', borderRadius: 'var(--rounded-xl)', padding: '32px', border: '1px solid var(--color-hairline)' }}>
-                                <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-                                    {departmentDistribution.map((dept, i) => {
-                                        const pct = Math.round((dept.total / maxDist) * 100);
-                                        const barColors = ['#4f46e5', '#0891b2', '#059669', '#d97706', '#dc2626', '#7c3aed', '#be185d'];
-                                        const barColor = barColors[i % barColors.length];
-                                        return (
-                                            <div data-animate key={i} style={{
-                                                opacity: 0,
-                                                transform: 'translateY(16px)',
-                                                transition: `all 0.6s cubic-bezier(0.16,1,0.3,1) ${0.05 + i * 0.08}s`
-                                            }}>
-                                                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '6px', fontSize: '13px' }}>
-                                                    <span style={{ fontWeight: 600, color: 'var(--color-ink)' }}>{dept.department}</span>
-                                                    <span style={{ fontFamily: 'var(--font-mono)', fontWeight: 600, color: barColor }}>{dept.total} anggota</span>
+                {/* Distribusi Anggota & Pengurus */}
+                <section style={{ padding: 'var(--spacing-section) var(--spacing-xl)', backgroundColor: 'var(--color-surface-soft)' }}>
+                    <div ref={distRef} style={{ maxWidth: '1200px', margin: '0 auto', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--spacing-xxl)' }} className="lg:grid-cols-2 grid-cols-1">
+                        
+                        {/* Distribusi Anggota */}
+                        <div data-animate style={{ opacity: 0, transform: 'translateY(24px)', transition: 'all 0.8s cubic-bezier(0.16,1,0.3,1)' }}>
+                            <h2 className="ds-display-lg">Distribusi Anggota</h2>
+                            <div className="ds-feature-card" style={{ marginTop: 'var(--spacing-xl)' }}>
+                                {departmentDistribution && departmentDistribution.length > 0 ? (
+                                    <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-md)' }}>
+                                        {departmentDistribution.map((dept, i) => {
+                                            const pct = Math.round((dept.total / maxDist) * 100);
+                                            return (
+                                                <div key={i}>
+                                                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 'var(--spacing-xxs)' }}>
+                                                        <span className="ds-body-md" style={{ fontWeight: 600 }}>{dept.department}</span>
+                                                        <span style={{ fontFamily: 'var(--font-mono)', fontSize: '14px', fontWeight: 500 }}>{dept.total}</span>
+                                                    </div>
+                                                    <div style={{ width: '100%', height: '8px', backgroundColor: 'var(--color-surface-strong)', borderRadius: 'var(--rounded-pill)' }}>
+                                                        <div style={{ height: '100%', width: `${pct}%`, backgroundColor: 'var(--color-primary)', borderRadius: 'var(--rounded-pill)' }}></div>
+                                                    </div>
                                                 </div>
-                                                <div style={{ width: '100%', height: '10px', backgroundColor: 'var(--color-surface-soft)', borderRadius: '5px', overflow: 'hidden' }}>
-                                                    <div style={{
-                                                        height: '100%',
-                                                        width: `${pct}%`,
-                                                        backgroundColor: barColor,
-                                                        borderRadius: '5px',
-                                                        transition: 'width 1s cubic-bezier(0.16,1,0.3,1) 0.3s'
-                                                    }}></div>
+                                            );
+                                        })}
+                                    </div>
+                                ) : (
+                                    <p className="ds-body-md" style={{ color: 'var(--color-muted)' }}>Belum ada data distribusi anggota.</p>
+                                )}
+                            </div>
+                        </div>
+
+                        {/* Pengurus */}
+                        <div data-animate style={{ opacity: 0, transform: 'translateY(24px)', transition: 'all 0.8s cubic-bezier(0.16,1,0.3,1) 0.1s' }}>
+                            <h2 className="ds-display-lg">Susunan Pengurus</h2>
+                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--spacing-md)', marginTop: 'var(--spacing-xl)' }}>
+                                {boardMembers && boardMembers.length > 0 ? (
+                                    boardMembers.map((member, i) => {
+                                        const initials = member.name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase();
+                                        const roleColor = roleColors[member.role] || roleColors.pengawas;
+                                        
+                                        return (
+                                            <div key={i} className="ds-feature-card" style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-sm)', padding: 'var(--spacing-md)' }}>
+                                                <div className="ds-asset-icon-circular" style={{ backgroundColor: roleColor.bg, color: roleColor.text }}>
+                                                    {initials}
+                                                </div>
+                                                <div>
+                                                    <div className="ds-title-sm" style={{ marginBottom: '2px' }}>{member.name}</div>
+                                                    <div style={{ fontFamily: 'var(--font-body)', fontSize: '12px', color: 'var(--color-muted)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                                                        {member.role_label}
+                                                    </div>
                                                 </div>
                                             </div>
                                         );
-                                    })}
-                                </div>
+                                    })
+                                ) : (
+                                    <div className="ds-feature-card" style={{ gridColumn: 'span 2' }}>
+                                        <p className="ds-body-md" style={{ color: 'var(--color-muted)' }}>Data pengurus belum tersedia.</p>
+                                    </div>
+                                )}
                             </div>
-                        ) : (
-                            <div style={{ textAlign: 'center', padding: '40px', color: 'var(--color-muted)', fontSize: '14px', backgroundColor: '#fff', borderRadius: 'var(--rounded-xl)', border: '1px solid var(--color-hairline)' }}>
-                                Belum ada data distribusi anggota per fakultas.
-                            </div>
-                        )}
+                        </div>
                     </div>
                 </section>
             </main>
 
             <FooterLight>
-                <div style={{ maxWidth: '1000px', margin: '0 auto', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: 'var(--spacing-xl)' }}>
+                <div style={{ maxWidth: '1200px', margin: '0 auto', display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 'var(--spacing-xl)' }} className="ds-grid-3up">
                     <div>
-                        <h3 className="ds-title-md" style={{ color: 'var(--color-ink)' }}>Koperasi FT Unila</h3>
-                        <p style={{ marginTop: 'var(--spacing-sm)', lineHeight: 1.6, fontSize: '13px' }}>
-                            Koperasi Simpan Pinjam Fakultas Teknik Universitas Lampung. Melayani kesejahteraan anggota melalui program simpanan dan pinjaman yang aman dan transparan.
+                        <div className="ds-title-md">Koperasi FT Unila</div>
+                        <p className="ds-body-sm" style={{ color: 'var(--color-muted)', marginTop: 'var(--spacing-sm)' }}>
+                            Melayani kesejahteraan anggota melalui program simpanan dan pinjaman yang aman, transparan, dan profesional.
                         </p>
                     </div>
                     <div>
-                        <h3 className="ds-title-md" style={{ color: 'var(--color-ink)' }}>Layanan</h3>
-                        <ul style={{ listStyle: 'none', padding: 0, marginTop: 'var(--spacing-sm)', display: 'flex', flexDirection: 'column', gap: 'var(--spacing-xs)', fontSize: '13px' }}>
-                            <li>Simpanan Pokok, Wajib &amp; Sukarela</li>
-                            <li>Pinjaman dengan Potong Gaji Otomatis</li>
-                            <li>Sisa Hasil Usaha (SHU) Tahunan</li>
+                        <div className="ds-title-md">Layanan</div>
+                        <ul style={{ listStyle: 'none', padding: 0, margin: 0, marginTop: 'var(--spacing-sm)', display: 'flex', flexDirection: 'column', gap: 'var(--spacing-xs)' }}>
+                            <li className="ds-body-sm" style={{ color: 'var(--color-muted)' }}>Simpanan Pokok & Wajib</li>
+                            <li className="ds-body-sm" style={{ color: 'var(--color-muted)' }}>Simpanan Sukarela</li>
+                            <li className="ds-body-sm" style={{ color: 'var(--color-muted)' }}>Pinjaman Terjadwal</li>
                         </ul>
                     </div>
                     <div>
-                        <h3 className="ds-title-md" style={{ color: 'var(--color-ink)' }}>Kontak</h3>
-                        <ul style={{ listStyle: 'none', padding: 0, marginTop: 'var(--spacing-sm)', display: 'flex', flexDirection: 'column', gap: 'var(--spacing-xs)', fontSize: '13px' }}>
-                            <li>Fakultas Teknik, Universitas Lampung</li>
-                            <li>Jl. Prof. Dr. Ir. Sumantri Brojonegoro No.1</li>
-                            <li>Bandar Lampung, Lampung</li>
+                        <div className="ds-title-md">Kontak</div>
+                        <ul style={{ listStyle: 'none', padding: 0, margin: 0, marginTop: 'var(--spacing-sm)', display: 'flex', flexDirection: 'column', gap: 'var(--spacing-xs)' }}>
+                            <li className="ds-body-sm" style={{ color: 'var(--color-muted)' }}>Fakultas Teknik Unila</li>
+                            <li className="ds-body-sm" style={{ color: 'var(--color-muted)' }}>Jl. Prof. Dr. Ir. Sumantri Brojonegoro No.1</li>
                         </ul>
                     </div>
                 </div>
             </FooterLight>
+            
+            <div className="ds-legal-band">
+                <div>&copy; {new Date().getFullYear()} Koperasi Simpan Pinjam FT Unila</div>
+                <div>Dirancang untuk kesejahteraan bersama</div>
+            </div>
         </div>
     );
 }
