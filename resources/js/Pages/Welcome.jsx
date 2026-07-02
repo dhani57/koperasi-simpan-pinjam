@@ -178,46 +178,44 @@ export default function Welcome({ auth, stats, departmentDistribution, boardMemb
                 {/* Visi & Misi Section */}
                 <section style={{ padding: 'var(--spacing-section) var(--spacing-xl)', backgroundColor: 'var(--color-canvas)' }}>
                     <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
-                        <div className="text-center mb-16">
+                        <div className="text-center mb-12">
                             <span className="ds-badge-pill" style={{ backgroundColor: 'var(--color-surface-strong)', color: 'var(--color-primary)' }}>Visi & Misi</span>
-                            <h2 className="ds-display-lg mt-4">Landasan Nilai Koperasi Kami</h2>
-                            <p className="ds-body-md text-slate-500 max-w-2xl mx-auto mt-4">
-                                Koperasi Simpan Pinjam FT Unila berdiri di atas pilar keadilan, kejujuran, dan transparansi untuk mensejahterakan seluruh anggotanya.
-                            </p>
                         </div>
                         
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                            {/* Visi/Nilai 1 */}
-                            <div className="ds-feature-card flex flex-col justify-between hover:shadow-lg transition-shadow duration-300">
-                                <div>
-                                    <div className="w-12 h-12 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold text-lg mb-6 border border-emerald-100">✓</div>
-                                    <h3 className="ds-title-md text-slate-900 mb-3">Bebas Riba</h3>
-                                    <p className="text-slate-500 text-sm leading-relaxed">
-                                        Berkomitmen menyelenggarakan program simpan pinjam yang adil dan amanah, menghindari unsur riba demi ketenangan dan keberkahan bersama seluruh anggota.
-                                    </p>
-                                </div>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+                            {/* Visi (Kiri) */}
+                            <div className="ds-feature-card hover:shadow-md transition-shadow duration-300">
+                                <h3 className="ds-title-md text-slate-900 mb-6 flex items-center gap-3">
+                                    <span className="w-8 h-8 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center font-bold text-sm">V</span>
+                                    Visi Koperasi
+                                </h3>
+                                <ol className="flex flex-col gap-4 list-decimal pl-5 text-slate-600 text-sm leading-relaxed">
+                                    <li>
+                                        Menjadi wadah keuangan bersama yang amanah, unggul, dan bebas riba demi terwujudnya kemandirian ekonomi anggota.
+                                    </li>
+                                    <li>
+                                        Membangun ekosistem simpan pinjam yang berlandaskan asas kekeluargaan dan profesionalisme di Fakultas Teknik Unila.
+                                    </li>
+                                </ol>
                             </div>
                             
-                            {/* Visi/Nilai 2 */}
-                            <div className="ds-feature-card flex flex-col justify-between hover:shadow-lg transition-shadow duration-300">
-                                <div>
-                                    <div className="w-12 h-12 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center font-bold text-lg mb-6 border border-blue-100">👁</div>
-                                    <h3 className="ds-title-md text-slate-900 mb-3">Transparansi Penuh</h3>
-                                    <p className="text-slate-500 text-sm leading-relaxed">
-                                        Menyediakan akses informasi saldo, laporan keuangan, dan kalkulasi bagi hasil secara berkala dan real-time tanpa ada yang disembunyikan.
-                                    </p>
-                                </div>
-                            </div>
-                            
-                            {/* Visi/Nilai 3 */}
-                            <div className="ds-feature-card flex flex-col justify-between hover:shadow-lg transition-shadow duration-300">
-                                <div>
-                                    <div className="w-12 h-12 rounded-full bg-amber-50 text-amber-600 flex items-center justify-center font-bold text-lg mb-6 border border-amber-100">🤝</div>
-                                    <h3 className="ds-title-md text-slate-900 mb-3">Kesejahteraan Adil</h3>
-                                    <p className="text-slate-500 text-sm leading-relaxed">
-                                        Fokus memberikan layanan finansial yang mempermudah kebutuhan anggota dengan bunga/jasa minimal, serta pengembalian SHU yang proporsional.
-                                    </p>
-                                </div>
+                            {/* Misi (Kanan) */}
+                            <div className="ds-feature-card hover:shadow-md transition-shadow duration-300">
+                                <h3 className="ds-title-md text-slate-900 mb-6 flex items-center gap-3">
+                                    <span className="w-8 h-8 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold text-sm">M</span>
+                                    Misi Koperasi
+                                </h3>
+                                <ol className="flex flex-col gap-4 list-decimal pl-5 text-slate-600 text-sm leading-relaxed">
+                                    <li>
+                                        Menyelenggarakan transaksi simpanan dan pinjaman tanpa unsur riba demi keberkahan dan ketenangan berfinansial.
+                                    </li>
+                                    <li>
+                                        Menyediakan transparansi data dan bagi hasil yang adil bagi seluruh anggota secara terbuka dan berkala.
+                                    </li>
+                                    <li>
+                                        Memberikan kemudahan layanan keuangan yang cepat, aman, dan terintegrasi bagi dosen dan karyawan.
+                                    </li>
+                                </ol>
                             </div>
                         </div>
                     </div>
