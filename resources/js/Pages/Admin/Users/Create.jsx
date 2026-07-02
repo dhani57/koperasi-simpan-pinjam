@@ -7,16 +7,19 @@ import AlertModal from '@/Components/AlertModal';
 
 export default function Create({ auth }) {
     const { data, setData, post, processing, errors } = useForm({
-        name: '',
         identity_number: '',
+        name: '',
         email: '',
-        roles: ['anggota'],
-        monthly_saving_nominal: 0,
-        max_salary_deduction_limit: 0,
-        total_saving_balance: 0,
+        department: '',
         joined_at: new Date().toISOString().split('T')[0],
-        password: '',
-        password_confirmation: '',
+        retirement_month: '',
+        retirement_year: '',
+        monthly_simpanan_wajib: 50000,
+        simpanan_pokok_balance: 0,
+        simpanan_wajib_balance: 0,
+        simpanan_sukarela_balance: 0,
+        bank_account_number: '',
+        roles: ['anggota'],
     });
 
     const submit = (e) => {
@@ -25,13 +28,13 @@ export default function Create({ auth }) {
     };
 
     const formatNumber = (num) => {
-        if (!num) return '';
+        if (num === null || num === undefined || num === '') return '';
         return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
     };
 
     const handleNumberInput = (field, value) => {
         const rawValue = value.replace(/\D/g, '');
-        setData(field, rawValue);
+        setData(field, rawValue ? parseInt(rawValue, 10) : 0);
     };
 
     const availableRoles = [
@@ -40,6 +43,10 @@ export default function Create({ auth }) {
         { value: 'pengurus', label: 'Pengurus (Admin)' },
         { value: 'ketua', label: 'Ketua' },
         { value: 'pengawas', label: 'Pengawas' }
+    ];
+
+    const faculties = [
+        'FEB', 'FH', 'FKIP', 'FT', 'FK', 'FP', 'FMIPA', 'FISIP'
     ];
 
     const [alertConfig, setAlertConfig] = useState({
@@ -69,19 +76,22 @@ export default function Create({ auth }) {
         <AdminLayout auth={auth} title="Tambah Anggota Baru">
             <Head title="Tambah Anggota" />
 
-            <div style={{ backgroundColor: 'var(--color-canvas)', borderRadius: 'var(--rounded-lg)', padding: 'var(--spacing-xl)', border: '1px solid var(--color-hairline)', maxWidth: '800px' }}>
+            <div style={{ backgroundColor: 'var(--color-canvas)', borderRadius: 'var(--rounded-lg)', padding: 'var(--spacing-xl)', border: '1px solid var(--color-hairline)', maxWidth: '900px' }}>
                 <form onSubmit={submit} style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-lg)' }}>
+                    
+                    <h3 className="text-lg font-bold text-slate-800 border-b pb-2 mb-2">Informasi Dasar</h3>
                     
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
                         <div>
                             <InputLabel htmlFor="identity_number" value={<span>NIP/NIM <span className="text-red-500">*</span></span>} className="ds-label" />
                             <input id="identity_number" type="text" className="ds-text-input" value={data.identity_number} onChange={e => setData('identity_number', e.target.value)} required />
-                            {errors.identity_number && <div className="ds-error-text">{errors.identity_number}</div>}
+                            <p className="text-xs text-slate-500 mt-1">NIP akan menjadi password default anggota.</p>
+                            {errors.identity_number && <div className="ds-error-text mt-1">{errors.identity_number}</div>}
                         </div>
                         <div>
                             <InputLabel htmlFor="name" value={<span>Nama Lengkap <span className="text-red-500">*</span></span>} className="ds-label" />
                             <input id="name" type="text" className="ds-text-input" value={data.name} onChange={e => setData('name', e.target.value)} required />
-                            {errors.name && <div className="ds-error-text">{errors.name}</div>}
+                            {errors.name && <div className="ds-error-text mt-1">{errors.name}</div>}
                         </div>
                     </div>
 
@@ -89,7 +99,46 @@ export default function Create({ auth }) {
                         <div>
                             <InputLabel htmlFor="email" value={<span>Email <span className="text-red-500">*</span></span>} className="ds-label" />
                             <input id="email" type="email" className="ds-text-input" value={data.email} onChange={e => setData('email', e.target.value)} required />
-                            {errors.email && <div className="ds-error-text">{errors.email}</div>}
+                            {errors.email && <div className="ds-error-text mt-1">{errors.email}</div>}
+                        </div>
+                        <div>
+                            <InputLabel htmlFor="department" value={<span>Fakultas/Unit <span className="text-red-500">*</span></span>} className="ds-label" />
+                            <select id="department" className="ds-text-input" value={data.department} onChange={e => setData('department', e.target.value)} required>
+                                <option value="" disabled>Pilih Fakultas/Unit</option>
+                                {faculties.map(f => (
+                                    <option key={f} value={f}>{f}</option>
+                                ))}
+                            </select>
+                            {errors.department && <div className="ds-error-text mt-1">{errors.department}</div>}
+                        </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+                        <div>
+                            <InputLabel htmlFor="joined_at" value={<span>Tanggal Bergabung <span className="text-red-500">*</span></span>} className="ds-label" />
+                            <input id="joined_at" type="date" className="ds-text-input" value={data.joined_at} onChange={e => setData('joined_at', e.target.value)} required />
+                            {errors.joined_at && <div className="ds-error-text mt-1">{errors.joined_at}</div>}
+                        </div>
+                        <div>
+                            <InputLabel value="Pensiun (Opsional)" className="ds-label mb-2" />
+                            <div className="flex gap-4">
+                                <div className="flex-1">
+                                    <input type="number" placeholder="Bulan (1-12)" min="1" max="12" className="ds-text-input" value={data.retirement_month} onChange={e => setData('retirement_month', e.target.value)} />
+                                    {errors.retirement_month && <div className="ds-error-text mt-1">{errors.retirement_month}</div>}
+                                </div>
+                                <div className="flex-1">
+                                    <input type="number" placeholder="Tahun" min="2020" className="ds-text-input" value={data.retirement_year} onChange={e => setData('retirement_year', e.target.value)} />
+                                    {errors.retirement_year && <div className="ds-error-text mt-1">{errors.retirement_year}</div>}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+                        <div>
+                            <InputLabel htmlFor="bank_account_number" value="Nomor Rekening Bank (Opsional)" className="ds-label" />
+                            <input id="bank_account_number" type="text" className="ds-text-input" value={data.bank_account_number} onChange={e => setData('bank_account_number', e.target.value)} placeholder="Contoh: 1234567890" />
+                            {errors.bank_account_number && <div className="ds-error-text mt-1">{errors.bank_account_number}</div>}
                         </div>
                         <div>
                             <InputLabel value={<span>Peran (Maksimal 2) <span className="text-red-500">*</span></span>} className="ds-label mb-3" />
@@ -111,41 +160,33 @@ export default function Create({ auth }) {
                         </div>
                     </div>
 
+                    <h3 className="text-lg font-bold text-slate-800 border-b pb-2 mt-6 mb-2">Informasi Simpanan</h3>
+
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
                         <div>
-                            <InputLabel htmlFor="monthly_saving_nominal" value={<span>Iuran Simpanan Bulanan (Rp) <span className="text-red-500">*</span></span>} className="ds-label" />
-                            <input id="monthly_saving_nominal" type="text" className="ds-text-input" value={formatNumber(data.monthly_saving_nominal)} onChange={e => handleNumberInput('monthly_saving_nominal', e.target.value)} required />
-                            {errors.monthly_saving_nominal && <div className="ds-error-text">{errors.monthly_saving_nominal}</div>}
+                            <InputLabel htmlFor="monthly_simpanan_wajib" value={<span>Iuran Simpanan Wajib per Bulan (Rp) <span className="text-red-500">*</span></span>} className="ds-label" />
+                            <input id="monthly_simpanan_wajib" type="text" className="ds-text-input" value={formatNumber(data.monthly_simpanan_wajib)} onChange={e => handleNumberInput('monthly_simpanan_wajib', e.target.value)} required />
+                            <p className="text-xs text-slate-500 mt-1">Minimal Rp 50.000</p>
+                            {errors.monthly_simpanan_wajib && <div className="ds-error-text mt-1">{errors.monthly_simpanan_wajib}</div>}
                         </div>
                         <div>
-                            <InputLabel htmlFor="max_salary_deduction_limit" value={<span>Batas Potongan Gaji (Rp) <span className="text-red-500">*</span></span>} className="ds-label" />
-                            <input id="max_salary_deduction_limit" type="text" className="ds-text-input" value={formatNumber(data.max_salary_deduction_limit)} onChange={e => handleNumberInput('max_salary_deduction_limit', e.target.value)} required />
-                            {errors.max_salary_deduction_limit && <div className="ds-error-text">{errors.max_salary_deduction_limit}</div>}
+                            <InputLabel htmlFor="simpanan_pokok_balance" value="Saldo Awal Simpanan Pokok (Rp)" className="ds-label" />
+                            <input id="simpanan_pokok_balance" type="text" className="ds-text-input" value={formatNumber(data.simpanan_pokok_balance)} onChange={e => handleNumberInput('simpanan_pokok_balance', e.target.value)} placeholder="0" />
+                            <p className="text-xs text-slate-500 mt-1">Opsional, isi jika migrasi data anggota lama.</p>
+                            {errors.simpanan_pokok_balance && <div className="ds-error-text mt-1">{errors.simpanan_pokok_balance}</div>}
                         </div>
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
                         <div>
-                            <InputLabel htmlFor="total_saving_balance" value="Saldo Awal Simpanan (Opsional/Migrasi)" className="ds-label" />
-                            <input id="total_saving_balance" type="text" className="ds-text-input" value={formatNumber(data.total_saving_balance) || ''} onChange={e => handleNumberInput('total_saving_balance', e.target.value)} placeholder="0" />
-                            {errors.total_saving_balance && <div className="ds-error-text">{errors.total_saving_balance}</div>}
+                            <InputLabel htmlFor="simpanan_wajib_balance" value="Saldo Awal Simpanan Wajib (Rp)" className="ds-label" />
+                            <input id="simpanan_wajib_balance" type="text" className="ds-text-input" value={formatNumber(data.simpanan_wajib_balance)} onChange={e => handleNumberInput('simpanan_wajib_balance', e.target.value)} placeholder="0" />
+                            {errors.simpanan_wajib_balance && <div className="ds-error-text mt-1">{errors.simpanan_wajib_balance}</div>}
                         </div>
                         <div>
-                            <InputLabel htmlFor="joined_at" value={<span>Tanggal Bergabung <span className="text-red-500">*</span></span>} className="ds-label" />
-                            <input id="joined_at" type="date" className="ds-text-input" value={data.joined_at} onChange={e => setData('joined_at', e.target.value)} required />
-                            {errors.joined_at && <div className="ds-error-text">{errors.joined_at}</div>}
-                        </div>
-                    </div>
-
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 pt-4 border-t border-slate-200">
-                        <div>
-                            <InputLabel htmlFor="password" value={<span>Password <span className="text-red-500">*</span></span>} className="ds-label" />
-                            <input id="password" type="password" className="ds-text-input" value={data.password} onChange={e => setData('password', e.target.value)} required />
-                            {errors.password && <div className="ds-error-text">{errors.password}</div>}
-                        </div>
-                        <div>
-                            <InputLabel htmlFor="password_confirmation" value={<span>Konfirmasi Password <span className="text-red-500">*</span></span>} className="ds-label" />
-                            <input id="password_confirmation" type="password" className="ds-text-input" value={data.password_confirmation} onChange={e => setData('password_confirmation', e.target.value)} required />
+                            <InputLabel htmlFor="simpanan_sukarela_balance" value="Saldo Awal Simpanan Sukarela (Rp)" className="ds-label" />
+                            <input id="simpanan_sukarela_balance" type="text" className="ds-text-input" value={formatNumber(data.simpanan_sukarela_balance)} onChange={e => handleNumberInput('simpanan_sukarela_balance', e.target.value)} placeholder="0" />
+                            {errors.simpanan_sukarela_balance && <div className="ds-error-text mt-1">{errors.simpanan_sukarela_balance}</div>}
                         </div>
                     </div>
 
@@ -166,3 +207,4 @@ export default function Create({ auth }) {
         </AdminLayout>
     );
 }
+

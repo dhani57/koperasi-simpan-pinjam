@@ -40,24 +40,17 @@ class UserController extends Controller
             'name' => 'required|string|max:255',
             'identity_number' => 'required|string|unique:users',
             'email' => 'required|string|email|max:255|unique:users',
-            'phone' => 'nullable|string|max:20',
-            'roles' => ['required', 'array', 'min:1', 'max:2'],
-            'roles.*' => [Rule::in(['anggota', 'bendahara', 'pengurus', 'ketua', 'pengawas'])],
-            'monthly_simpanan_wajib' => 'required|numeric|min:0',
-            'monthly_simpanan_sukarela' => 'nullable|numeric|min:0',
-            'max_salary_deduction_limit' => 'required|numeric|min:0',
+            'department' => 'required|string|max:100',
+            'joined_at' => 'required|date',
+            'retirement_month' => 'nullable|integer|min:1|max:12',
+            'retirement_year' => 'nullable|integer|min:2020',
+            'monthly_simpanan_wajib' => 'required|numeric|min:50000',
             'simpanan_pokok_balance' => 'nullable|numeric|min:0',
             'simpanan_wajib_balance' => 'nullable|numeric|min:0',
             'simpanan_sukarela_balance' => 'nullable|numeric|min:0',
-            'bank_account_number' => 'nullable|string|max:50',
-            'retirement_month' => 'nullable|integer|min:1|max:12',
-            'retirement_year' => 'nullable|integer|min:2020',
-            'department' => 'nullable|string|max:100',
-            'job_title' => 'nullable|string|max:100',
-            'job_start_date' => 'nullable|date',
-            'job_end_date' => 'nullable|date',
-            'joined_at' => 'nullable|date',
-            'password' => 'required|string|min:8|confirmed',
+            'bank_account_number' => 'nullable|numeric|digits_between:1,50',
+            'roles' => ['required', 'array', 'min:1', 'max:2'],
+            'roles.*' => [Rule::in(['anggota', 'bendahara', 'pengurus', 'ketua', 'pengawas'])],
         ]);
 
         $initialPokok = $validated['simpanan_pokok_balance'] ?? 0;
@@ -67,6 +60,8 @@ class UserController extends Controller
         $validated['simpanan_pokok_balance'] = $initialPokok;
         $validated['simpanan_wajib_balance'] = $initialWajib;
         $validated['simpanan_sukarela_balance'] = $initialSukarela;
+        $validated['max_salary_deduction_limit'] = 0;
+        $validated['password'] = bcrypt($validated['identity_number']);
 
         $roles = $validated['roles'];
         if (count($roles) === 2 && !in_array('anggota', $roles)) {
@@ -139,7 +134,7 @@ class UserController extends Controller
             'monthly_simpanan_wajib' => 'required|numeric|min:0',
             'monthly_simpanan_sukarela' => 'nullable|numeric|min:0',
             'max_salary_deduction_limit' => 'required|numeric|min:0',
-            'bank_account_number' => 'nullable|string|max:50',
+            'bank_account_number' => 'nullable|numeric|digits_between:1,50',
             'retirement_month' => 'nullable|integer|min:1|max:12',
             'retirement_year' => 'nullable|integer|min:2020',
             'department' => 'nullable|string|max:100',
